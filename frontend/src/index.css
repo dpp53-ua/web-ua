@@ -1,0 +1,24 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+/* Colores principales de la web */
+:root {
+   /* Definir como --nombre-variable: #000000 */
+  --red: #A11515;
+  --dark-red: #460216;
+  --grey: #A7A7A7;
+  --medium-grey: #202024;
+  --dark-grey: #141212;
+  --white: #E6E8EC;
+}

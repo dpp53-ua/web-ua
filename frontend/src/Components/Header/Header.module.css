@@ -1,0 +1,6 @@
+header {
+    background: linear-gradient(90deg, var(--dark-red) 0%, var(--red) 100%);
+    color: white;
+    margin: 0;
+    gap:0;
+}
