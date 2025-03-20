@@ -1,17 +1,14 @@
-/* Modulos de librerías */
-
 /* Componentes */
 import { Link } from "react-router-dom";
-import { Button, InputField, LinkWrapper } from '../../Components';
+import { Button, InputField } from '../../Components';
 import { faUser, faLock } from "@fortawesome/free-solid-svg-icons";
 
 /* Estilos */
 import styles from "./Login.module.css";
 
-
 function Login() {
   return (
-    <div className={styles["main-container"]}> {/* FIX: La propia plantilla tiene un main, mover este main y su estilo para que no haya redundancia */}
+    <>
       <section className={styles["left-section"]}>
         <h1>Inicia sesión</h1>
         <form method="POST" action="">
@@ -30,7 +27,7 @@ function Login() {
         <p>¿No tienes una cuenta?</p>
         <Link to="" className={styles["register-link"]}>Regístrate</Link>
       </section>
-    </div> 
+    </>
   );
 }
 

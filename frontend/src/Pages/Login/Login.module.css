@@ -4,27 +4,20 @@ h1 {
     margin: 0;
 }
 
-.main-container {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto;
-    gap: 0;
-}
-
 .left-section, .right-section {
     display: flex;
+    height: 23.47em;
     flex-direction: column;
     font-size: 1.5em;
     color: var(--white);
-    padding: 7em;
+    padding-inline: 7em;
+    padding-block: 2.5em;
 }
 
 .left-section {
     background-color: var(--dark-grey);
     flex: 2; /*Ocupa dos de tres partes*/
-    gap: 1.5em;
+    gap: 2.55em;
 }
 
 .left-section h1 {
@@ -60,7 +53,7 @@ h1 {
     background: linear-gradient(90deg, var(--dark-red) 0%, var(--red) 100%);
     flex: 1; /* Ocupa una de tres partes */
     align-items: center;
-    gap: 1.91em;
+    gap: 1.75em;
 }
 
 @keyframes girar {
@@ -73,7 +66,7 @@ h1 {
 }
 
 .right-section img {
-    width: 10em;
+    width: 15em;
     height: auto;
     animation: girar 10s linear infinite;
 }
@@ -93,5 +86,3 @@ h1 {
     background-color: var(--grey);
     color: black;
 }
-
-

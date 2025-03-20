@@ -1,7 +1,21 @@
-.footer {
-    background-color: aqua;
+.footer-basic {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding-inline: 2.5em;
+    color: var(--white);
+    align-items: center;
+    background-color: var(--dark-red);
+    height: 3em;
+}
+
+.language-div {
+    display: flex;
+    flex-direction: row;
+    margin: 0;
 }
 
 p {
     margin: 0;
+    align-self: center;
 }

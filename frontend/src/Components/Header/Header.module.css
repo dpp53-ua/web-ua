@@ -1,6 +1,37 @@
 header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
     background: linear-gradient(90deg, var(--dark-red) 0%, var(--red) 100%);
-    color: white;
+    padding: 0.5em;
     margin: 0;
-    gap:0;
+    height: 3em;
+    padding-inline: 2em;
+}
+
+ul {
+    display: flex; 
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    list-style: none; 
+    gap: 1em; 
+}
+
+li {
+    display: flex;
+    align-items: center;
+    font-size: 1.25em;
+}
+
+img {
+    width: 2em;
+    height: auto;
+}
+
+a {
+    color: var(--white);
+    text-decoration: none;
+    
 }

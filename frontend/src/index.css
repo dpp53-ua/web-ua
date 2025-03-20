@@ -12,6 +12,12 @@ code {
     monospace;
 }
 
+#root {
+  gap: 0;
+  margin: 0;
+  padding: 0;
+}
+
 /* Colores principales de la web */
 :root {
    /* Definir como --nombre-variable: #000000 */
