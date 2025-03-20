@@ -3,6 +3,7 @@ node_modules/
 package-lock.json
 yarn.lock
 
+
 # Build y producción
 build/
 dist/
@@ -22,6 +23,7 @@ Thumbs.db
 .env.development.local
 .env.test.local
 .env.production.local
+.env.test
 
 # Archivos de logs
 npm-debug.log*
