@@ -1,21 +1,23 @@
-.footer-basic {
+.footer-container {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    padding-inline: 2.5em;
-    color: var(--white);
-    align-items: center;
-    background-color: var(--dark-red);
-    height: 3em;
-}
 
-.language-div {
-    display: flex;
-    flex-direction: row;
-    margin: 0;
-}
+    padding-block: 0.75rem;
+    padding-inline: 7.5rem;
 
-p {
-    margin: 0;
-    align-self: center;
+    background-color: var(--medium-red);
+    color: white;
+
+    > div {
+        display: inherit;
+        flex-direction: inherit;
+        align-items: center;
+        gap: 0.5rem;
+
+        > p {
+            margin: 0;
+            font-size: var(--font-small);
+        }
+    }
 }

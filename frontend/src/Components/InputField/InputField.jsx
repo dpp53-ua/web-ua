@@ -1,11 +1,11 @@
-import style from './InputField.module.css';
+import styles from './InputField.module.css';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 function InputField({ id, type, label, explicativeText, name, placeholder, icon }) {
     return (
-        <div className={style["form-input-container"]}>
-            <div className={style["input-label-container"]}>
-                {icon && <FontAwesomeIcon icon={icon} className={style["input-icon"]} />}
+        <div className={styles["input-container"]}>
+            <div>
+                {icon && <FontAwesomeIcon className={styles["font-icon"]} icon={icon}/>}
                 <label htmlFor={id}> {label} </label>
             </div>
             {explicativeText ? <small>{explicativeText}</small> : <></>}
