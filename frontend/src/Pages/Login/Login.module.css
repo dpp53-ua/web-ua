@@ -64,7 +64,7 @@
             width: 20rem;
             height: auto;
             animation: spin 25s linear infinite;
-            margin-block: 1rem;
+            margin-bottom: 1rem;
         }
 
         > p {
