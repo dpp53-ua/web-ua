@@ -15,17 +15,24 @@ app.use(logger("dev")); // Logs de las peticiones
 app.use(cors()); // Permitir CORS
 app.use(express.json()); // Soporte para JSON
 
-// 🟢 POST: Crear usuario
+// 🟢 POST: Crear usuario evitando duplicados
 app.post("/api/users", (req, res) => {
-    const { name, password } = req.body;
+    const { email, name, password } = req.body;
 
-    if (!name || !password) {
+    if (!name || !password || !email) {
         return res.status(400).json({ message: "Faltan datos" });
     }
 
-    db.users.insert({ name, password }, (err, user) => {
+    // Verificar si el usuario ya existe por email o nombre
+    db.users.findOne({ $or: [{ email }, { name }] }, (err, existingUser) => {
         if (err) return res.status(500).json({ message: "Error en el servidor", error: err });
-        res.status(201).json({ message: "Usuario creado", user });
+        if (existingUser) return res.status(400).json({ message: "El usuario o el email ya existen" });
+
+        // Insertar usuario si no existe
+        db.users.insert({ email, name, password }, (err, user) => {
+            if (err) return res.status(500).json({ message: "Error en el servidor", error: err });
+            res.status(201).json({ message: "Usuario creado", user });
+        });
     });
 });
 
