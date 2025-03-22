@@ -1,33 +1,15 @@
 import styles from "./Button.module.css";
+import { Link } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-export default function Boton( { type, onClickFunction } ) {
+export default function Boton( { type, variant, label, onClickFunction, icon, to} ) {
+  const buttonContent = (
+    <button type={type} className={styles[variant]} onClick={onClickFunction}>
+      {icon && <FontAwesomeIcon icon={icon} className={styles.icon} />}
+      {label}
+    </button>
+  );
 
-    let style = "enabled-button";
-    let text = "";
-    let disabled;
-    switch ( type ) {
-        case "reset":
-            text = "Limpiar";
-            disabled = false;
-            break;
-        case "submit":
-            text = "Aceptar";
-            disabled = false;
-            break;
-        case "cancel":
-            text = "Cancelar"
-            disabled = false;
-            break;
-        default:
-            style = "disabled-button";
-            text = "No disponible";
-            disabled = true;
-            break;
-    }
-
-    return (
-        <button className={ styles[style] } type={ type } onClick={ onClickFunction } disabled={ disabled }> 
-            { text }
-        </button>
-    );
+  // Si to está presente, usamos <Link>, sino, solo mostramos el botón sin redirección.
+  return to ? <Link to={to}>{buttonContent}</Link> : buttonContent;
 }

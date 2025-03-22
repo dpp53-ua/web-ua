@@ -1,7 +1,23 @@
-.footer {
-    background-color: aqua;
-}
+.footer-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
 
-p {
-    margin: 0;
+    padding-block: 0.75rem;
+    padding-inline: 7.5rem;
+
+    background-color: var(--medium-grey);
+    color: white;
+
+    > div {
+        display: inherit;
+        flex-direction: inherit;
+        align-items: center;
+        gap: 0.5rem;
+
+        > p {
+            margin: 0;
+            font-size: var(--font-small);
+        }
+    }
 }

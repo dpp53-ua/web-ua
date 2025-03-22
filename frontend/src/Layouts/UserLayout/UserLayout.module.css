@@ -1,0 +1,21 @@
+/* Asegura que el contenedor principal ocupa toda la altura del viewport */
+.grid-layout {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Asegura que ocupa toda la altura del viewport */
+}
+
+/* El Header y Footer tendrán su altura natural */
+header {
+    flex: 0 1 auto; /* No cambia de tamaño, se ajusta a su contenido */
+}
+
+footer {
+    flex: 0 1 auto; /* No cambia de tamaño, se ajusta a su contenido */
+}
+
+/* El main ocupa el espacio restante, se expande y puede hacer scroll */
+main {
+    flex: 1 1 auto; /* Ocupa el espacio restante */
+    overflow-y: auto; /* Activa el scroll cuando sea necesario */
+}

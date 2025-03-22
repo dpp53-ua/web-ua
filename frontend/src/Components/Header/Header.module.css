@@ -1,6 +1,25 @@
-header {
-    background: linear-gradient(90deg, var(--dark-red) 0%, var(--red) 100%);
-    color: white;
-    margin: 0;
-    gap:0;
+.header {
+  background: linear-gradient(30deg, var(--dark-red), var(--medium-red));
+  padding: 0 1rem;
+  display: flex;
+  justify-content: space-between; 
+  align-items: center;
+  /* background: var(--medium-red); */
+  color: var(--white);
+}
+
+.leftContent {
+  display: flex;
+  gap: 3em;
+  padding: 1em;
+}
+.rightContent {
+    display: flex;
+    gap: 1em;
+    padding: 1em;
+  }
+
+.logo {
+  width: 2rem;
+  height: auto;
 }

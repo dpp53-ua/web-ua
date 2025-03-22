@@ -1,0 +1,77 @@
+.searchBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  
+}
+
+.searchBar > div {
+  display: flex;
+  align-items: center;
+  background-color: var(--white);
+  border-radius: 5px;
+  padding: 5px;
+
+  flex-grow: 1;
+  transition: box-shadow 0.3s ease, transform 0.3s ease; /* Transición suave para sombra y transformación */
+}
+
+/* Hover solo en la barra de búsqueda */
+.searchBar:hover > div {
+  transform: scale(1.02); /* Ligeramente aumenta el tamaño de la barra */
+}
+
+/* Estilos del input */
+.searchBar input {
+  border: none;
+  outline: none;
+  padding: 5px;
+  font-size: 14px;
+  width: 100%;
+  background-color: transparent;
+}
+
+/* Estilos del botón dentro de la barra de búsqueda */
+.searchBar > div button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  width: fit-content;
+}
+
+.searchBar > div button svg {
+  padding-inline: 0.3em;
+  width: 1em;
+  height: 1em;
+  color:  var(--dark-grey);
+  transition: color 0.2s ease-in-out;
+}
+
+.searchBar button:hover svg {
+  color: #333;
+}
+
+/* Estilo para el botón de filtro */
+.filter {
+  width: 2em;
+  height: 100%;
+  background-color: var(--dark-grey);
+  color: var(--white);
+  border-radius: 7px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.filter:hover {
+  background-color: var(--white);
+}
+
+.filter svg {
+  color: var(--white);
+  width: 1.1em;
+}

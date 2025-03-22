@@ -1,3 +1,7 @@
+html {
+  font-size: 20px;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -12,13 +16,41 @@ code {
     monospace;
 }
 
+#root {
+  gap: 0;
+  margin: 0;
+  padding: 0;
+}
+
+a {
+  color: var(--primary-link); /* Color principal del enlace */
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+a:active {
+  color: var(--white);
+}
+
 /* Colores principales de la web */
 :root {
    /* Definir como --nombre-variable: #000000 */
   --red: #A11515;
+  --medium-red: #730B16;
   --dark-red: #460216;
   --grey: #A7A7A7;
   --medium-grey: #202024;
   --dark-grey: #141212;
   --white: #E6E8EC;
+  --primary-link: #B96DFF;
+}
+
+:root {
+  --font-small: 0.75rem;
+  --font-medium: 1rem;
+  --font-large: 1.25rem;
+  --font-larger: 1.75rem;
 }
