@@ -1,0 +1,99 @@
+.login-main-container {
+    display: flex;
+    flex-direction: row;
+    min-height: 100vh; 
+
+    h1 {
+        font-size: var(--font-larger);
+        color: var(--white);
+    }
+
+    a {
+        font-size: var(--font-medium);
+    }
+
+    > .left-section, .right-section {
+        display: inherit;
+        flex-direction: column;
+        padding-block: 5rem;
+        flex: 1;
+        align-items: center;
+    }
+
+    > .left-section {
+        /* padding-inline: 12rem; */
+        padding-inline: 2rem; 
+        gap: 1.25rem;
+        background-color: var(--dark-grey);
+
+        > * {
+            max-width: 600px; /* Para que no sea demasiado grande */
+            width: 100%; /* Para que ocupe el máximo permitido */
+        }
+
+        > h1 {
+            font-size: var(--font-larger);
+            color: var(--white);
+        }
+
+        > form  {
+            display: inherit;
+            flex-direction: column;
+            gap: 3rem;
+
+            label {
+                font-size: var(--font-large);
+            }
+
+            input {
+                font-size: var(--font-medium);
+            }
+
+            > div:last-child {
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                gap: 1rem;
+                font-size: var(--font-medium);
+            }
+        }
+    }
+
+    > .right-section {
+        gap: 1rem;
+        /* padding-inline: 6rem; */
+
+        background: linear-gradient(90deg, var(--dark-red), var(--medium-red));
+
+        > img {
+            width: 20rem;
+            height: auto;
+            animation: spin 25s linear infinite;
+            margin-bottom: 1rem;
+        }
+
+        > p {
+            color: var(--white);
+            font-size: var(--font-large);
+        }
+    }
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (max-width: 768px) {  /* Cuando la pantalla sea menor a 768px */
+    .login-main-container {
+        flex-direction: column; /* Apila los elementos en columna */
+    }
+
+    .right-section {
+        order: -1; /* Mueve la sección derecha abajo */
+    }
+}
