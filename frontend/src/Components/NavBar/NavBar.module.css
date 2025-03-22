@@ -1,0 +1,55 @@
+
+  
+  .nav ul {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    gap: 1em;
+    padding: 0;
+    margin: 0;
+    height: 100%;
+    font-size: 16px;
+    font-weight: bold;
+  }
+  
+  .nav a {
+    color: var(--white);
+    text-decoration: none;
+    transition: color 0.3s ease; /* Transición suave para el color del texto */
+  }
+  
+  .nav li {
+    padding: 10px 15px;
+    position: relative;
+    overflow: hidden; /* Necesario para los efectos */
+  }
+  
+  .nav li:hover {
+    background-color: #00000031; /* Color de fondo cuando se pasa el ratón */
+    border-radius: 5px; /* Bordes redondeados */
+  }
+  
+  
+  
+  .nav a::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: var(--white); /* Subrayado animado */
+    transform: scaleX(0);
+    transform-origin: bottom right;
+    transition: transform 0.3s ease-out;
+  }
+  
+  .nav a:hover::after {
+    transform: scaleX(1);
+    transform-origin: bottom left;
+  }
+  
+
+  
+ 
+  

@@ -1,5 +1,25 @@
-.header-container {
-    background: linear-gradient(90deg, var(--dark-red), var(--medium-red));
-    padding: 1.5rem;
-    color: white;
+.header {
+  background: linear-gradient(30deg, var(--dark-red), var(--medium-red));
+  padding: 0 1rem;
+  display: flex;
+  justify-content: space-between; 
+  align-items: center;
+  /* background: var(--medium-red); */
+  color: var(--white);
+}
+
+.leftContent {
+  display: flex;
+  gap: 3em;
+  padding: 1em;
+}
+.rightContent {
+    display: flex;
+    gap: 1em;
+    padding: 1em;
+  }
+
+.logo {
+  width: 2rem;
+  height: auto;
 }
