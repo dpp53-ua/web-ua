@@ -25,7 +25,7 @@ function Login() {
         <img alt="logo" src="/atom.png"/>
         <h1>Bienvenido</h1>
         <p>¿No tienes una cuenta?</p>
-        <Button  variant="headerButtonWhite" label="Regístrate" to="/register"/>
+        <Button  variant="white" label="Regístrate" to="/register"/>
       </section>
     </div>
   );

@@ -14,6 +14,15 @@ button {
     }
 }
 
+.red, .white {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+    &:hover {
+        transform: scale(1.05); /* Efecto de ampliación */
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Sombra sutil */
+    }
+}
+
 .red {
     color: var(--white);
     background-color: var(--red);
@@ -126,3 +135,24 @@ button {
     background-color: var(--white); /* Fondo más oscuro cuando se presiona */
     color: var(--dark-grey);
 }
+
+
+@media (max-width: 550px) {
+    /* Ocultar el texto de los botones */
+    .headerButtonWhite span,
+    .headerButtonBlack span {
+        display: none;
+    }
+
+    /* Ajustar tamaño de los botones */
+    .headerButtonWhite,
+    .headerButtonBlack {
+        width: 40px; /* Tamaño fijo */
+        height: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 0; /* Eliminar relleno extra */
+    }
+}
+  

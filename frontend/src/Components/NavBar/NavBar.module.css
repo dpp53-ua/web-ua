@@ -20,7 +20,7 @@
   
   .nav li {
     padding: 10px 15px;
-    position: relative;
+    position: relative; 
     overflow: hidden; /* Necesario para los efectos */
   }
   
@@ -49,7 +49,57 @@
     transform-origin: bottom left;
   }
   
+  @media (max-width: 550px) {
+    .nav ul {
+      flex-direction: column; 
+      align-items: center; 
+      gap: 0.5em; 
+    }
+  
+    .nav li {
+      width: 100%; 
+      text-align: center; 
+    }
+    .nav{
+      display: none;
+    }
+  }
+  
 
+
+
+@media (max-width: 550px) {
+  .nav {
+    display: none; /* Si no cabe se esconde */
+    width: 100%;
+  }
+
+  /* Mostrar menú cuando menuOpen es true */
+
+  .showMenu {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    background-color: var(--medium-red);
+    padding: 1em;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  }
   
- 
+  .showMenu ul {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    text-align: center;
+  }
   
+  .showMenu a {
+    color: var(--white);
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: bold;
+  }
+}

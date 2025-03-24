@@ -13,6 +13,8 @@
   gap: 3em;
   padding: 1em;
 }
+
+
 .rightContent {
     display: flex;
     gap: 1em;
@@ -22,4 +24,74 @@
 .logo {
   width: 2rem;
   height: auto;
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: scale(1.15); /* Efecto de ampliación */
+    cursor: pointer;
+  }
 }
+
+
+
+
+/* Icono de menú hamburguesa */
+.menuIcon {
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: none; /* Oculto en pantallas grandes */
+}
+
+.navigation {
+  display: flex;
+}
+
+.topNav {
+  display: flex;
+}
+
+
+@media (max-width: 1300px) {
+  .header {
+    flex-direction: column;
+  }
+  .leftContent {
+    flex-direction: column;
+  }
+  .logoDiv {
+    width: 100%;
+    display: flex;
+  }
+}
+
+@media (max-width: 550px) {
+  .menuIcon {
+    display: block; /* Mostrar icono de menú */
+  }
+  .nav {
+    width: 100%;
+  }
+
+  .navigation {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centrar logo y menú */
+  }
+
+  .topNav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 1em 1em;
+  }
+
+  .leftContent {
+    width: 100%;
+  }
+
+  .rightContent > button {
+    height: 100%;
+  }
+}
+

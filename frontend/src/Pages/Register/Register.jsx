@@ -27,7 +27,7 @@ function Register() {
         <img alt="logo" src="/atom.png"/>
         <h1>Bienvenido</h1>
         <p>¿Ya tienes una cuenta?</p>
-        <Button  variant="headerButtonWhite" label="Inicia sesión" to="/login"/>
+        <Button  variant="white" label="Inicia sesión" to="/login"/>
       </section>
 
     </div>

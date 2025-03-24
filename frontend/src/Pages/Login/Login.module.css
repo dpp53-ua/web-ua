@@ -1,6 +1,8 @@
 .login-main-container {
     display: flex;
     flex-direction: row;
+    min-height: 100vh; 
+
 
     h1 {
         font-size: var(--font-larger);
@@ -16,12 +18,20 @@
         flex-direction: column;
         padding-block: 5rem;
         flex: 1;
+        align-items: center;
+        justify-content: center; /* Centra verticalmente el contenido */
     }
 
     > .left-section {
-        padding-inline: 12rem;
+        /* padding-inline: 12rem; */
+        padding-inline: 2rem; 
         gap: 1.25rem;
         background-color: var(--dark-grey);
+
+        > * {
+            max-width: 600px; /* Para que no sea demasiado grande */
+            width: 100%; /* Para que ocupe el máximo permitido */
+        }
 
         > h1 {
             font-size: var(--font-larger);
@@ -52,16 +62,13 @@
     }
 
     > .right-section {
-
         gap: 1rem;
-        align-items: center;
-        padding-inline: 6rem;
-
+        /* padding-inline: 6rem; */
         background: linear-gradient(90deg, var(--dark-red), var(--medium-red));
-        height: 100%;
 
         > img {
-            width: 20rem;
+            /* width: 20rem; */
+            width: 60%;
             height: auto;
             animation: spin 25s linear infinite;
             margin-bottom: 1rem;
@@ -80,5 +87,15 @@
     }
     to {
         transform: rotate(360deg);
+    }
+}
+
+@media (max-width: 768px) {  /* Cuando la pantalla sea menor a 768px */
+    .login-main-container {
+        flex-direction: column; /* Apila los elementos en columna */
+    }
+
+    .right-section {
+        order: -1; /* Mueve la sección derecha abajo */
     }
 }
