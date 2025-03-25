@@ -44,5 +44,36 @@ app.get("/api/users", (req, res) => {
     });
 });
 
+// 🔐 POST: Login básico sin encriptar
+app.post("/api/login", (req, res) => {
+    const { name, password } = req.body;
+
+    if (!name || !password) {
+        return res.status(400).json({ message: "Faltan nombre de usuario o contraseña" });
+    }
+
+    // Buscar usuario por nombre
+    db.users.findOne({ name }, (err, user) => {
+        if (err) return res.status(500).json({ message: "Error en el servidor", error: err });
+
+        if (!user) {
+            return res.status(404).json({ message: "El usuario no existe" });
+        }
+
+        // Comparar contraseña (sin seguridad)
+        if (user.password !== password) {
+            return res.status(401).json({ message: "Contraseña incorrecta" });
+        }
+
+        // excluir la contraseña de la respuesta
+        const { password: _, ...userWithoutPassword } = user;
+
+        res.status(200).json({ message: "Login exitoso", user: userWithoutPassword });
+    });
+});
+
+
+
+
 
 app.listen(PORT, () => console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`));

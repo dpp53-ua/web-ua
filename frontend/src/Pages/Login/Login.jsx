@@ -8,28 +8,46 @@ import { useState } from "react";
 import styles from "./Login.module.css";
 
 function Login() {
-  const [formData, setFormData] = useState({ user: "", password: "" });
-  const [error, setError] = useState("");
+  const [formData, setFormData] = useState({ name: "", password: "" });
+  const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    setErrors((prevErrors) => ({ ...prevErrors, [e.target.name]: "" }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
+    let newErrors = {};
+   if (!formData.name) newErrors.name = "El usuario es obligatorio";
+   if (!formData.password) newErrors.password = "La contraseña es obligatoria";
+
+    
     try {
-      const response = await fetch("", {
+      const response = await fetch("http://localhost:5000/api/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
       
       const result = await response.json();
-      if (!response.ok) throw new Error(result.message || "Error en el login");
-      console.log("Login exitoso", result);
+      if (!response.ok) {
+        if (response.status === 404) {
+          setErrors((prevErrors) => ({ ...prevErrors, name: "Este usuario o correo electrónico no existe" }));
+        } else if (response.status=== 401) {
+          setErrors((prevErrors) => ({ ...prevErrors, name: "Contraseña incorrecta" }));
+          
+        }else {
+          throw new Error(result.message || "Error en el login");
+        }
+        console.log("Login incorrecto", result);
+      }else{
+        console.log("Login exitoso", result);
+      }
+
+      
     } catch (error) {
-      setError(error.message);
+      setErrors((prevErrors) => ({ ...prevErrors, general: error.message }));
     }
   };
 
@@ -37,17 +55,18 @@ function Login() {
     <div className={styles["login-main-container"]}>
       <section className={styles["left-section"]}>
         <h1>Inicia sesión</h1>
-        {error && <p className={styles["error"]}>{error}</p>}
+        {errors.general && <p className={styles["error"]}>{errors.general}</p>}
         <form onSubmit={handleSubmit}>
           <InputField 
-            id="user" 
+            id="name" 
             type="text" 
             label="Nombre de usuario" 
-            name="user" 
+            name="name" 
             placeholder="Usuario" 
             icon={faUser} 
-            value={formData.user} 
+            value={formData.name} 
             onChange={handleChange} 
+            explicativeText={errors.name}
           />
           <InputField 
             id="password" 
@@ -58,6 +77,7 @@ function Login() {
             icon={faLock} 
             value={formData.password} 
             onChange={handleChange} 
+            explicativeText={errors.password}
           />
           <Link to="">¿Has olvidado tu contraseña?</Link>
           <div>
