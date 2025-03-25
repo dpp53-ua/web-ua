@@ -14,7 +14,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 //   return to ? <Link to={to}>{buttonContent}</Link> : buttonContent;
 // }
 
-export default function Boton({ type, variant, label, onClickFunction, icon, to }) {
+export default function Boton({ type, variant, label, onClickFunction, onChangeFunction, icon, to }) {
   const buttonContent = (
     <button type={type} className={styles[variant]} onClick={onClickFunction}>
       {icon && <FontAwesomeIcon icon={icon} className={styles.icon} />}

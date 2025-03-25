@@ -17,6 +17,7 @@
 
     > small {
         color: var(--red);
+        font-weight: bold;
     }
 
     > input {
