@@ -19,9 +19,14 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     let newErrors = {};
+    
    if (!formData.name) newErrors.name = "El usuario es obligatorio";
    if (!formData.password) newErrors.password = "La contraseña es obligatoria";
-
+   
+   if (Object.keys(newErrors).length > 0) {
+    setErrors(newErrors);
+    return;
+   }
     
     try {
       const response = await fetch("http://localhost:5000/api/login", {
