@@ -38,6 +38,7 @@ a:active {
 /* Colores principales de la web */
 :root {
    /* Definir como --nombre-variable: #000000 */
+  --light-red: rgb(255, 186, 186);;
   --red: #A11515;
   --medium-red: #730B16;
   --dark-red: #460216;
