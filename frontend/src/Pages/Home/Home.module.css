@@ -1,0 +1,70 @@
+.home-main-container {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--dark-grey);
+    min-height: 100vh; 
+    color: var(--white);
+}
+
+.home-welcome {
+    background: linear-gradient(90deg, var(--dark-red), var(--medium-red));
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 5em;
+    height: fit-content;
+
+    > div {
+        width: 50%;
+    
+        >img {
+            width: 30%;
+            height: 30%;
+            animation: spin 25s linear infinite;
+            margin-bottom: 1rem;
+        }
+    }
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.category-header, .product-header {
+    display: flex;
+    justify-content: space-between; 
+    align-items: center;
+    padding: 3em;
+}
+
+.category-arrows {
+    width: 100px;
+    display: flex;
+    justify-content: space-between;
+
+    > button svg {
+        color: #ffffff;
+      }
+}
+
+.circle-button {
+    display: flex; 
+    align-items: center;
+    justify-content: center; 
+    padding: 10px; 
+    aspect-ratio: 1 / 1; /* Mantiene el botón siempre circular */
+
+    border-radius: 50%; /* Lo hace circular */
+    background: none;
+    cursor: pointer;
+    transition: border 0.2s;
+  }
+  
+.circle-button:hover {
+    border: 2px solid rgb(255, 255, 255); /* Borde sin relleno */
+}
