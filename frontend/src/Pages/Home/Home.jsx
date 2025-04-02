@@ -4,9 +4,10 @@
 import { Link } from "react-router-dom";
 import { Button } from '../../Components';
 import Model from "../../Components/Model/Model";
+import Category from "../../Components/Category/Category";
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRight, faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import { faArrowRight, faArrowLeft, faCircle } from "@fortawesome/free-solid-svg-icons";
 
 
 /* Estilos */
@@ -27,8 +28,8 @@ function Home() {
                 </div>
             </section>
 
-            <section className={styles["category"]}>
-                <div className={styles["category-header"]}>
+            <section className={styles["category-section"]}>
+                <header className={styles["category-header"]}>
                     <h2>Categorías</h2>
                     <div className={styles["category-arrows"]}>
                         <button className={styles["circle-button"]}>
@@ -38,14 +39,45 @@ function Home() {
                             <FontAwesomeIcon icon={faArrowRight} />
                         </button>
                     </div>
+                </header>
+                <div className={styles["categories"]}>
+                    <Category/> 
+                    <Category/> 
+                    <Category/> 
+                    <Category/> 
+                    <Category/> 
                 </div>
-                <Model/> 
+                <footer className={styles["category-footer"]}>
+                    <span>
+                        <FontAwesomeIcon icon={faCircle} />
+                        <FontAwesomeIcon icon={faCircle} />
+                        <FontAwesomeIcon icon={faCircle} />
+                    </span>
+                </footer>
+                
             </section>
 
-            <section className={styles["product"]}>
-                <div className={styles["product-header"]}>
+            <section className={styles["product-section"]}>
+                <header className={styles["product-header"]}>
                     <h2>Todos los productos</h2>
+                </header>
+                <div className={styles["models"]}>
+                    <Model/> 
+                    <Model/> 
+                    <Model/> 
+                    <Model/> 
+                    <Model/> 
+                    <Model/> 
+                    <Model/> 
+                    <Model/> 
+                    <Model/> 
+                    <Model/> 
+                    <Model/> 
+                    <Model/> 
                 </div>
+                <footer className={styles["model-footer"]}>
+                    <Button variant="red-rounded" label="Mostrar más +" to="/home"/>
+                </footer>
             </section>
         </div>
     );
