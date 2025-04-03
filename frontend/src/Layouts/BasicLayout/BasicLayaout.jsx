@@ -4,10 +4,10 @@ import Footer from "../../Components/Footer/Footer";
 
 import styles from "./BasicLayout.module.css"
 
-function BasicLayout () {
+function BasicLayout ( {isAuth} ) {
     return (
-        <div className={styles["grid-layout"]}>
-            <Header className={styles["header-layout"]} />
+        <div className={styles["flex-layout"]}>
+            <Header isAuth = { isAuth } className={styles["header-layout"]} />
             <main className={styles["main-content"]}>
                 <Outlet />
             </main>

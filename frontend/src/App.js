@@ -11,7 +11,7 @@ function App() {
     <Router>
       <Routes>
         {/* Rutas públicas */}
-        <Route path="/" element={<BasicLayout />}>
+        <Route path="/" element={<BasicLayout isAuth={ isAuth } />}>
           <Route index element={<Login />} />
           <Route path="Login" element={<Login />} />
           <Route path="Register" element={<Register />} />
@@ -22,7 +22,7 @@ function App() {
 
         {/* Rutas privadas */}
         <Route element={<PrivateRoute isAuth={ isAuth } />}>
-          <Route path="/" element={<UserLayout />}>
+          <Route path="/" element={<BasicLayout isAuth={ isAuth } />}>
             <Route index element={<Home />} />
             <Route path="Home" element={<Home />} />
             <Route path="Placeholder" element={<Placeholder />} />
