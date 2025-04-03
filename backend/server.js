@@ -68,33 +68,40 @@ app.get("/api/users", (req, res) => {
 
 
 // 🟡 UPDATE: Actualizar usuario parcialmente
-app.put("/api/users/:id", (req, res) => {
+app.put("/api/users/:id", upload.single("foto"), (req, res) => {
     const { id } = req.params;
     const updateFields = {};
 
     // Filtrar solo los campos que vienen en el body
-    const allowedFields = ["email", "name", "password", "biografia", "web", "twitter", "instagram", "foto"];
+    const allowedFields = ["email", "name", "password", "biografia", "web", "twitter", "instagram"];
     allowedFields.forEach(field => {
         if (req.body[field] !== undefined) {
             updateFields[field] = req.body[field];
         }
     });
 
-    if (Object.keys(updateFields).length === 0) {
-        return res.status(400).json({ message: "No hay campos para actualizar" });
-    }
+    // Si hay una nueva foto
+    if (req.file) {
+        // Subir la foto a GridFS y obtener el archivo ID
+        const file = req.file;
+        const filePath = file.path;
+        const readStream = fs.createReadStream(filePath);
 
-    // Verificar si el nuevo email o nombre ya existen en otro usuario
-    db.users.findOne(
-        {
-            $or: [{ email: updateFields.email }, { name: updateFields.name }],
-            _id: { $ne: mongojs.ObjectId(id) } // Excluir al usuario actual de la búsqueda
-        },
-        (err, existingUser) => {
-            if (err) return res.status(500).json({ message: "Error en el servidor", error: err });
-            if (existingUser) return res.status(400).json({ message: "El usuario o el email ya existen" });
+        const uploadResult = new Promise((resolve, reject) => {
+            const uploadStream = bucket.openUploadStream(file.originalname);
+            readStream.pipe(uploadStream)
+                .on("error", reject)
+                .on("finish", () => resolve(uploadStream));
+        });
 
-            // Actualizar el usuario
+        uploadResult.then(uploadStream => {
+            // Eliminar el archivo temporal
+            fs.unlinkSync(filePath);
+
+            // Actualizar el campo 'foto' del usuario con el ID del archivo en GridFS
+            updateFields.foto = uploadStream.id;
+
+            // Ahora, realizamos la actualización del usuario con la nueva foto
             db.users.update(
                 { _id: mongojs.ObjectId(id) },
                 { $set: updateFields },
@@ -103,9 +110,40 @@ app.put("/api/users/:id", (req, res) => {
                     res.json({ message: "Usuario actualizado", user });
                 }
             );
+        }).catch((err) => {
+            console.error("Error al subir la foto a GridFS:", err);
+            res.status(500).json({ message: "Error al subir la foto", error: err });
+        });
+    } else {
+        // Si no hay foto, solo actualizamos los campos disponibles
+        if (Object.keys(updateFields).length === 0) {
+            return res.status(400).json({ message: "No hay campos para actualizar" });
         }
-    );
+
+        // Verificar si el nuevo email o nombre ya existen en otro usuario
+        db.users.findOne(
+            {
+                $or: [{ email: updateFields.email }, { name: updateFields.name }],
+                _id: { $ne: mongojs.ObjectId(id) }
+            },
+            (err, existingUser) => {
+                if (err) return res.status(500).json({ message: "Error en el servidor", error: err });
+                if (existingUser) return res.status(400).json({ message: "El usuario o el email ya existen" });
+
+                // Actualizar el usuario
+                db.users.update(
+                    { _id: mongojs.ObjectId(id) },
+                    { $set: updateFields },
+                    (err, user) => {
+                        if (err) return res.status(500).json({ message: "Error en el servidor", error: err });
+                        res.json({ message: "Usuario actualizado", user });
+                    }
+                );
+            }
+        );
+    }
 });
+
 
 
 
