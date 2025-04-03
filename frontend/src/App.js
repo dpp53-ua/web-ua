@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { BasicLayout } from './Layouts';
-import { NotFound, Home, Login, Register, PostForm, Categories } from './Pages';
+import { NotFound, Home, Login, Register, PostForm, Categories, Detail } from './Pages';
 import { PrivateRoute } from './Components';
 
 function App() {
@@ -18,6 +18,7 @@ function App() {
           {/* pruebas */}
           <Route path="Home" element={<Home />} />  
           <Route path="Categories" element={<Categories />} />
+          <Route path="Detail" element={<Detail />} />
         </Route>
 
         {/* Rutas privadas */}

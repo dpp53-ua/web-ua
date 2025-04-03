@@ -4,6 +4,7 @@ import NotFound from "./NotFound/NotFound";
 import Register from "./Register/Register";
 import Categories from "./Categories/Categories";
 import PostForm from "./PostForm/PostForm"
+import Detail from "./Detail/Detail"
 
 export { 
     Home, 
@@ -11,5 +12,6 @@ export {
     NotFound, 
     Register, 
     Categories,
-    PostForm
+    PostForm,
+    Detail
 };

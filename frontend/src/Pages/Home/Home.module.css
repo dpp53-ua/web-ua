@@ -57,9 +57,10 @@
 
 .type-section {
     display: flex;
-    justify-content: center;
-    gap: 2em; 
-    margin-top: 5em;
+    flex-wrap: wrap;
+    gap: 1em; 
+    justify-content: center; 
+    margin: 5em auto; 
 }
 
 .category-section, .product-section {

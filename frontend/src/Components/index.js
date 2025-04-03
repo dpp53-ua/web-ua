@@ -5,6 +5,7 @@ import InputField from "./InputField/InputField";
 import Button from "./Button/Button";
 import Category from "./Category/Category";
 import ModelGrid from "./ModelGrid/ModelGrid";
+import Comment from "./Comment/Comment";
 
 /* Utils */
 import PrivateRoute from "./PrivateRoute/PrivateRoute";
@@ -17,5 +18,6 @@ export {
     Button,
     PrivateRoute,
     Category,
-    ModelGrid
+    ModelGrid,
+    Comment
 };
