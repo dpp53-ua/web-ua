@@ -1,5 +1,3 @@
-/* Modulos de librerías */
-
 /* Componentes */
 import { Link } from "react-router-dom";
 import { Button } from '../../Components';
@@ -7,7 +5,7 @@ import Model from "../../Components/Model/Model";
 import Category from "../../Components/Category/Category";
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRight, faArrowLeft, faCircle } from "@fortawesome/free-solid-svg-icons";
+import { faArrowRight, faArrowLeft, faCircle, faCircleUp, faArrowUp } from "@fortawesome/free-solid-svg-icons";
 
 
 /* Estilos */
@@ -17,6 +15,8 @@ import styles from "./Home.module.css";
 function Home() {
     return (
         <div className={styles["home-main-container"]}>
+            
+            <FontAwesomeIcon icon={faArrowUp} className={styles.upButton}/>
 
             <section className={styles["home-welcome"]}>
                 <div>
@@ -26,6 +26,14 @@ function Home() {
                     <h1>Bienvenido</h1>
                     <h1>Comienza a explorar assets</h1>
                 </div>
+            </section>
+
+            <section className={styles["type-section"]}>
+                <Button variant="red-rounded" label="3D" to="/home"/>
+                <Button variant="red-rounded" label="2D" to="/home"/>
+                <Button variant="red-rounded" label="Vídeo" to="/home"/>
+                <Button variant="red-rounded" label="Audio" to="/home"/>
+                <Button variant="red-rounded" label="Script" to="/home"/>
             </section>
 
             <section className={styles["category-section"]}>
