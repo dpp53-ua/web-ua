@@ -21,7 +21,7 @@ export default function NavBar({ menuOpen }) {
         <nav className={`${styles.nav} ${menuOpen ? styles.showMenu : ""}`}>
             <ul>
                 <li><a href="/">Inicio</a></li>
-                <li><a href="/categorias">Categorías</a></li>
+                <li><a href="/categories">Categorías</a></li>
                 <li><a href="/comunidad">Comunidad</a></li>
                 <li><a href="/contacto">Contacto</a></li>
             </ul>

@@ -3,6 +3,7 @@ import Login from "./Login/Login";
 import NotFound from "./NotFound/NotFound";
 import Placeholder from "./Placeholder/Placeholder";
 import Register from "./Register/Register";
+import Categories from "./Categories/Categories";
 import PostForm from "./PostForm/PostForm"
 
 export { 
@@ -10,6 +11,8 @@ export {
     Login, 
     NotFound, 
     Placeholder, 
+    Register, 
+    Categories
     Register,
     PostForm
 };
