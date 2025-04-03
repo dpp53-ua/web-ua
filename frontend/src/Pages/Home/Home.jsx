@@ -1,8 +1,6 @@
 /* Componentes */
 import { Link } from "react-router-dom";
-import { Button } from '../../Components';
-import ModelGrid from "../../Components/ModelGrid/ModelGrid";
-import Category from "../../Components/Category/Category";
+import { Button, ModelGrid, Category } from '../../Components';
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight, faArrowLeft, faCircle, faCircleUp, faArrowUp } from "@fortawesome/free-solid-svg-icons";

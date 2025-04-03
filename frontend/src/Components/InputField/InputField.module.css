@@ -24,7 +24,7 @@
         border: 0.1em solid var(--red);
     }
 
-    > input {
+    > input, textarea, select {
         outline: 0.15rem solid var(--white);
         border-radius: 0.1rem;
         background-color: var(--medium-grey);
