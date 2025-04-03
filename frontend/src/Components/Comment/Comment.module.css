@@ -1,0 +1,38 @@
+.comment {
+    display: flex;
+    flex-direction: column;
+    padding: 1em;
+    /* border: 2px solid var(--grey); 
+    border-radius: 10px; */
+}
+
+.author {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 20px;
+}
+
+.author-image {
+    width: 50px;
+    height: 50px;
+    aspect-ratio: 1/1;
+    border-radius: 50%;
+    object-fit: cover; /* Ajusta la imagen sin deformarla */
+}
+
+.comment-content {
+    width: 100%;
+    display: flex;
+    padding: 5px 0px 2em 25px;
+    gap: 30px; 
+    word-wrap: break-word;
+}
+
+.text-comment {
+    display: block;
+    max-width: 100%;  /* Evita que crezca más de su contenedor */
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal; /* Permite que el texto salte de línea */
+}

@@ -37,12 +37,28 @@ button {
 .red-rounded {
     color: var(--white);
     background-color: var(--red);
-    border-radius: 2rem;
-    padding: 1em;
-    padding-left: 2em;
-    padding-right: 2em;
+}
 
+.grey-rounded {
+    color: var(--white);
+    background-color: var(--medium-light-grey);
+}
+
+.blue-rounded {
+    color: var(--white);
+    background-color: var(--blue);
+}
+
+.green-rounded {
+    color: var(--white);
+    background-color: var(--green);
+}
+
+.grey-rounded, .red-rounded, .blue-rounded, .green-rounded {
+    border-radius: 2rem;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+    padding: 1em 2em 1em 2em;
 
     &:active {
         background-color: var(--white);
@@ -54,12 +70,6 @@ button {
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Sombra sutil */
     }
 }
-
-
-
-
-
-
 
 
 .white {

@@ -1,0 +1,46 @@
+.category-main-container {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--dark-grey);
+    min-height: 100vh; 
+    color: var(--white);
+}
+
+.type-section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1em; 
+    justify-content: center; 
+    margin: 5em auto; 
+}
+
+.category-title {
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+    padding: 2em;
+}
+
+
+
+.category-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1em; /* Espacio entre elementos */
+    justify-content: center; /* Centra los elementos horizontalmente */
+    max-width: calc(5 * 200px + 4 * 1em); /* Máximo 5 elementos por fila */
+    margin: 0 auto; /* Centrar el contenedor */
+    padding: 0px 3em 5em 3em;
+}
+
+
+
+.category-footer {
+    display: flex;
+    justify-content: center;
+    padding: 2em;
+
+    > button {
+        padding: 2em;
+    }
+}

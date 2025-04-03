@@ -42,10 +42,14 @@ a:active {
   --red: #A11515;
   --medium-red: #730B16;
   --dark-red: #460216;
+  --blue: #1546a1;
+  --green: #23a115;
   --grey: #A7A7A7;
   --medium-grey: #202024;
+  --medium-light-grey: #5c5c5c;
   --dark-grey: #141212;
   --white: #E6E8EC;
+  --black: #000000;
   --primary-link: #B96DFF;
 }
 
