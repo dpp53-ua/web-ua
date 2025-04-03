@@ -5,7 +5,29 @@ const PORT = 5000;
 const express = require("express");
 const logger = require("morgan");
 const mongojs = require("mongojs");
+
+const multer = require("multer");
+const { MongoClient, GridFSBucket, ObjectId } = require("mongodb");
+const fs = require("fs");
+
+const upload = multer({ dest: 'uploads/' });
+
+const mongoClient = new MongoClient("mongodb://127.0.0.1:27017");
+let bucket;
+let publicacionesDB;
+
+mongoClient.connect().then(client => {
+    const database = client.db("miBaseDeDatos");
+    bucket = new GridFSBucket(database, { bucketName: "archivos" });
+    publicacionesDB = database.collection("publicaciones");
+}).catch(console.error);
+
 const cors = require("cors");
+
+
+
+
+
 
 const app = express();
 const db = mongojs("miBaseDeDatos", ["users"]); // Conectar a MongoDB y usar la colección "users"
@@ -70,6 +92,74 @@ app.post("/api/login", (req, res) => {
 
         res.status(200).json({ message: "Login exitoso", user: userWithoutPassword });
     });
+});
+
+app.post("/api/publicacion", upload.single("archivo"), async (req, res) => {
+    try {
+        const { titulo, descripcion, precio, categoria } = req.body;
+        const file = req.file;
+
+        if (!titulo || !descripcion || !precio || !categoria || !file) {
+            return res.status(400).json({ message: "Faltan campos obligatorios" });
+        }
+
+        console.log("📥 Archivo recibido:", file.originalname);
+
+        const filePath = file.path;
+        const readStream = fs.createReadStream(filePath);
+
+        // Subir archivo a GridFS con una promesa
+        const uploadResult = await new Promise((resolve, reject) => {
+            const uploadStream = bucket.openUploadStream(file.originalname);
+            readStream.pipe(uploadStream)
+                .on("error", reject)
+                .on("finish", () => resolve(uploadStream));
+        });
+
+        // Eliminar el archivo temporal
+        fs.unlinkSync(filePath);
+        console.log("✅ Archivo subido a GridFS y eliminado del disco");
+
+        // Crear documento de publicación
+        const nuevaPublicacion = {
+            titulo,
+            descripcion,
+            precio: parseFloat(precio),
+            categoria,
+            archivoId: uploadResult.id,
+            archivoNombre: file.originalname,
+            fecha: new Date()
+        };
+
+        const insertResult = await publicacionesDB.insertOne(nuevaPublicacion);
+
+        console.log("📝 Publicación guardada correctamente");
+
+        res.status(201).json({
+            message: "Publicación creada",
+            publicacion: {
+                _id: insertResult.insertedId,
+                ...nuevaPublicacion
+            }
+        });
+
+    } catch (err) {
+        console.error("❌ Error en publicación:", err);
+        res.status(500).json({ message: "Error al procesar la publicación", error: err.message });
+    }
+});
+
+
+app.post("/api/test-subida", upload.single("archivo"), (req, res) => {
+    const { titulo } = req.body;
+    const file = req.file;
+
+    if (!titulo || !file) {
+        return res.status(400).json({ message: "Faltan campos" });
+    }
+
+    console.log("✅ Recibido archivo:", file.originalname);
+    res.status(200).json({ message: "Archivo recibido correctamente", nombre: file.originalname });
 });
 
 
