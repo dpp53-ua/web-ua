@@ -3,7 +3,7 @@ import Header from "./Header/Header";
 import Footer from "./Footer/Footer";
 import InputField from "./InputField/InputField";
 import Button from "./Button/Button";
-
+import ProfileMenu from "./ProfileMenu/ProfileMenu";
 /* Utils */
 import PrivateRoute from "./PrivateRoute/PrivateRoute";
 
@@ -13,5 +13,6 @@ export {
     Footer,  
     InputField, 
     Button,
-    PrivateRoute 
+    PrivateRoute,
+    ProfileMenu
 };

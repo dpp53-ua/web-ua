@@ -1,0 +1,10 @@
+.profile-main-container {
+    background-color: var(--dark-grey);
+    width: 100%;
+    min-height: 100vh; /* min-height en lugar de height para que crezca con el contenido */
+    padding: 1em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  

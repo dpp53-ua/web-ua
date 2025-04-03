@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { BasicLayout, UserLayout } from './Layouts';
-import { NotFound, Home, Login, Register, Placeholder } from './Pages';
+import { NotFound, Home, Login, Register, Placeholder, Profile } from './Pages';
 import { PrivateRoute } from './Components';
 
 function App() {
@@ -17,6 +17,8 @@ function App() {
           <Route path="Register" element={<Register />} />
           {/* pruebas */}
           <Route path="Home" element={<Home />} />  
+          {/* El profile lo pongo aqui hasta que configuremos el login */}
+          <Route path="Profile" element={<Profile />} />  
         </Route>
 
         {/* Rutas privadas */}

@@ -1,0 +1,67 @@
+.prfilemenu{
+    display: flex;
+    flex-direction: column;
+    gap: 29px;
+    background: linear-gradient(90deg, var(--dark-red), var(--red));
+    width: fit-content;
+    height: fit-content;
+    padding: 43px;
+    border-radius: 10px;
+    font-size: var(--font-medium);
+
+
+    > .profilebox{
+        border-bottom: 0.08em solid var(--white);
+        border-radius: 2px;
+        padding: 1em;
+
+        > .photoname{
+            display: flex;
+            color: var(--white);
+            display: flex;
+            gap: 0.2em;
+            font-weight: bold;
+            margin-bottom: 1em;
+            align-items: center;
+            justify-content: left;
+            gap: 2em;
+        
+            >img{
+                width: 2.7em;
+            }
+            >p{
+                font-size: var(--font-medium);
+    
+            }
+        }
+
+        > .uploadsdownloads{
+            color: var(--white);
+            display: flex;
+            gap: 2em;
+            justify-content: space-between;
+
+            >p{
+                font-size: 16px;
+        
+    
+            }
+        }
+        
+    }
+    
+}
+
+.prfilemenu a {
+    color: white;
+    text-decoration: none; /* Quita el subrayado */
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Espacio entre el icono y el texto */
+    font-size: var(--font-medium);
+    font-weight: bold;
+}
+
+.prfilemenu a:hover {
+    color: #ccc; /* Color cuando pasas el mouse */
+}
