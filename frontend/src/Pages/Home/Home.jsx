@@ -1,16 +1,14 @@
 /* Componentes */
 import { Link } from "react-router-dom";
 import { Button } from '../../Components';
-import Model from "../../Components/Model/Model";
+import ModelGrid from "../../Components/ModelGrid/ModelGrid";
 import Category from "../../Components/Category/Category";
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight, faArrowLeft, faCircle, faCircleUp, faArrowUp } from "@fortawesome/free-solid-svg-icons";
 
-
 /* Estilos */
 import styles from "./Home.module.css";
-
 
 function Home() {
     return (
@@ -69,20 +67,7 @@ function Home() {
                 <header className={styles["product-header"]}>
                     <h2>Todos los productos</h2>
                 </header>
-                <div className={styles["models"]}>
-                    <Model/> 
-                    <Model/> 
-                    <Model/> 
-                    <Model/> 
-                    <Model/> 
-                    <Model/> 
-                    <Model/> 
-                    <Model/> 
-                    <Model/> 
-                    <Model/> 
-                    <Model/> 
-                    <Model/> 
-                </div>
+                <ModelGrid/>
                 <footer className={styles["model-footer"]}>
                     <Button variant="red-rounded" label="Mostrar más +" to="/home"/>
                 </footer>
