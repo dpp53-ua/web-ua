@@ -6,7 +6,7 @@ import Button from "../Button/Button";
 import { faSignInAlt, faUserPlus, faBars } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-export default function Header() { 
+export default function Header( {isAuth} ) { 
 
     const [menuOpen, setMenuOpen] = useState(false);
 
@@ -24,6 +24,9 @@ export default function Header() {
                     <NavBar menuOpen={menuOpen} />  {/* Pasamos el estado a NavBar */}
 
                 </div> 
+
+
+                {isAuth ? <div>Ejemplo</div> : null}
                 
                 <SearchBar />
                 

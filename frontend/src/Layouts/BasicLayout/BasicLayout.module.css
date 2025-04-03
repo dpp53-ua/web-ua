@@ -1,5 +1,5 @@
 /* Asegura que el contenedor principal ocupa toda la altura del viewport */
-.grid-layout {
+.flex-layout {
     display: flex;
     flex-direction: column;
     min-height: 100vh; /* Asegura que ocupa toda la altura del viewport */
