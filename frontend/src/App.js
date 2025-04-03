@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { BasicLayout, UserLayout } from './Layouts';
+import { BasicLayout } from './Layouts';
 import { NotFound, Home, Login, Register, Placeholder, Categories } from './Pages';
 import { PrivateRoute } from './Components';
 
