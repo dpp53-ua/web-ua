@@ -1,21 +1,20 @@
-/* Modulos de librerías */
-
 /* Componentes */
 import { Link } from "react-router-dom";
 import { Button } from '../../Components';
-import Model from "../../Components/Model/Model";
+import ModelGrid from "../../Components/ModelGrid/ModelGrid";
+import Category from "../../Components/Category/Category";
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRight, faArrowLeft } from "@fortawesome/free-solid-svg-icons";
-
+import { faArrowRight, faArrowLeft, faCircle, faCircleUp, faArrowUp } from "@fortawesome/free-solid-svg-icons";
 
 /* Estilos */
 import styles from "./Home.module.css";
 
-
 function Home() {
     return (
         <div className={styles["home-main-container"]}>
+            
+            <FontAwesomeIcon icon={faArrowUp} className={styles.upButton}/>
 
             <section className={styles["home-welcome"]}>
                 <div>
@@ -27,8 +26,16 @@ function Home() {
                 </div>
             </section>
 
-            <section className={styles["category"]}>
-                <div className={styles["category-header"]}>
+            <section className={styles["type-section"]}>
+                <Button variant="red-rounded" label="3D" to="/home"/>
+                <Button variant="red-rounded" label="2D" to="/home"/>
+                <Button variant="red-rounded" label="Vídeo" to="/home"/>
+                <Button variant="red-rounded" label="Audio" to="/home"/>
+                <Button variant="red-rounded" label="Script" to="/home"/>
+            </section>
+
+            <section className={styles["category-section"]}>
+                <header className={styles["category-header"]}>
                     <h2>Categorías</h2>
                     <div className={styles["category-arrows"]}>
                         <button className={styles["circle-button"]}>
@@ -38,14 +45,32 @@ function Home() {
                             <FontAwesomeIcon icon={faArrowRight} />
                         </button>
                     </div>
+                </header>
+                <div className={styles["categories"]}>
+                    <Category/> 
+                    <Category/> 
+                    <Category/> 
+                    <Category/> 
+                    <Category/> 
                 </div>
-                <Model/> 
+                <footer className={styles["category-footer"]}>
+                    <span>
+                        <FontAwesomeIcon icon={faCircle} />
+                        <FontAwesomeIcon icon={faCircle} />
+                        <FontAwesomeIcon icon={faCircle} />
+                    </span>
+                </footer>
+                
             </section>
 
-            <section className={styles["product"]}>
-                <div className={styles["product-header"]}>
+            <section className={styles["product-section"]}>
+                <header className={styles["product-header"]}>
                     <h2>Todos los productos</h2>
-                </div>
+                </header>
+                <ModelGrid/>
+                <footer className={styles["model-footer"]}>
+                    <Button variant="red-rounded" label="Mostrar más +" to="/home"/>
+                </footer>
             </section>
         </div>
     );
