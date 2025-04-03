@@ -1,12 +1,10 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { BasicLayout } from './Layouts';
-import { NotFound, Home, Login, Register, Placeholder, Categories } from './Pages';
-import { NotFound, Home, Login, Register, PostForm } from './Pages';
+import { NotFound, Home, Login, Register, PostForm, Categories } from './Pages';
 import { PrivateRoute } from './Components';
 
 function App() {
 
-  let isAuth = true; // TESTING
   let isAuth = true; // TESTING
 
   return (
