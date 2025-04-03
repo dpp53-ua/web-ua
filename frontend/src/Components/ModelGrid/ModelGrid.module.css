@@ -1,0 +1,6 @@
+.models {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Columnas dinámicas */
+    gap: 1em; /* Espacio entre elementos */
+    justify-content: center; /* Centra la grid */
+}
