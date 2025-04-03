@@ -138,13 +138,26 @@ app.post("/api/login", (req, res) => {
     });
 });
 
-app.post("/api/publicacion", upload.single("archivo"), async (req, res) => {
+app.post("/api/publicacion/:idUsuario", upload.single("archivo"), async (req, res) => {
     try {
         const { titulo, descripcion, precio, categoria } = req.body;
         const file = req.file;
+        const idUsuario = req.params.idUsuario;
 
-        if (!titulo || !descripcion || !precio || !categoria || !file) {
+        if (!titulo || !descripcion || !precio || !categoria || !file || !idUsuario) {
             return res.status(400).json({ message: "Faltan campos obligatorios" });
+        }
+
+        // Verificar si el usuario existe
+        const usuario = await new Promise((resolve, reject) => {
+            db.users.findOne({ _id: mongojs.ObjectId(idUsuario) }, (err, doc) => {
+                if (err) return reject(err);
+                resolve(doc);
+            });
+        });
+
+        if (!usuario) {
+            return res.status(404).json({ message: "Usuario no encontrado" });
         }
 
         console.log("📥 Archivo recibido:", file.originalname);
@@ -152,7 +165,6 @@ app.post("/api/publicacion", upload.single("archivo"), async (req, res) => {
         const filePath = file.path;
         const readStream = fs.createReadStream(filePath);
 
-        // Subir archivo a GridFS con una promesa
         const uploadResult = await new Promise((resolve, reject) => {
             const uploadStream = bucket.openUploadStream(file.originalname);
             readStream.pipe(uploadStream)
@@ -160,12 +172,11 @@ app.post("/api/publicacion", upload.single("archivo"), async (req, res) => {
                 .on("finish", () => resolve(uploadStream));
         });
 
-        // Eliminar el archivo temporal
         fs.unlinkSync(filePath);
-        console.log("✅ Archivo subido a GridFS y eliminado del disco");
+        console.log("✅ Archivo subido a GridFS");
 
-        // Crear documento de publicación
         const nuevaPublicacion = {
+            usuarioId: idUsuario, // ID del usuario que publica
             titulo,
             descripcion,
             precio: parseFloat(precio),
@@ -193,18 +204,6 @@ app.post("/api/publicacion", upload.single("archivo"), async (req, res) => {
     }
 });
 
-
-app.post("/api/test-subida", upload.single("archivo"), (req, res) => {
-    const { titulo } = req.body;
-    const file = req.file;
-
-    if (!titulo || !file) {
-        return res.status(400).json({ message: "Faltan campos" });
-    }
-
-    console.log("✅ Recibido archivo:", file.originalname);
-    res.status(200).json({ message: "Archivo recibido correctamente", nombre: file.originalname });
-});
 
 
 
