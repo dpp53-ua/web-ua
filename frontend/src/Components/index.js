@@ -21,6 +21,5 @@ export {
     Category,
     ModelGrid,
     Comment,
-    PrivateRoute,
     ProfileMenu
 };

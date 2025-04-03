@@ -15,6 +15,5 @@ export {
     Categories,
     PostForm,
     Detail,
-    Placeholder, 
     Profile
 };
