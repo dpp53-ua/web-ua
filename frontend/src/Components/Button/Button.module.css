@@ -32,15 +32,35 @@ button {
     }
 }
 
+
+
 .red-rounded {
     color: var(--white);
     background-color: var(--red);
-    border-radius: 1rem;
+    border-radius: 2rem;
+    padding: 1em;
+    padding-left: 2em;
+    padding-right: 2em;
+
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 
     &:active {
-        background-color: var(--dark-red);
+        background-color: var(--white);
+        color: black;
+    }
+
+    &:hover {
+        transform: scale(1.05); /* Efecto de ampliación */
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Sombra sutil */
     }
 }
+
+
+
+
+
+
+
 
 .white {
     color: black;

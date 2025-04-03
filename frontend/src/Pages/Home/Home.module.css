@@ -6,6 +6,26 @@
     color: var(--white);
 }
 
+.upButton {
+    position: fixed;
+    bottom: 80px;     /* Distancia desde la parte inferior */
+    right: 60px;      /* Distancia desde la parte derecha */
+    font-size: 40px;
+    cursor: pointer;
+
+    background-color: white;
+    color: black;
+    border-radius: 50%;
+    aspect-ratio: 1/1;
+    padding: .2em;
+    transition: background-color, color 0.2s;
+
+    &:hover {
+        background-color: black;
+        color: white;
+    }
+}
+
 .home-welcome {
     background: linear-gradient(90deg, var(--dark-red), var(--medium-red));
     display: flex;
@@ -33,6 +53,13 @@
     to {
         transform: rotate(360deg);
     }
+}
+
+.type-section {
+    display: flex;
+    justify-content: center;
+    gap: 2em; 
+    margin-top: 5em;
 }
 
 .category-section, .product-section {
@@ -80,6 +107,7 @@
 .category-footer {
     display: flex;
     justify-content: center; /* Centra el span en la pantalla */
+    padding: 1em;
 
     > span {
         display: flex;
@@ -94,16 +122,11 @@
     }
 }
 
-.models {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Columnas dinámicas */
-    gap: 1em; /* Espacio entre elementos */
-    justify-content: center; /* Centra la grid */
-}
-
 .model-footer {
     display: flex;
     justify-content: center;
+    padding: 2em;
+
     > button {
         width: 1000px;
         padding: 2em;

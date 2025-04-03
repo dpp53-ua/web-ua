@@ -66,6 +66,50 @@ app.get("/api/users", (req, res) => {
     });
 });
 
+
+// 🟡 UPDATE: Actualizar usuario parcialmente
+app.put("/api/users/:id", (req, res) => {
+    const { id } = req.params;
+    const updateFields = {};
+
+    // Filtrar solo los campos que vienen en el body
+    const allowedFields = ["email", "name", "password", "biografia", "web", "twitter", "instagram", "foto"];
+    allowedFields.forEach(field => {
+        if (req.body[field] !== undefined) {
+            updateFields[field] = req.body[field];
+        }
+    });
+
+    if (Object.keys(updateFields).length === 0) {
+        return res.status(400).json({ message: "No hay campos para actualizar" });
+    }
+
+    // Verificar si el nuevo email o nombre ya existen en otro usuario
+    db.users.findOne(
+        {
+            $or: [{ email: updateFields.email }, { name: updateFields.name }],
+            _id: { $ne: mongojs.ObjectId(id) } // Excluir al usuario actual de la búsqueda
+        },
+        (err, existingUser) => {
+            if (err) return res.status(500).json({ message: "Error en el servidor", error: err });
+            if (existingUser) return res.status(400).json({ message: "El usuario o el email ya existen" });
+
+            // Actualizar el usuario
+            db.users.update(
+                { _id: mongojs.ObjectId(id) },
+                { $set: updateFields },
+                (err, user) => {
+                    if (err) return res.status(500).json({ message: "Error en el servidor", error: err });
+                    res.json({ message: "Usuario actualizado", user });
+                }
+            );
+        }
+    );
+});
+
+
+
+
 // 🔐 POST: Login básico sin encriptar
 app.post("/api/login", (req, res) => {
     const { name, password } = req.body;
