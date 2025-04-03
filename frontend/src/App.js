@@ -1,11 +1,11 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { BasicLayout } from './Layouts';
-import { NotFound, Home, Login, Register, Placeholder } from './Pages';
+import { NotFound, Home, Login, Register, PostForm } from './Pages';
 import { PrivateRoute } from './Components';
 
 function App() {
 
-  let isAuth = false; // TESTING
+  let isAuth = true; // TESTING
 
   return (
     <Router>
@@ -24,7 +24,7 @@ function App() {
           <Route path="/" element={<BasicLayout isAuth={ isAuth } />}>
             <Route index element={<Home />} />
             <Route path="Home" element={<Home />} />
-            <Route path="Placeholder" element={<Placeholder />} />
+            <Route path="PostForm" element={<PostForm />} />
           </Route>
         </Route>
 
