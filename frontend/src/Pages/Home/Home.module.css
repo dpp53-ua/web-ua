@@ -28,17 +28,30 @@
 
 .home-welcome {
     /* background: linear-gradient(90deg, var(--dark-red), var(--medium-red)); */
-    background-image: url("../../../public/banner.png");
+    background-image: url("../../../public/banner4.png");
     background-size: cover;  /* Cubre todo el contenedor */
     background-position: center; /* Centra la imagen */
     background-repeat: no-repeat; /* Evita repeticiones */
     display: flex;
     flex-direction: row;
     align-items: center;
+    justify-content: center;
     padding: 5em;
+    gap: 5rem;
     height: fit-content;
 
-    > div {
+    > div:first-of-type{
+        width: 30%;
+        display: flex;
+        justify-content: right;
+        >img {
+            width: 40%;
+            height: 40%;
+            animation: spin 25s linear infinite;
+            margin-bottom: 1rem;
+        }
+    }
+    > div:last-of-type{
         width: 50%;
     
         >img {
@@ -64,11 +77,11 @@
     flex-wrap: wrap;
     gap: 1em; 
     justify-content: center; 
-    margin: 5em auto; 
+    margin: 3em auto; 
 }
 
 .category-section, .product-section {
-    padding: 3em;
+    padding: 2rem;
 }
 
 .category-header, .product-header {

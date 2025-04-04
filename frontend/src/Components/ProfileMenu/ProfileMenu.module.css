@@ -1,7 +1,11 @@
 .profilemenu{
-    gap: 29px;
+    gap: 1rem;
     display: flex;
-    background: var(--medium-red);
+    /* background: var(--medium-red); */
+    background-image: url("../../../public/banner3.png");
+    background-size: cover;  /* Cubre todo el contenedor */
+    background-position: right; /* Centra la imagen */
+    background-repeat: no-repeat; /* Evita repeticiones */
     height: fit-content;
     padding: 1.5rem;
     border-radius: 10px;
@@ -57,18 +61,21 @@
 
 .profilemenu a {
     color: var(--white);
-    text-decoration: none; /* Quita el subrayado */
+    text-decoration: none;
     display: flex;
     align-items: center;
-    gap: 8px; /* Espacio entre el icono y el texto */
     font-size: var(--font-medium);
     font-weight: bold;
     display: none;
+    padding: 8px 12px; /* Añade algo de espacio interno para que el fondo se vea */
+    border-radius: 6px; /* Bordes redondeados para mejor estética */
+    transition: background-color 0.3s ease; /* Transición suave */
 }
 
 .profilemenu a:hover {
-    color: var(--white) /* Color cuando pasas el mouse */
+    background-color: rgba(255, 255, 255, 0.1); /* Fondo blanquecino translúcido */
 }
+
 
 @media (min-width: 940px) {
     .profilemenu > .profilebox{

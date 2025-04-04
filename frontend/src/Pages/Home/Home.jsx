@@ -50,6 +50,8 @@ function Home() {
                     <Category/> 
                     <Category/> 
                     <Category/> 
+                    <Category/> 
+                    <Category/> 
                 </div>
                 <footer className={styles["category-footer"]}>
                     <span>

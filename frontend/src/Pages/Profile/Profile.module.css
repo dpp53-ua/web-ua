@@ -38,7 +38,7 @@
   .profile-pic-container {
     position: relative;
     width: 10rem;
-    max-height: 10rem;
+    height: 8rem;
     border-radius: 7%;
     overflow: hidden;
     border: 2px solid white;
