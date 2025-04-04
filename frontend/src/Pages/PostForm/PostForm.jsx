@@ -1,130 +1,174 @@
-/* Componentes */
-import { Link } from "react-router-dom";
-import { Button, InputField } from '../../Components';
-import { faUser, faLock } from "@fortawesome/free-solid-svg-icons";
-import { useState } from "react";
-
-/* Estilos */
+import { useState, useRef, useEffect } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCloudArrowUp } from "@fortawesome/free-solid-svg-icons";
+import { Button, InputField, DeleteableTag } from '../../Components';
 import styles from "./PostForm.module.css";
 
-function Login() {
-  const [formData, setFormData] = useState({ name: "", password: "" });
+function PostForm() {
+  const [formData, setFormData] = useState({});
+  const [uploadedFiles, setUploadedFiles] = useState([]);
   const [errors, setErrors] = useState({});
+  const dropAreaRef = useRef(null);
+  const fileInputRef = useRef(null);
+  const MAX_FILES = 10;
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-    setErrors((prevErrors) => ({ ...prevErrors, [e.target.name]: "" }));
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+    setErrors(prev => ({ ...prev, [name]: "" }));
+  };
+
+  const isDuplicate = (fileName) =>
+    uploadedFiles.some((f) => f.name === fileName);
+
+  const addFiles = (files) => {
+    const newFiles = [];
+
+    for (const file of files) {
+      if (isDuplicate(file.name)) continue;
+      if (uploadedFiles.length + newFiles.length >= MAX_FILES) break;
+      newFiles.push(file);
+    }
+
+    if (newFiles.length < files.length) {
+      setErrors(prev => ({ ...prev, postFile: "Algunos archivos ya estaban añadidos." }));
+    } else {
+      setErrors(prev => ({ ...prev, postFile: "" }));
+    }
+
+    if (newFiles.length) {
+      setUploadedFiles(prev => [...prev, ...newFiles]);
+    }
+
+    // Limpia el input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+
+  };
+
+  const handleFileInput = (e) => {
+    const files = Array.from(e.target.files);
+    addFiles(files);
+  };
+
+  const handleDeleteFile = (fileName) => {
+    setUploadedFiles(prev => prev.filter(f => f.name !== fileName));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    let newErrors = {};
-    
-   if (!formData.name) newErrors.name = "El usuario es obligatorio";
-   if (!formData.password) newErrors.password = "La contraseña es obligatoria";
-   
-   if (Object.keys(newErrors).length > 0) {
-    setErrors(newErrors);
-    return;
-   }
-    
-    try {
-      const response = await fetch("http://localhost:5000/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-      
-      const result = await response.json();
-      if (!response.ok) {
-        if (response.status === 404) {
-          setErrors((prevErrors) => ({ ...prevErrors, name: "Este usuario o correo electrónico no existe" }));
-        } else if (response.status=== 401) {
-          setErrors((prevErrors) => ({ ...prevErrors, name: "Contraseña incorrecta" }));
-          
-        }else {
-          throw new Error(result.message || "Error en el login");
-        }
-        console.log("Login incorrecto", result);
-      }else{
-        console.log("Login exitoso", result);
-      }
+    const newErrors = {};
 
-      
-    } catch (error) {
-      setErrors((prevErrors) => ({ ...prevErrors, general: error.message }));
+    if (!formData.name) newErrors.name = "El usuario es obligatorio";
+    if (!formData.password) newErrors.password = "La contraseña es obligatoria";
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
     }
+
+    console.log("Archivos para enviar:", uploadedFiles);
+    // Aquí tu lógica de envío
   };
 
+  useEffect(() => {
+    const dropArea = dropAreaRef.current;
+    if (!dropArea) return;
+
+    const preventDefaults = (e) => e.preventDefault();
+    const highlight = () => (dropArea.style.opacity = "0.6");
+    const unhighlight = () => (dropArea.style.opacity = "1");
+    const handleDrop = (e) => {
+      const files = Array.from(e.dataTransfer.files);
+      addFiles(files);
+    };
+
+    ["dragenter", "dragover", "dragleave", "drop"].forEach(event =>
+      dropArea.addEventListener(event, preventDefaults)
+    );
+    ["dragenter", "dragover"].forEach(event =>
+      dropArea.addEventListener(event, highlight)
+    );
+    ["dragleave", "drop"].forEach(event =>
+      dropArea.addEventListener(event, unhighlight)
+    );
+    dropArea.addEventListener("drop", handleDrop);
+
+    return () => {
+      ["dragenter", "dragover", "dragleave", "drop"].forEach(event =>
+        dropArea.removeEventListener(event, preventDefaults)
+      );
+      ["dragenter", "dragover"].forEach(event =>
+        dropArea.removeEventListener(event, highlight)
+      );
+      ["dragleave", "drop"].forEach(event =>
+        dropArea.removeEventListener(event, unhighlight)
+      );
+      dropArea.removeEventListener("drop", handleDrop);
+    };
+  }, [uploadedFiles]);
+
   return (
-    <div className={styles["login-main-container"]}>
+    <div className={styles["post-main-container"]}>
       <section className={styles["left-section"]}>
-        <h1>Inicia sesión</h1>
+        <h1>Formulario de publicación</h1>
         {errors.general && <p className={styles["error"]}>{errors.general}</p>}
         <form onSubmit={handleSubmit}>
-          <InputField 
-            id="postTitle" 
-            type="text" 
-            label="Título" 
-            name="postTitle" 
-            placeholder="Título" 
-            value={formData.postTitle} 
-            onChange={handleChange} 
-            explicativeText={errors.postTitle}
+          <InputField
+            id="name"
+            type="text"
+            label="Usuario"
+            name="name"
+            placeholder="Tu usuario"
+            value={formData.name || ""}
+            onChange={handleChange}
+            explicativeText={errors.name}
           />
-          <InputField 
-            id="postFile" 
-            type="file" 
-            label="Archivo" 
-            name="postFile" 
-            placeholder="Seleccionar Archivo" 
-            value={formData.postFile} 
-            onChange={handleChange} 
+          <InputField
+            id="password"
+            type="password"
+            label="Contraseña"
+            name="password"
+            placeholder="Contraseña"
+            value={formData.password || ""}
+            onChange={handleChange}
+            explicativeText={errors.password}
+          />
+          <InputField
+            id="postFile"
+            type="file"
+            label="Archivo"
+            name="postFile"
+            placeholder="Seleccionar archivo"
+            onChange={handleFileInput}
             explicativeText={errors.postFile}
+            inputRef={fileInputRef}
           />
-        <InputField 
-            id="postDescription" 
-            type="textarea" 
-            label="Descripción" 
-            name="postDescription" 
-            placeholder="Descripción" 
-            value={formData.postDescription} 
-            onChange={handleChange} 
-            explicativeText={errors.postDescription}
-          />
-          <InputField 
-            id="postPrice" 
-            type="number" 
-            label="Precio" 
-            name="postPrice"  
-            value={formData.postPrice} 
-            onChange={handleChange} 
-            explicativeText={errors.postPrice}
-          />
-          <InputField 
-            id="postCategory" 
-            type="select" 
-            label="Categoría" 
-            name="postCategory" 
-            placeholder="Categoría" 
-            value={formData.postCategory} 
-            onChange={handleChange} 
-            explicativeText={errors.postCategory}
-          />
-          <div>
-            <Button type="reset" variant="red" label="Limpiar" onClick={() => setFormData({ user: "", password: "" })}/>
-            <Button type="submit" variant="red" label="Aceptar" />
+          <div className={styles["grid-list"]}>
+            <ul>
+              {uploadedFiles.map((file) => (
+                <DeleteableTag
+                  key={file.name}
+                  file={file}
+                  onDelete={() => handleDeleteFile(file.name)}
+                />
+              ))}
+            </ul>
           </div>
+          <Button type="submit" variant="red" label="Enviar" />
         </form>
       </section>
+
       <section className={styles["right-section"]}>
-        <img alt="logo" src="/atom.png"/>
-        <h1>Bienvenido</h1>
-        <p>¿No tienes una cuenta?</p>
-        <Button variant="white" label="Regístrate" to="/register"/>
+        <div className={styles["droparea"]} ref={dropAreaRef}>
+          <FontAwesomeIcon className={styles["font-icon"]} icon={faCloudArrowUp} />
+          <p>También puedes arrastrar aquí tus archivos</p>
+          <small>Máximo 10 archivos</small>
+        </div>
       </section>
     </div>
   );
 }
 
-export default Login;
+export default PostForm;

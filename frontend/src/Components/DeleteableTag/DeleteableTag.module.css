@@ -1,0 +1,29 @@
+.deleteable-tag {
+    display: flex;
+    gap: 0.25rem;
+
+    background-color: var(--grey);
+    border-radius: 0.25rem;
+
+    padding-block: 0.25rem;
+    padding-inline: 0.5rem;
+
+    font-size: var(--font-small);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    align-items: center;
+
+    > .delete-icon {
+        font-size: 1rem;
+    }
+
+    > .delete-icon:hover {
+        cursor: pointer;
+    }
+
+    input[type="file"] {
+        display: none;
+    }
+}
