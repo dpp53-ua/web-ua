@@ -1,33 +1,33 @@
-.prfilemenu{
-    display: flex;
-    flex-direction: column;
+.profilemenu{
     gap: 29px;
-    background: linear-gradient(90deg, var(--dark-red), var(--red));
-    width: fit-content;
+    display: flex;
+    background: var(--medium-red);
     height: fit-content;
-    padding: 43px;
+    padding: 1.5rem;
     border-radius: 10px;
-    font-size: var(--font-medium);
-
+    width: fit-content;
+    flex-direction: column;
 
     > .profilebox{
-        border-bottom: 0.08em solid var(--white);
-        border-radius: 2px;
-        padding: 1em;
+        border-radius: 0.1rem;
+        padding: 0.5rem;
+        display: flex;
+        flex-direction: row;
+        gap: 2rem;
+
 
         > .photoname{
             display: flex;
             color: var(--white);
             display: flex;
-            gap: 0.2em;
             font-weight: bold;
-            margin-bottom: 1em;
             align-items: center;
             justify-content: left;
-            gap: 2em;
+            gap: 1rem;
         
             >img{
-                width: 2.7em;
+                width: 2.7rem;
+                border-radius: 5rem;
             }
             >p{
                 font-size: var(--font-medium);
@@ -38,30 +38,68 @@
         > .uploadsdownloads{
             color: var(--white);
             display: flex;
-            gap: 2em;
-            justify-content: space-between;
+            gap: 0;
+            flex-direction: column;
+            justify-content: space-around;
 
             >p{
-                font-size: 16px;
-        
-    
+                font-size: var(--font-small);
             }
         }
         
     }
+
+    svg{
+        margin-right: 0.4rem;
+    }
     
 }
 
-.prfilemenu a {
-    color: white;
+.profilemenu a {
+    color: var(--white);
     text-decoration: none; /* Quita el subrayado */
     display: flex;
     align-items: center;
     gap: 8px; /* Espacio entre el icono y el texto */
     font-size: var(--font-medium);
     font-weight: bold;
+    display: none;
 }
 
-.prfilemenu a:hover {
-    color: #ccc; /* Color cuando pasas el mouse */
+.profilemenu a:hover {
+    color: var(--white) /* Color cuando pasas el mouse */
 }
+
+@media (min-width: 940px) {
+    .profilemenu > .profilebox{
+        flex-direction: column;
+        gap: 0;
+        border-bottom: 0.08em solid var(--white);
+
+        > .photoname{
+            margin-bottom: 1rem;
+        }
+        > .uploadsdownloads{
+            flex-direction: row;
+            gap: 1rem;
+            > p{
+                min-width: fit-content;
+            }
+        }
+    }
+    .profilemenu a {
+        color: var(--white);
+        text-decoration: none; /* Quita el subrayado */
+        display: flex;
+        align-items: center;
+        gap: 8px; /* Espacio entre el icono y el texto */
+        font-size: var(--font-small);
+        font-weight: bold;
+        display: inline;
+    }
+
+    
+  }
+  
+  
+  

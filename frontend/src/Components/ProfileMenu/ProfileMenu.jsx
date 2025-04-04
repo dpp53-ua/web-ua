@@ -7,7 +7,7 @@ import styles from "./ProfileMenu.module.css";
 
 export default function ProfileMenu() {
     return (
-        <div className={styles.prfilemenu}>
+        <div className={styles.profilemenu}>
             <div className={styles.profilebox}>
                 <div className={styles.photoname}>
                     <img alt="foto de perfil" src="/atom.png"></img>
