@@ -50,7 +50,7 @@ export default function Header( { isAuth, setIsAuth } ) {
                                 <p className={styles.menuTitle}>Tus opciones</p>
                                 <ul>
                                     <li><a href="/profile"><FontAwesomeIcon icon={faUser} /> Perfil</a></li>
-                                    <li><FontAwesomeIcon icon={faFolder} /> Mis assets</li>
+                                    <li><a href="/myassets"><FontAwesomeIcon icon={faFolder} /> Mis assets</a></li>
                                     <li><FontAwesomeIcon icon={faDownload} /> Mis descargas</li>
                                     <li><FontAwesomeIcon icon={faCog} /> Configuración</li>
                                     <li className={styles.logout} onClick={handleLogout}><FontAwesomeIcon icon={faSignOutAlt} /> Cerrar sesión</li>

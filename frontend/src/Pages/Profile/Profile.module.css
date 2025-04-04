@@ -12,7 +12,11 @@
     .right-content{
         width: 90%;
         color: var(--white);
-        h1{margin: 0;}
+          
+        > header{
+          text-align: center;
+          margin-bottom: 3rem;
+        }
 
         form > div{
           font-size: var(--font-small);
@@ -67,6 +71,16 @@
     display: flex;
     flex-direction: row !important;
     justify-content: space-between;
+  }
+  .change-password-header{
+    background-color: var(--medium-red);
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    cursor: pointer;  /* Cambia el puntero a selector cuando pasas el mouse */
+
+  }
+  .seccion{
+    margin-bottom: 1.5rem;
   }
 
   @media (min-width: 500px) {

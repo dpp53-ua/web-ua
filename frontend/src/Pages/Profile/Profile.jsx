@@ -1,6 +1,9 @@
 import { Button, InputField, ProfileMenu } from '../../Components';
-import { faCheck, faRotateLeft } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faRotateLeft,faLock, faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
 import { useState, useEffect } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
+import Swal from "sweetalert2";
 
 /* Estilos */
 import styles from "./Profile.module.css";
@@ -13,9 +16,12 @@ function Profile() {
     web: "",
     twitter: "",
     insta: "",
+    currentPassword: "",
+    newPassword: "",
   });
 
   const [errors, setErrors] = useState({});
+  const [showPasswordFields, setShowPasswordFields] = useState(false); // Controla si se muestran los campos de contraseña
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -54,6 +60,10 @@ function Profile() {
     // Validaciones básicas
     if (!formData.name) newErrors.name = "El nombre es obligatorio";
     if (!formData.email) newErrors.email = "El correo es obligatorio";
+    if (showPasswordFields) {
+      if (!formData.currentPassword) newErrors.currentPassword = "La contraseña actual es obligatoria";
+      if (!formData.newPassword) newErrors.newPassword = "La nueva contraseña es obligatoria";
+    }
   
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -61,9 +71,24 @@ function Profile() {
     }
   
     const userId = sessionStorage.getItem("userId");
-    if (!userId) {
-      setErrors({ general: "No se encontró el ID del usuario. Intenta iniciar sesión de nuevo." });
-      return;
+
+    const result = await Swal.fire({
+      title: "¿Confirmar acción?",
+      text: "Esta acción no se puede deshacer.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, continuar",
+      cancelButtonText: "Cancelar",
+      background: "#1e1e1e", 
+      color: "#ffffff", 
+      customClass: {
+        confirmButton: "swal-confirm-btn", 
+        cancelButton: "swal-cancel-btn" 
+      }
+    });
+  
+    if (!result.isConfirmed) {
+      return; // Si el usuario cancela, no se ejecuta la actualización
     }
   
     try {
@@ -83,10 +108,13 @@ function Profile() {
         } else {
           throw new Error(result.message || "Error al actualizar el perfil");
         }
-        console.log("Error al actualizar", result);
       } else {
-        console.log("Perfil actualizado correctamente", result);
-        // Podés mostrar un mensaje de éxito o redireccionar
+        Swal.fire({
+          title: "¡Perfil actualizado!",
+          text: "Tu perfil ha sido actualizado correctamente.",
+          icon: "success",
+          confirmButtonText: "OK"
+        });
       }
     } catch (error) {
       setErrors((prevErrors) => ({ ...prevErrors, general: error.message }));
@@ -99,7 +127,10 @@ function Profile() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     setErrors((prevErrors) => ({ ...prevErrors, [e.target.name]: "" }));
   };
- 
+
+  const togglePasswordFields = () => {
+    setShowPasswordFields(!showPasswordFields);
+  }
 
   return (
     <div className={styles["profile-main-container"]}>
@@ -108,11 +139,13 @@ function Profile() {
       </section>
 
       <section className={styles["right-content"]}>
-        <h1>Perfil</h1>
+        <header>
+          <h1>Perfil</h1>
+        </header>
         <form onSubmit={handleSubmit}>
           <h3>Información personal</h3>
           {errors.general && <p className={styles["error"]}>{errors.general}</p>}
-          <div>
+          <div className={styles["seccion"]}>
             <div className={styles["pic-name-email-input"]}>
               <div className={styles["profile-pic-container"]}>
                 <img src="/atom.png" alt="Foto de perfil" className={styles["profile-pic"]} />
@@ -156,9 +189,8 @@ function Profile() {
               explicativeText={errors.bio}
             />
           </div>
-
           <h3>Social</h3>
-          <div>
+          <div className={styles["seccion"]}>
             <InputField
               id="web"
               type="text"
@@ -192,13 +224,40 @@ function Profile() {
             />
           </div>
 
+          <h4 onClick={togglePasswordFields} className={styles["change-password-header"]}>
+            <FontAwesomeIcon  icon = {faLock}> </FontAwesomeIcon>
+            <span icon={faLock}>  Cambiar contraseña </span>
+            <FontAwesomeIcon  icon = {showPasswordFields ? faChevronDown : faChevronUp}></FontAwesomeIcon>
+              
+          </h4>
+
+          {showPasswordFields && (
+            <div className={styles["seccion"]}>
+              <InputField
+                id="currentPassword"
+                type="password"
+                label="Contraseña actual"
+                name="currentPassword"
+                placeholder="Introduce tu contraseña actual"
+                value={formData.currentPassword}
+                onChange={handleChange}
+                explicativeText={errors.currentPassword}
+              />
+              <InputField
+                id="newPassword"
+                type="password"
+                label="Nueva contraseña"
+                name="newPassword"
+                placeholder="Introduce la nueva contraseña"
+                value={formData.newPassword}
+                onChange={handleChange}
+                explicativeText={errors.newPassword}
+              />
+            </div>
+          )}
+
           <div className={styles["profile-buttons"]}>
-            <Button
-              className={styles.btn_regist}
-              variant="headerButtonBlack"
-              label="Reestablecer"
-              icon={faRotateLeft}
-              type="button"
+            <Button className={styles.btn_regist} variant="headerButtonBlack" label="Reestablecer" icon={faRotateLeft} type="button"
               onClick={() =>
                 setFormData({
                   name: "",
@@ -207,15 +266,12 @@ function Profile() {
                   web: "",
                   twitter: "",
                   insta: "",
+                  currentPassword: "",
+                  newPassword: "",
                 })
               }
             />
-            <Button
-              variant="headerButtonWhite"
-              label="Actualizar"
-              icon={faCheck}
-              type="submit"
-            />
+            <Button variant="headerButtonWhite" label="Actualizar" icon={faCheck} type="submit" />
           </div>
         </form>
       </section>

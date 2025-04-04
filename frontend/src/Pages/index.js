@@ -6,6 +6,7 @@ import Categories from "./Categories/Categories";
 import PostForm from "./PostForm/PostForm"
 import Detail from "./Detail/Detail"
 import Profile from "./Profile/Profile";
+import MyAssets from "./MyAssets/MyAssets";
 
 export { 
     Home, 
@@ -15,5 +16,6 @@ export {
     Categories,
     PostForm,
     Detail,
-    Profile
+    Profile,
+    MyAssets
 };

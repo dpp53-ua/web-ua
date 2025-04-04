@@ -22,7 +22,7 @@ export default function ProfileMenu() {
             <Link to="/profile">
                 <FontAwesomeIcon icon={faUser} /> Perfil
             </Link>
-            <Link to="/assets">
+            <Link to="/myassets">
                 <FontAwesomeIcon icon={faFolder} /> Mis Assets
             </Link>
             <Link to="/downloads">

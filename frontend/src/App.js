@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { BasicLayout } from './Layouts';
-import { NotFound, Home, Login, Register, PostForm, Categories, Detail, Profile } from './Pages';
+import { NotFound, Home, Login, Register, PostForm, Categories, Detail, Profile,MyAssets } from './Pages';
 import { PrivateRoute } from './Components';
 import { useState } from "react"; 
 
@@ -29,6 +29,7 @@ function App() {
             <Route path="Home" element={<Home />} />
             <Route path="PostForm" element={<PostForm />} />
             <Route path="profile" element={<Profile />} />
+            <Route path="MyAssets" element={<MyAssets />} />
           </Route>
         </Route>
 

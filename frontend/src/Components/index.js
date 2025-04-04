@@ -10,7 +10,6 @@ import Comment from "./Comment/Comment";
 import ProfileMenu from "./ProfileMenu/ProfileMenu";
 /* Utils */
 import PrivateRoute from "./PrivateRoute/PrivateRoute";
-
 /* Retorna los componentes */
 export { 
     Header, 
@@ -21,5 +20,5 @@ export {
     Category,
     ModelGrid,
     Comment,
-    ProfileMenu
+    ProfileMenu,
 };
