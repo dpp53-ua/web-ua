@@ -2,11 +2,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import styles from "./DeleteableTag.module.css";
 import { faCircleXmark } from "@fortawesome/free-solid-svg-icons";
 
-function DeleteableTag({ file, onDelete }) {
+function DeleteableTag({ file, tag, onDelete }) {
   const handleDelete = (e) => {
     e.preventDefault();
     onDelete();
   };
+
+  const displayName = file ? file.name : tag;
 
   return (
     <li className={styles["deleteable-tag"]}>
@@ -15,10 +17,10 @@ function DeleteableTag({ file, onDelete }) {
         icon={faCircleXmark}
         onClick={handleDelete}
       />
-      <p title={file.name}>{file.name}</p>
-      <input type="file" style={{ display: "none" }} />
+      <p title={displayName}>{displayName}</p>
+      {file && <input type="file" style={{ display: "none" }} />}
     </li>
   );
-}  
+}
 
 export default DeleteableTag;

@@ -26,6 +26,7 @@
         /* padding-inline: 12rem; */
         padding-inline: 2rem; 
         background-color: var(--dark-grey);
+        gap: 1rem;
 
         > * {
             max-width: 600px; /* Para que no sea demasiado grande */

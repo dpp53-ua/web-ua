@@ -7,6 +7,8 @@ import styles from "./PostForm.module.css";
 function PostForm() {
   const [formData, setFormData] = useState({});
   const [uploadedFiles, setUploadedFiles] = useState([]);
+  const [arrOptions, setArrOptions] = useState([]);
+  const [selectedTags, setSelectedTags] = useState([]);
   const [errors, setErrors] = useState({});
   const dropAreaRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -37,40 +39,104 @@ function PostForm() {
     }
 
     if (newFiles.length) {
-      setUploadedFiles(prev => [...prev, ...newFiles]);
+      setUploadedFiles(prev => {
+        const updatedFiles = [...prev, ...newFiles];
+        console.log(updatedFiles); 
+        return updatedFiles;
+      });
     }
 
-    // Limpia el input
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
-
   };
 
   const handleFileInput = (e) => {
     const files = Array.from(e.target.files);
     addFiles(files);
+    console.log(uploadedFiles);
   };
 
   const handleDeleteFile = (fileName) => {
-    setUploadedFiles(prev => prev.filter(f => f.name !== fileName));
+    setUploadedFiles(prev => {
+      const updatedFiles = prev.filter(f => f.name !== fileName);
+      console.log(updatedFiles);
+      return updatedFiles;
+    });
+  };
+
+  const addTag = (e) => {
+    const newTag = e.target.value;
+    if (newTag && !selectedTags.includes(newTag)) {
+      setSelectedTags(prevTags => [...prevTags, newTag]);
+    }
+  };
+
+  const deleteTag = (tagToDelete) => {
+    setSelectedTags(prevTags => prevTags.filter(tag => tag !== tagToDelete));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = {};
 
-    if (!formData.name) newErrors.name = "El usuario es obligatorio";
-    if (!formData.password) newErrors.password = "La contraseña es obligatoria";
+    // Validación
+    if (!formData.postTitle) newErrors.postTitle = "El título es obligatorio";
+    if (!formData.postDescription) newErrors.postDescription = "La descripción es obligatoria";
+    if (!uploadedFiles.length) newErrors.postFile = "Debe subir almenos un archivo";
+
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
 
-    console.log("Archivos para enviar:", uploadedFiles);
-    // Aquí tu lógica de envío
+    // Console log con los datos que se enviarán
+    console.log("Datos a enviar:");
+    console.log("Título:", formData.postTitle);
+    console.log("Descripción:", formData.postDescription);
+    console.log("Archivos:", uploadedFiles);
+    console.log("Categorías:", selectedTags);
+
+    // Aquí la lógica de envío.
+    // En este punto se haría el POST de la información al servidor.
   };
+
+  const fetchCategories = async () => {
+    // try {
+    //   const response = await fetch('URL_DE_TU_API'); // Reemplaza con la URL de tu API
+    //   const data = await response.json();
+      
+    //   // Suponiendo que las categorías vienen como un array en la propiedad 'categories' de la respuesta.
+    //   if (data && Array.isArray(data.categories)) {
+    //     setArrOptions(data.categories.map(category => ({
+    //       label: category.name,  // Suponiendo que cada categoría tiene una propiedad 'name'
+    //       value: category.id     // Suponiendo que cada categoría tiene una propiedad 'id'
+    //     })));
+    //   }
+    // } catch (error) {
+    //   console.error('Error al obtener las categorías:', error);
+    // }
+    await setArrOptions([
+      { label: "Opcion1", value: "Opción 1" },
+      { label: "Opcion2", value: "Opción 2" }
+    ]);
+  }
+
+  const handleClear = () => {
+    setFormData({});
+    setUploadedFiles([]);
+    setSelectedTags([]);
+    setErrors({});
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ""; // limpiar input file
+    }
+  };
+  
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
     const dropArea = dropAreaRef.current;
@@ -114,26 +180,26 @@ function PostForm() {
       <section className={styles["left-section"]}>
         <h1>Formulario de publicación</h1>
         {errors.general && <p className={styles["error"]}>{errors.general}</p>}
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} onReset={handleClear}>
           <InputField
-            id="name"
+            id="postTitle"
             type="text"
-            label="Usuario"
-            name="name"
-            placeholder="Tu usuario"
-            value={formData.name || ""}
+            label="Título"
+            name="postTitle"
+            placeholder="Título"
+            value={formData.postTitle}
             onChange={handleChange}
-            explicativeText={errors.name}
+            explicativeText={errors.postTitle}
           />
           <InputField
-            id="password"
-            type="password"
-            label="Contraseña"
-            name="password"
-            placeholder="Contraseña"
-            value={formData.password || ""}
+            id="postDescription"
+            type="textarea"
+            label="Descripción"
+            name="postDescription"
+            placeholder="Descripción"
+            value={formData.postDescription}
             onChange={handleChange}
-            explicativeText={errors.password}
+            explicativeText={errors.postDescription}
           />
           <InputField
             id="postFile"
@@ -143,8 +209,9 @@ function PostForm() {
             placeholder="Seleccionar archivo"
             onChange={handleFileInput}
             explicativeText={errors.postFile}
-            inputRef={fileInputRef}
+            ref={fileInputRef}
           />
+
           <div className={styles["grid-list"]}>
             <ul>
               {uploadedFiles.map((file) => (
@@ -156,12 +223,40 @@ function PostForm() {
               ))}
             </ul>
           </div>
-          <Button type="submit" variant="red" label="Enviar" />
+          <InputField
+            id="postCategories"
+            type="select"
+            label="Categorías"
+            name="postCategories"
+            placeholder="Categoría"
+            onChange={addTag}
+            arrOptions={arrOptions}
+          />
+          <div className={styles["grid-list"]}>
+            <ul>
+              {selectedTags.map((tag) => (
+                <DeleteableTag
+                  key={tag}
+                  tag={tag}
+                  onDelete={() => deleteTag(tag)}
+                />
+              ))}
+            </ul>
+          </div>
+          <div>
+            <Button type="reset" variant="red" label="Limpiar"/>
+            <Button type="submit" variant="red" label="Aceptar" />
+          </div>
         </form>
       </section>
 
       <section className={styles["right-section"]}>
-        <div className={styles["droparea"]} ref={dropAreaRef}>
+        <h1>Última editado: XX/XX/XXXX</h1>
+        <div
+          className={styles["droparea"]}
+          ref={dropAreaRef}
+          onClick={() => fileInputRef.current?.click()}
+        >
           <FontAwesomeIcon className={styles["font-icon"]} icon={faCloudArrowUp} />
           <p>También puedes arrastrar aquí tus archivos</p>
           <small>Máximo 10 archivos</small>
