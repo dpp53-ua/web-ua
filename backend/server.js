@@ -178,11 +178,18 @@ app.post("/api/login", (req, res) => {
 
 app.post("/api/publicacion/:idUsuario", upload.single("archivo"), async (req, res) => {
     try {
-        const { titulo, descripcion, precio, categoria } = req.body;
+        let { titulo, descripcion, precio, categoria } = req.body;
+
+        // Asegurar que categoria sea un array (por si solo se envía una)
+        if (!Array.isArray(categoria)) {
+            categoria = [categoria];
+        }
+
         const file = req.file;
         const idUsuario = req.params.idUsuario;
 
-        if (!titulo || !descripcion || !precio || !categoria || !file || !idUsuario) {
+        if (!titulo || !descripcion || !precio || !categoria.length || !file || !idUsuario)
+            {
             return res.status(400).json({ message: "Faltan campos obligatorios" });
         }
 
