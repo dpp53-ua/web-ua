@@ -3,7 +3,6 @@
   justify-content: space-between;
   align-items: center;
   gap: 10px;
-  
 }
 
 .searchBar > div {
@@ -76,3 +75,71 @@
   color: var(--white);
   width: 1.1em;
 }
+
+
+.searchBarWrapper {
+  position: relative;
+}
+
+
+
+.searchBar input {
+  border: none;
+  outline: none;
+  padding-left: 0.5rem;
+}
+
+.filterPanel {
+  position: absolute;
+  top: calc(100% + 10px); /* separa del botón */
+  right: 0;
+  z-index: 10;
+  background-color: var(--medium-red);
+  color: white;
+  border-radius: 0.5rem;
+  margin-top: 0.5rem;
+  padding: 1rem;
+  width: 300px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+/* Triángulo hacia arriba, centrado justo debajo del icono */
+.filterPanel::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  right: .5rem; /* ajústalo para que apunte al icono de filtro */
+  border-width: 0 10px 10px 10px;
+  border-style: solid;
+  border-color: transparent transparent var(--medium-red) transparent;
+}
+
+
+.filterSection {
+  margin-bottom: 1rem;
+  display:flex;
+  flex-direction: column;
+}
+
+.filterSection label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+input[type="checkbox"] {
+  accent-color: black;
+}
+
+.span {
+  display: flex;
+  justify-content: space-between;
+  width: 50%;
+  flex-wrap: nowrap;
+}
+
+.span p {
+  margin-left: .5em;
+}
+
