@@ -63,7 +63,7 @@ export default function Header( ) { //{ isAuth, setIsAuth } antes lo usaba
                     </>
                 :
                     <>  
-                    <Button  variant="headerButtonWhite" label="Subir asset" icon={faArrowUpFromBracket} onClickFunction={() => console.log("Redirigiendo a subir asset...")} to="/PostForm"/> 
+                    <Button  variant="headerButtonWhite" label="Subir asset" icon={faArrowUpFromBracket} onClickFunction={() => console.log("Redirigiendo a subir asset...")} to="/post-form"/> 
 
                     <div className={styles.drop} onClick={() => setProfileMenuOpen(!profileMenuOpen)} ref={profileButtonRef}>
                         <img alt="foto de perfil" src="/atom.png" />
@@ -76,8 +76,8 @@ export default function Header( ) { //{ isAuth, setIsAuth } antes lo usaba
                         <div className={styles.profileMenu} ref={profileMenuRef}>
                             <p className={styles.menuTitle}>Tus opciones</p>
                             <ul>
-                                <li><a href="/profile"><FontAwesomeIcon icon={faUser} /> Perfil</a></li>
-                                <li><a href="/myassets"><FontAwesomeIcon icon={faFolder} /> Mis assets</a></li>
+                            <a href="/profile"><li><FontAwesomeIcon icon={faUser} /> Perfil</li></a>
+                            <a href="/my-assets"><li><FontAwesomeIcon icon={faFolder} /> Mis assets</li></a>
                                 <li><FontAwesomeIcon icon={faDownload} /> Mis descargas</li>
                                 <li><FontAwesomeIcon icon={faCog} /> Configuración</li>
                                 <li className={styles.logout} onClick={handleLogout}><FontAwesomeIcon icon={faSignOutAlt} /> Cerrar sesión</li>

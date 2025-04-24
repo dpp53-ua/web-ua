@@ -6,8 +6,8 @@ export default function NavBar({ menuOpen }) {
             <ul>
                 <li><a href="/home">Inicio</a></li>
                 <li><a href="/categories">Categorías</a></li>
-                <li><a href="/comunidad">Comunidad</a></li>
-                <li><a href="/contacto">Contacto</a></li>
+                <li><a href="/comunity">Comunidad</a></li>
+                <li><a href="/contact">Contacto</a></li>
             </ul>
         </nav>
     );
