@@ -14,7 +14,24 @@ export default function Header( ) { //{ isAuth, setIsAuth } antes lo usaba
     const profileButtonRef = useRef(null);
 
     // Usamos el hook useAuth para obtener isAuth y logout
-    const { isAuth, logout } = useAuth();
+    const { isAuth, logout, userId } = useAuth();
+    const [foto, setFoto] = useState("");
+
+    useEffect(() => {
+        const fetchUserPhoto = async () => {
+            if (!userId) return;
+
+            try {
+                const response = await fetch(`http://localhost:5000/api/users/${userId}`);
+                const data = await response.json();
+                setFoto(data.foto || "");
+            } catch (error) {
+                console.error("Error al cargar la foto del usuario:", error);
+            }
+        };
+
+        fetchUserPhoto();
+    }, [userId]);
 
     const handleLogout = () => {
         //setIsAuth(false); // Ahora sí actualiza el estado
@@ -42,7 +59,6 @@ export default function Header( ) { //{ isAuth, setIsAuth } antes lo usaba
         };
     }, []);
     
-    
     return (
         <header className={styles.header}>
             <div className={styles.leftContent}>
@@ -66,7 +82,7 @@ export default function Header( ) { //{ isAuth, setIsAuth } antes lo usaba
                     <Button  variant="headerButtonWhite" label="Subir asset" icon={faArrowUpFromBracket} onClickFunction={() => console.log("Redirigiendo a subir asset...")} to="/post-form"/> 
 
                     <div className={styles.drop} onClick={() => setProfileMenuOpen(!profileMenuOpen)} ref={profileButtonRef}>
-                        <img alt="foto de perfil" src="/atom.png" />
+                        <img alt="foto de perfil" src={`http://localhost:5000/api/users/${userId}/foto`} />
                         <FontAwesomeIcon icon={faCaretDown} />
                     </div>
 
