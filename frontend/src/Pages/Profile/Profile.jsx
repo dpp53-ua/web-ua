@@ -151,7 +151,11 @@ function Profile() {
           <div className={styles["seccion"]}>
             <div className={styles["pic-name-email-input"]}>
             <div className={styles["profile-pic-container"]}>
-              <img src="/atom.png" alt="Foto de perfil" className={styles["profile-pic"]} />
+            <img
+  src={`http://localhost:5000/api/users/${userId}/foto`}
+  alt="Foto de perfil"
+  className={styles["profile-pic"]}
+/>
               <input
                 type="file"
                 accept="image/*"

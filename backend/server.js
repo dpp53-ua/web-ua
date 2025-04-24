@@ -4,10 +4,9 @@ const PORT = 5000;
 
 const express = require("express");
 const logger = require("morgan");
-const mongojs = require("mongojs");
+const { MongoClient, GridFSBucket, ObjectId } = require("mongodb");
 
 const multer = require("multer");
-const { MongoClient, GridFSBucket, ObjectId } = require("mongodb");
 const fs = require("fs");
 
 const upload = multer({ dest: 'uploads/' });
@@ -15,22 +14,18 @@ const upload = multer({ dest: 'uploads/' });
 const mongoClient = new MongoClient("mongodb://127.0.0.1:27017");
 let bucket;
 let publicacionesDB;
+let usersCollection;
 
 mongoClient.connect().then(client => {
     const database = client.db("miBaseDeDatos");
     bucket = new GridFSBucket(database, { bucketName: "archivos" });
     publicacionesDB = database.collection("publicaciones");
+    usersCollection = database.collection("users"); // Cambié esto para usar mongodb en lugar de mongojs
 }).catch(console.error);
 
 const cors = require("cors");
 
-
-
-
-
-
 const app = express();
-const db = mongojs("miBaseDeDatos", ["users"]); // Conectar a MongoDB y usar la colección "users"
 
 // Middleware
 app.use(logger("dev")); // Logs de las peticiones
@@ -46,41 +41,42 @@ app.post("/api/users", (req, res) => {
     }
 
     // Verificar si el usuario ya existe por email o nombre
-    db.users.findOne({ $or: [{ email }, { name }] }, (err, existingUser) => {
-        if (err) return res.status(500).json({ message: "Error en el servidor", error: err });
-        if (existingUser) return res.status(400).json({ message: "El usuario o el email ya existen" });
+    usersCollection.findOne({ $or: [{ email }, { name }] }).then(existingUser => {
+        if (existingUser) {
+            return res.status(400).json({ message: "El usuario o el email ya existen" });
+        }
 
         // Insertar usuario si no existe
-        db.users.insert({ email, name, password }, (err, user) => {
-            if (err) return res.status(500).json({ message: "Error en el servidor", error: err });
-            res.status(201).json({ message: "Usuario creado", user });
-        });
-    });
+        usersCollection.insertOne({ email, name, password })
+            .then(user => {
+                res.status(201).json({ message: "Usuario creado", user });
+            })
+            .catch(err => res.status(500).json({ message: "Error en el servidor", error: err }));
+    }).catch(err => res.status(500).json({ message: "Error en el servidor", error: err }));
 });
 
 // 🔵 GET: Obtener todos los usuarios
 app.get("/api/users", (req, res) => {
-    db.users.find((err, users) => {
-        if (err) return res.status(500).json({ message: "Error en el servidor", error: err });
-        res.json(users);
-    });
+    usersCollection.find().toArray()
+        .then(users => res.json(users))
+        .catch(err => res.status(500).json({ message: "Error en el servidor", error: err }));
 });
 
 // 🔵 GET: Obtener un usuario por ID
 app.get("/api/users/:id", (req, res) => {
     const { id } = req.params;
 
-    db.users.findOne({ _id: mongojs.ObjectId(id) }, (err, user) => {
-        if (err) return res.status(500).json({ message: "Error en el servidor", error: err });
-        if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
+    usersCollection.findOne({ _id: new ObjectId(id) })
+        .then(user => {
+            if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
 
-        // Excluir la contraseña por seguridad
-        const { password, ...userWithoutPassword } = user;
+            // Excluir la contraseña por seguridad
+            const { password, ...userWithoutPassword } = user;
 
-        res.json(userWithoutPassword);
-    });
+            res.json(userWithoutPassword);
+        })
+        .catch(err => res.status(500).json({ message: "Error en el servidor", error: err }));
 });
-
 
 // 🟡 UPDATE: Actualizar usuario parcialmente
 app.put("/api/users/:id", upload.single("foto"), (req, res) => {
@@ -117,14 +113,12 @@ app.put("/api/users/:id", upload.single("foto"), (req, res) => {
             updateFields.foto = uploadStream.id;
 
             // Ahora, realizamos la actualización del usuario con la nueva foto
-            db.users.update(
-                { _id: mongojs.ObjectId(id) },
-                { $set: updateFields },
-                (err, user) => {
-                    if (err) return res.status(500).json({ message: "Error en el servidor", error: err });
-                    res.json({ message: "Usuario actualizado", user });
-                }
-            );
+            usersCollection.updateOne(
+                { _id: new ObjectId(id) },
+                { $set: updateFields }
+            ).then(() => {
+                res.json({ message: "Usuario actualizado" });
+            }).catch(err => res.status(500).json({ message: "Error en el servidor", error: err }));
         }).catch((err) => {
             console.error("Error al subir la foto a GridFS:", err);
             res.status(500).json({ message: "Error al subir la foto", error: err });
@@ -136,32 +130,24 @@ app.put("/api/users/:id", upload.single("foto"), (req, res) => {
         }
 
         // Verificar si el nuevo email o nombre ya existen en otro usuario
-        db.users.findOne(
+        usersCollection.findOne(
             {
                 $or: [{ email: updateFields.email }, { name: updateFields.name }],
-                _id: { $ne: mongojs.ObjectId(id) }
-            },
-            (err, existingUser) => {
-                if (err) return res.status(500).json({ message: "Error en el servidor", error: err });
-                if (existingUser) return res.status(400).json({ message: "El usuario o el email ya existen" });
-
-                // Actualizar el usuario
-                db.users.update(
-                    { _id: mongojs.ObjectId(id) },
-                    { $set: updateFields },
-                    (err, user) => {
-                        if (err) return res.status(500).json({ message: "Error en el servidor", error: err });
-                        res.json({ message: "Usuario actualizado", user });
-                    }
-                );
+                _id: { $ne: new ObjectId(id) }
             }
-        );
+        ).then(existingUser => {
+            if (existingUser) return res.status(400).json({ message: "El usuario o el email ya existen" });
+
+            // Actualizar el usuario
+            usersCollection.updateOne(
+                { _id: new ObjectId(id) },
+                { $set: updateFields }
+            ).then(() => {
+                res.json({ message: "Usuario actualizado" });
+            }).catch(err => res.status(500).json({ message: "Error en el servidor", error: err }));
+        }).catch(err => res.status(500).json({ message: "Error en el servidor", error: err }));
     }
 });
-
-
-
-
 
 // 🔐 POST: Login básico sin encriptar
 app.post("/api/login", (req, res) => {
@@ -172,25 +158,26 @@ app.post("/api/login", (req, res) => {
     }
 
     // Buscar usuario por nombre
-    db.users.findOne({ name }, (err, user) => {
-        if (err) return res.status(500).json({ message: "Error en el servidor", error: err });
+    usersCollection.findOne({ name })
+        .then(user => {
+            if (!user) {
+                return res.status(404).json({ message: "El usuario no existe" });
+            }
 
-        if (!user) {
-            return res.status(404).json({ message: "El usuario no existe" });
-        }
+            // Comparar contraseña (sin seguridad)
+            if (user.password !== password) {
+                return res.status(401).json({ message: "Contraseña incorrecta" });
+            }
 
-        // Comparar contraseña (sin seguridad)
-        if (user.password !== password) {
-            return res.status(401).json({ message: "Contraseña incorrecta" });
-        }
+            // excluir la contraseña de la respuesta
+            const { password: _, ...userWithoutPassword } = user;
 
-        // excluir la contraseña de la respuesta
-        const { password: _, ...userWithoutPassword } = user;
-
-        res.status(200).json({ message: "Login exitoso", user: userWithoutPassword });
-    });
+            res.status(200).json({ message: "Login exitoso", user: userWithoutPassword });
+        })
+        .catch(err => res.status(500).json({ message: "Error en el servidor", error: err }));
 });
 
+// POST: Crear publicación
 app.post("/api/publicacion/:idUsuario", upload.single("archivo"), async (req, res) => {
     try {
         let { titulo, descripcion, precio, categoria } = req.body;
@@ -203,18 +190,12 @@ app.post("/api/publicacion/:idUsuario", upload.single("archivo"), async (req, re
         const file = req.file;
         const idUsuario = req.params.idUsuario;
 
-        if (!titulo || !descripcion || !precio || !categoria.length || !file || !idUsuario)
-            {
+        if (!titulo || !descripcion || !precio || !categoria.length || !file || !idUsuario) {
             return res.status(400).json({ message: "Faltan campos obligatorios" });
         }
 
         // Verificar si el usuario existe
-        const usuario = await new Promise((resolve, reject) => {
-            db.users.findOne({ _id: mongojs.ObjectId(idUsuario) }, (err, doc) => {
-                if (err) return reject(err);
-                resolve(doc);
-            });
-        });
+        const usuario = await usersCollection.findOne({ _id: new ObjectId(idUsuario) });
 
         if (!usuario) {
             return res.status(404).json({ message: "Usuario no encontrado" });
@@ -264,9 +245,31 @@ app.post("/api/publicacion/:idUsuario", upload.single("archivo"), async (req, re
     }
 });
 
+// Endpoint para obtener la imagen del perfil desde GridFS
+app.get("/api/users/:id/foto", async (req, res) => {
+    const { id } = req.params;
 
+    try {
+        // Buscar el usuario para obtener el ID del archivo
+        usersCollection.findOne({ _id: new ObjectId(id) })
+            .then(user => {
+                if (!user || !user.foto) {
+                    return res.status(404).json({ message: "Imagen no encontrada" });
+                }
 
+                // Abrir un stream de lectura desde GridFS
+                const downloadStream = bucket.openDownloadStream(user.foto);
 
-
+                res.set("Content-Type", "image/jpeg"); // Ajusta el tipo si sabes el formato real
+                downloadStream.pipe(res).on("error", (err) => {
+                    console.error("Error al leer la imagen desde GridFS:", err);
+                    res.status(500).json({ message: "Error al leer la imagen" });
+                });
+            })
+            .catch(err => res.status(500).json({ message: "Error al procesar la imagen", error: err }));
+    } catch (err) {
+        res.status(500).json({ message: "Error al procesar la imagen", error: err });
+    }
+});
 
 app.listen(PORT, () => console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`));
