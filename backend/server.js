@@ -66,6 +66,21 @@ app.get("/api/users", (req, res) => {
     });
 });
 
+// 🔵 GET: Obtener un usuario por ID
+app.get("/api/users/:id", (req, res) => {
+    const { id } = req.params;
+
+    db.users.findOne({ _id: mongojs.ObjectId(id) }, (err, user) => {
+        if (err) return res.status(500).json({ message: "Error en el servidor", error: err });
+        if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
+
+        // Excluir la contraseña por seguridad
+        const { password, ...userWithoutPassword } = user;
+
+        res.json(userWithoutPassword);
+    });
+});
+
 
 // 🟡 UPDATE: Actualizar usuario parcialmente
 app.put("/api/users/:id", upload.single("foto"), (req, res) => {
