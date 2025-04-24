@@ -13,19 +13,19 @@ function App() {
           <Route path="login" element={<Login />} />
           <Route path="register" element={<Register />} />
           {/* Rutas públicas adicionales */}
-          <Route path="Home" element={<Home />} />
-          <Route path="Categories" element={<Categories />} />
-          <Route path="Detail" element={<Detail />} />
+          <Route path="home" element={<Home />} />
+          <Route path="categories" element={<Categories />} />
+          <Route path="detail" element={<Detail />} />
         </Route>
 
         {/* Rutas privadas protegidas */}
         <Route element={<PrivateRoute />}>
           <Route path="/" element={<BasicLayout />}>
             <Route index element={<Home />} />
-            <Route path="Home" element={<Home />} />
-            <Route path="PostForm" element={<PostForm />} />
+            <Route path="home" element={<Home />} />
+            <Route path="post-form" element={<PostForm />} />
             <Route path="profile" element={<Profile />} />
-            <Route path="MyAssets" element={<MyAssets />} />
+            <Route path="my-assets" element={<MyAssets />} />
           </Route>
         </Route>
 
