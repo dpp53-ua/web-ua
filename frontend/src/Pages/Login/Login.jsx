@@ -1,8 +1,9 @@
 /* Componentes */
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button, InputField } from '../../Components';
 import { faUser, faLock } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
+import { useAuth } from "../../Context";
 
 /* Estilos */
 import styles from "./Login.module.css";
@@ -10,6 +11,9 @@ import styles from "./Login.module.css";
 function Login() {
   const [formData, setFormData] = useState({ name: "", password: "" });
   const [errors, setErrors] = useState({});
+  const { login } = useAuth();
+  const navigate = useNavigate();
+
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -48,6 +52,10 @@ function Login() {
         console.log("Login incorrecto", result);
       }else{
         console.log("Login exitoso", result);
+
+        // Suponiendo que el backend te devuelve el id en `result.userId`
+        login(result.user._id); // Guarda el id en el contexto y sessionStorage
+        navigate("/home"); // Redirigís al usuario a una ruta protegida
       }
 
       

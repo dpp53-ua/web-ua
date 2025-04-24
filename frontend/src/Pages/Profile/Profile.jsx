@@ -2,13 +2,14 @@ import { Button, InputField, ProfileMenu } from '../../Components';
 import { faCheck, faRotateLeft,faLock, faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
 import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
+import { useAuth } from "../../Context";
 import Swal from "sweetalert2";
 
 /* Estilos */
 import styles from "./Profile.module.css";
 
 function Profile() {
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -19,23 +20,21 @@ function Profile() {
     currentPassword: "",
     newPassword: "",
   });
-
+  const { userId } = useAuth();  // Obtén el userId desde el contexto
   const [errors, setErrors] = useState({});
   const [showPasswordFields, setShowPasswordFields] = useState(false); // Controla si se muestran los campos de contraseña
 
   useEffect(() => {
     const fetchUserData = async () => {
-      const userId = sessionStorage.getItem("userId");
-  
       if (!userId) {
-        console.error("No se encontró el ID del usuario en sessionStorage.");
+        console.error("No se encontró el ID del usuario en el contexto.");
         return;
       }
-  
+
       try {
         const response = await fetch(`http://localhost:5000/api/users/${userId}`);
         const data = await response.json();
-  
+
         setFormData({
           id: userId,
           name: data.name || "",
@@ -49,9 +48,9 @@ function Profile() {
         console.error("Error al obtener datos del usuario:", error);
       }
     };
-  
+
     fetchUserData();
-  }, []);
+  }, [userId]);  // Dependencia de userId para asegurarse de que se actualice cuando cambie
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -90,7 +89,7 @@ function Profile() {
     if (!result.isConfirmed) {
       return; // Si el usuario cancela, no se ejecuta la actualización
     }
-  
+    
     try {
       const response = await fetch(`http://localhost:5000/api/users/${userId}`, {
         method: "PUT",
