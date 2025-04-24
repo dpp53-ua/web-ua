@@ -86,7 +86,6 @@ export default function Header( ) { //{ isAuth, setIsAuth } antes lo usaba
                         <FontAwesomeIcon icon={faCaretDown} />
                     </div>
 
-                        
                     {/* Menú desplegable */}
                     {profileMenuOpen && (
                         <div className={styles.profileMenu} ref={profileMenuRef}>

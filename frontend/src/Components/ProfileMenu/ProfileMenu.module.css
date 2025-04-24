@@ -10,6 +10,7 @@
     padding: 1.5rem;
     border-radius: 10px;
     width: 10rem;
+    min-width: fit-content;
     flex-direction: column;
 
     > .profilebox{
@@ -47,7 +48,7 @@
             gap: 0;
             flex-direction: column;
             justify-content: space-around;
-
+            min-width: 4rem;
             >p{
                 font-size: var(--font-small);
             }
@@ -75,8 +76,9 @@
 }
 
 .profilemenu a:hover {
-    background-color: rgba(255, 255, 255, 0.1); /* Fondo blanquecino translúcido */
+    background-color: #00000031; /* Fondo blanquecino translúcido */
 }
+
 
 
 @media (min-width: 940px) {

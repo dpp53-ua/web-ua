@@ -81,9 +81,6 @@
     flex-direction: column;
     align-items: center;
     width: 100%;
-    background-color: var(--medium-red);
-    padding: 1em;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   }
   
   .showMenu ul {
