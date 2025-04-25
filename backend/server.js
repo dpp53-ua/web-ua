@@ -40,20 +40,29 @@ app.post("/api/users", (req, res) => {
         return res.status(400).json({ message: "Faltan datos" });
     }
 
-    // Verificar si el usuario ya existe por email o nombre
     usersCollection.findOne({ $or: [{ email }, { name }] }).then(existingUser => {
         if (existingUser) {
             return res.status(400).json({ message: "El usuario o el email ya existen" });
         }
 
-        // Insertar usuario si no existe
-        usersCollection.insertOne({ email, name, password })
-            .then(user => {
-                res.status(201).json({ message: "Usuario creado", user });
+        // Insertar usuario con valores por defecto
+        const nuevoUsuario = {
+            email,
+            name,
+            password,
+            theme: "night",
+            fontSize: "medium"
+        };
+
+        usersCollection.insertOne(nuevoUsuario)
+            .then(result => {
+                res.status(201).json({ message: "Usuario creado", user: result });
             })
             .catch(err => res.status(500).json({ message: "Error en el servidor", error: err }));
     }).catch(err => res.status(500).json({ message: "Error en el servidor", error: err }));
 });
+
+
 
 // 🔵 GET: Obtener todos los usuarios
 app.get("/api/users", (req, res) => {
@@ -84,7 +93,7 @@ app.put("/api/users/:id", upload.single("foto"), (req, res) => {
     const updateFields = {};
 
     // Filtrar solo los campos que vienen en el body
-    const allowedFields = ["email", "name", "password", "biografia", "web", "twitter", "instagram"];
+    const allowedFields = ["email", "name", "password", "biografia", "web", "twitter", "instagram", "theme", "fontSize"];
     allowedFields.forEach(field => {
         if (req.body[field] !== undefined) {
             updateFields[field] = req.body[field];

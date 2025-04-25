@@ -35,7 +35,7 @@ const InputField = forwardRef((props, ref) => {
         id={id}
         name={name}
         onChange={onChange}
-        defaultValue={"DEFAULT"}
+        defaultValue={value || "DEFAULT"}
         ref={ref}
       >
         <option value="DEFAULT" disabled>

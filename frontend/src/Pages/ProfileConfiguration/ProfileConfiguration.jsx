@@ -2,6 +2,7 @@ import { Button, InputField, ProfileMenu } from '../../Components';
 import { useState, useEffect } from "react";
 import Swal from 'sweetalert2';
 import { useAuth } from "../../Context";
+import { applyUserPreferences, getCSSVariable } from '../../Utils';
 
 /* Estilos */
 import styles from "./ProfileConfiguration.module.css";
@@ -53,39 +54,83 @@ function ProfileConfiguration() {
     const updates = {};
     if (preferences.theme !== initial.theme) updates.theme = preferences.theme;
     if (preferences.fontSize !== initial.fontSize) updates.fontSize = preferences.fontSize;
-
+  
     if (Object.keys(updates).length === 0) {
-      return Swal.fire('Sin cambios', 'No hay modificaciones para guardar', 'info');
-    }
-
-    try {
-      console.log("PUT payload:", updates);
-      const res = await fetch(`http://localhost:5000/api/users/${userId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updates)
+      return Swal.fire({
+        title: 'Sin cambios',
+        text: 'No hay modificaciones para guardar',
+        icon: 'info',
+        background: getCSSVariable('--dark-grey'),     
+        color: getCSSVariable('--white'),         
+        customClass: {
+          confirmButton: "swal-confirm-btn",
+        },
       });
-      console.log("PUT /api/users status:", res.status, "ok?", res.ok);
+    }
+  
+    // Preguntar por la confirmación antes de proceder
+    const result = await Swal.fire({
+      title: '¿Estás seguro?',
+      text: '¿Deseas guardar los cambios realizados en tus preferencias?',
+      icon: 'warning',
+      background: getCSSVariable('--dark-grey'),     
+      color: getCSSVariable('--white'),           
+      customClass: {
+        confirmButton: "swal-confirm-btn",
+      },
+      showCancelButton: true,
+      confirmButtonText: 'Sí, guardar cambios',
+      cancelButtonText: 'Cancelar'
+    });
+  
+    if (result.isConfirmed) {
+      try {
+        console.log("PUT payload:", updates);
+        const res = await fetch(`http://localhost:5000/api/users/${userId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updates)
+        });
+        console.log("PUT /api/users status:", res.status, "ok?", res.ok);
+  
+        if (!res.ok) {
+          const text = await res.text();
+          throw new Error(`Status ${res.status}: ${text}`);
+        }
 
-      if (!res.ok) {
-        const text = await res.text();
-        throw new Error(`Status ${res.status}: ${text}`);
+        applyUserPreferences({ theme: preferences.theme, fontSize: preferences.fontSize });
+
+        await res.json();
+        Swal.fire({
+          title: "¡Listo!",
+          text: 'Tus preferencias han sido actualizadas',
+          icon: 'success',
+          background: getCSSVariable('--dark-grey'),     
+          color: getCSSVariable('--white'),           
+          customClass: {
+            confirmButton: "swal-confirm-btn",
+          }
+        });
+  
+        setInitial({ ...preferences });
+      } catch (err) {
+        console.error('Error al actualizar:', err);
+        Swal.fire('Error', 'No se pudieron guardar los cambios', 'error');
       }
-
-      await res.json();
-      Swal.fire('¡Listo!', 'Tus preferencias han sido actualizadas', 'success');
-      setInitial({ ...preferences });
-    } catch (err) {
-      console.error('Error al actualizar:', err);
-      Swal.fire('Error', 'No se pudieron guardar los cambios', 'error');
     }
   };
+  
 
   const handleDelete = async () => {
     Swal.fire({
       title: '¿Estás seguro?',
       text: 'Se eliminarán todos tus assets y compras. Esta acción no se puede deshacer.',
       icon: 'warning',
+      background: getCSSVariable('--dark-grey'),     
+      color: getCSSVariable('--white'),          
+      customClass: {
+        confirmButton: "swal-confirm-btn",
+      },
       showCancelButton: true,
       confirmButtonText: 'Sí, dar de baja',
       cancelButtonText: 'Cancelar'
@@ -97,8 +142,17 @@ function ProfileConfiguration() {
           if (!res.ok) throw new Error();
 
           // Muestra el mensaje de éxito
-          await Swal.fire('Eliminado', 'Tu cuenta ha sido dada de baja', 'success');
-
+          Swal.fire({
+            title: 'Eliminado',
+            text: 'Tu cuenta ha sido dada de baja',
+            icon: 'success',
+            background: getCSSVariable('--dark-grey'),     
+            color: getCSSVariable('--white'),           
+            customClass: {
+              confirmButton: "swal-confirm-btn",
+            }
+          });
+        
           // Limpia el contexto de autenticación
           logout();
 

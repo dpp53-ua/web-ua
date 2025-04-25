@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import { applyUserPreferences } from '../Utils';
 
 const AuthContext = createContext();
 
@@ -7,10 +8,24 @@ export function AuthProvider({ children }) {
 
   const isAuth = !!userId;
 
-  const login = (id) => {
+  const login = async (id) => {
     sessionStorage.setItem('userId', id);
     setUserId(id);
+  
+    try {
+      const res = await fetch(`http://localhost:5000/api/users/${id}`);
+      if (!res.ok) throw new Error();
+      const user = await res.json();
+      applyUserPreferences({ theme: user.theme, fontSize: user.fontSize });
+      localStorage.setItem(
+        'userPreferences',
+        JSON.stringify({ theme: user.theme, fontSize: user.fontSize })
+      );
+    } catch (err) {
+      console.error("No se pudieron aplicar preferencias tras login:", err);
+    }
   };
+  
 
   const logout = () => {
     sessionStorage.removeItem('userId');
