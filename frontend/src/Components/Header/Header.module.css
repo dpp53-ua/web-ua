@@ -4,6 +4,8 @@
   display: flex;
   justify-content: space-between; 
   align-items: center;
+  min-height: fit-content;
+  height: 5rem;
   /* background: var(--medium-red); */
   color: var(--white);
   /* position: sticky;
@@ -22,17 +24,23 @@
     display: flex;
     gap: 1em;
     padding: 1em;
-
+    align-items: center;
     
     .drop{
       display: flex;
       flex-direction: row;
       gap: 1rem;
       align-items: center;
+      border-radius: 30px;
+      padding: 0 0.8rem 0 0;
+
       img{
-        width: 2rem;
+        width: 2.5rem;
         border-radius: 5rem;
       }
+    }
+    .drop:hover{
+      background-color: #00000031;
     }
   }
 
@@ -41,6 +49,7 @@
   height: auto;
   transition: transform 0.3s ease;
   margin-right: 1rem;
+
   &:hover {
     transform: scale(1.15); /* Efecto de ampliación */
     cursor: pointer;
@@ -80,12 +89,13 @@
 
 .profileMenu {
   position: absolute;
-  top: 50px;
+  top: 5rem;
   right: 0;
   background: var(--medium-red);
   color: var(--white);
-  border-radius: 12px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+
   padding: 1rem;
   width: 180px;
   text-align: left;
@@ -94,7 +104,21 @@
   gap: 0.5rem;
   z-index: 10;
   animation: fadeIn 0.2s ease-in-out;
+
 }
+
+
+/* Triángulo hacia arriba, centrado justo debajo del icono */
+.profileMenu::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  right: .10rem; /* ajústalo para que apunte al icono de filtro */
+  border-width: 0 10px 10px 10px;
+  border-style: solid;
+  border-color: transparent transparent var(--medium-red) transparent;
+}
+
 
 .menuTitle {
   font-size: var(--font-medium);
@@ -107,6 +131,11 @@
   list-style: none;
   padding: 0;
   margin: 0;
+
+  > a{
+    text-decoration: none;
+    color: var(--white);
+  }
 }
 
 .profileMenu li {
@@ -117,13 +146,13 @@
   gap: 8px;
   padding: 10px;
   cursor: pointer;
-  border-radius: 0 0 0.5rem 0.5rem;
+  border-radius: 0.5rem;
  
   transition: background 0.2s ease-in-out;
 }
 
 .profileMenu li:hover {
-  background: rgba(73, 1, 1, 0.2);
+  background: rgba(73, 1, 1, 0.637);
 }
 
 .toggleOption {

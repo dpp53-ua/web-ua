@@ -1,15 +1,13 @@
 import { Button, InputField, ProfileMenu } from '../../Components';
-import { faCheck, faRotateLeft,faLock, faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
-import { useState, useEffect } from "react";
+import { faCheck, faRotateLeft, faLock, faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
+import { useState, useEffect, useRef } from "react"; // 🔄 CAMBIO
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useAuth } from "../../Context";
 import Swal from "sweetalert2";
-
-/* Estilos */
 import styles from "./Profile.module.css";
 
 function Profile() {
-
+  const [previewUrl, setPreviewUrl] = useState("");
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -20,9 +18,10 @@ function Profile() {
     currentPassword: "",
     newPassword: "",
   });
-  const { userId } = useAuth();  // Obtén el userId desde el contexto
+  const { userId } = useAuth();
   const [errors, setErrors] = useState({});
-  const [showPasswordFields, setShowPasswordFields] = useState(false); // Controla si se muestran los campos de contraseña
+  const [showPasswordFields, setShowPasswordFields] = useState(false);
+  const fileInputRef = useRef(null); // 🔄 CAMBIO
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -34,15 +33,13 @@ function Profile() {
       try {
         const response = await fetch(`http://localhost:5000/api/users/${userId}`);
         const data = await response.json();
-
         setFormData({
-          id: userId,
           name: data.name || "",
           email: data.email || "",
-          bio: data.bio || "",
+          bio: data.biografia || "",
           web: data.web || "",
           twitter: data.twitter || "",
-          insta: data.insta || "",
+          insta: data.instagram || "",
         });
       } catch (error) {
         console.error("Error al obtener datos del usuario:", error);
@@ -50,26 +47,24 @@ function Profile() {
     };
 
     fetchUserData();
-  }, [userId]);  // Dependencia de userId para asegurarse de que se actualice cuando cambie
+  }, [userId]);
 
+  //--------- SUBIDA DE FORMULARIO -----------------------------------
   const handleSubmit = async (e) => {
     e.preventDefault();
     let newErrors = {};
-  
-    // Validaciones básicas
+
     if (!formData.name) newErrors.name = "El nombre es obligatorio";
     if (!formData.email) newErrors.email = "El correo es obligatorio";
     if (showPasswordFields) {
       if (!formData.currentPassword) newErrors.currentPassword = "La contraseña actual es obligatoria";
       if (!formData.newPassword) newErrors.newPassword = "La nueva contraseña es obligatoria";
     }
-  
+
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
-  
-    const userId = sessionStorage.getItem("userId");
 
     const result = await Swal.fire({
       title: "¿Confirmar acción?",
@@ -78,29 +73,40 @@ function Profile() {
       showCancelButton: true,
       confirmButtonText: "Sí, continuar",
       cancelButtonText: "Cancelar",
-      background: "#1e1e1e", 
-      color: "#ffffff", 
+      background: "#1e1e1e",
+      color: "#ffffff",
       customClass: {
-        confirmButton: "swal-confirm-btn", 
-        cancelButton: "swal-cancel-btn" 
+        confirmButton: "swal-confirm-btn",
+        cancelButton: "swal-cancel-btn"
       }
     });
-  
-    if (!result.isConfirmed) {
-      return; // Si el usuario cancela, no se ejecuta la actualización
+
+    if (!result.isConfirmed) return;
+
+    // 🔄 CAMBIO: Usamos FormData
+    const formDataToSend = new FormData();
+    formDataToSend.append("name", formData.name);
+    formDataToSend.append("email", formData.email);
+    formDataToSend.append("biografia", formData.bio);
+    formDataToSend.append("web", formData.web);
+    formDataToSend.append("twitter", formData.twitter);
+    formDataToSend.append("instagram", formData.insta);
+    if (showPasswordFields && formData.newPassword) {
+      formDataToSend.append("password", formData.newPassword);
     }
-    
+
+    if (fileInputRef.current?.files[0]) {
+      formDataToSend.append("foto", fileInputRef.current.files[0]);
+    }
+
     try {
       const response = await fetch(`http://localhost:5000/api/users/${userId}`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
+        body: formDataToSend,
       });
-  
+
       const result = await response.json();
-  
+
       if (!response.ok) {
         if (response.status === 404) {
           setErrors((prevErrors) => ({ ...prevErrors, email: "Usuario no encontrado" }));
@@ -112,16 +118,23 @@ function Profile() {
           title: "¡Perfil actualizado!",
           text: "Tu perfil ha sido actualizado correctamente.",
           icon: "success",
-          confirmButtonText: "OK"
+          confirmButtonText: "OK",
+          background: "#1e1e1e",      // 🖤 Fondo oscuro
+          color: "#ffffff",           // 🤍 Texto blanco
+          customClass: {
+            confirmButton: "swal-confirm-btn",
+          }
+        }).then(() => {
+          window.location.reload();
         });
+        
       }
     } catch (error) {
       setErrors((prevErrors) => ({ ...prevErrors, general: error.message }));
       console.error("Error inesperado:", error);
     }
   };
-  
-    
+  //--------- CAMBIO DE VALORES -----------------------------------
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     setErrors((prevErrors) => ({ ...prevErrors, [e.target.name]: "" }));
@@ -129,7 +142,7 @@ function Profile() {
 
   const togglePasswordFields = () => {
     setShowPasswordFields(!showPasswordFields);
-  }
+  };
 
   return (
     <div className={styles["profile-main-container"]}>
@@ -147,9 +160,30 @@ function Profile() {
           <div className={styles["seccion"]}>
             <div className={styles["pic-name-email-input"]}>
               <div className={styles["profile-pic-container"]}>
-                <img src="/atom.png" alt="Foto de perfil" className={styles["profile-pic"]} />
-                <button type="button" className={styles["update-button"]}>
-                  Actualizar
+                <img
+                  src={previewUrl || `http://localhost:5000/api/users/${userId}/foto`}
+                  alt="Foto de perfil"
+                  className={styles["profile-pic"]}
+                />
+                <input
+                  type="file"
+                  accept="image/*"
+                  ref={fileInputRef}
+                  style={{ display: "none" }}
+                  id="fileUpload"
+                  onChange={(e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                      setPreviewUrl(URL.createObjectURL(file));
+                    }
+                  }}
+                />
+                <button
+                  type="button"
+                  className={styles["update-button"]}
+                  onClick={() => fileInputRef.current?.click()} // ✅ Abrimos el input al hacer clic
+                >
+                  Cambiar foto
                 </button>
               </div>
 
@@ -188,6 +222,7 @@ function Profile() {
               explicativeText={errors.bio}
             />
           </div>
+
           <h3>Social</h3>
           <div className={styles["seccion"]}>
             <InputField
@@ -224,10 +259,9 @@ function Profile() {
           </div>
 
           <h4 onClick={togglePasswordFields} className={styles["change-password-header"]}>
-            <FontAwesomeIcon  icon = {faLock}> </FontAwesomeIcon>
-            <span icon={faLock}>  Cambiar contraseña </span>
-            <FontAwesomeIcon  icon = {showPasswordFields ? faChevronDown : faChevronUp}></FontAwesomeIcon>
-              
+            <FontAwesomeIcon icon={faLock} />
+            <span> Cambiar contraseña </span>
+            <FontAwesomeIcon icon={showPasswordFields ? faChevronDown : faChevronUp} />
           </h4>
 
           {showPasswordFields && (
@@ -256,7 +290,12 @@ function Profile() {
           )}
 
           <div className={styles["profile-buttons"]}>
-            <Button className={styles.btn_regist} variant="headerButtonBlack" label="Reestablecer" icon={faRotateLeft} type="button"
+            <Button
+              className={styles.btn_regist}
+              variant="headerButtonBlack"
+              label="Reestablecer"
+              icon={faRotateLeft}
+              type="button"
               onClick={() =>
                 setFormData({
                   name: "",
