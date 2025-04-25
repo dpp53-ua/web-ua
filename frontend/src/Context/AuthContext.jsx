@@ -25,7 +25,6 @@ export function AuthProvider({ children }) {
       console.error("No se pudieron aplicar preferencias tras login:", err);
     }
   };
-  
 
   const logout = () => {
     sessionStorage.removeItem('userId');
@@ -38,7 +37,15 @@ export function AuthProvider({ children }) {
     if (storedId && !userId) {
       setUserId(storedId);
     }
-  }, []);
+
+    // Aplicar preferencias si existen en localStorage (al cargar la página)
+    const storedPrefs = localStorage.getItem('userPreferences');
+    if (storedPrefs) {
+      const parsedPrefs = JSON.parse(storedPrefs);
+      applyUserPreferences(parsedPrefs);
+    }
+
+  }, [userId]);  // Solo se ejecuta cuando userId cambia
 
   return (
     <AuthContext.Provider value={{ userId, isAuth, login, logout }}>
