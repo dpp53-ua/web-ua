@@ -52,6 +52,10 @@
         }
       }
     }
+
+    > button {
+      width: fit-content;
+    }
   }
     
 }

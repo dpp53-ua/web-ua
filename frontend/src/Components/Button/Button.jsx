@@ -1,24 +1,20 @@
+// Button.jsx
 import styles from "./Button.module.css";
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-// export default function Boton( { type, variant, label, onClickFunction, icon, to} ) {
-//   const buttonContent = (
-//     <button type={type} className={styles[variant]} onClick={onClickFunction}>
-//       {icon && <FontAwesomeIcon icon={icon} className={styles.icon} />}
-//       {label}
-//     </button>
-//   );
-
-//   // Si to está presente, usamos <Link>, sino, solo mostramos el botón sin redirección.
-//   return to ? <Link to={to}>{buttonContent}</Link> : buttonContent;
-// }
-
-export default function Boton({ type, variant, label, onClickFunction, onChangeFunction, icon, to }) {
+export default function Button({
+  type = "button", // Default: button
+  variant,
+  label,
+  onClick, // 👈 Nombre estándar
+  icon,
+  to
+}) {
   const buttonContent = (
-    <button type={type} className={styles[variant]} onClick={onClickFunction}>
+    <button type={type} className={styles[variant]} onClick={onClick}>
       {icon && <FontAwesomeIcon icon={icon} className={styles.icon} />}
-      {label && <span>{label}</span>} {/* Ahora el texto está dentro de un <span> */}
+      {label && <span>{label}</span>}
     </button>
   );
 
