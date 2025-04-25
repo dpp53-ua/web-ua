@@ -82,6 +82,17 @@ button {
     }
 }
 
+
+.white-red {
+    color: var(--red);
+    background-color: var(--white);
+
+    &:active {
+        background-color: black;
+        color: var(--white);
+    }
+}
+
 .white-rounded {
     color: black;
     background-color: var(--white);
