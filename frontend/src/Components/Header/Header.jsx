@@ -91,10 +91,10 @@ export default function Header( ) { //{ isAuth, setIsAuth } antes lo usaba
                         <div className={styles.profileMenu} ref={profileMenuRef}>
                             <p className={styles.menuTitle}>Tus opciones</p>
                             <ul>
-                            <a href="/profile"><li><FontAwesomeIcon icon={faUser} /> Perfil</li></a>
-                            <a href="/my-assets"><li><FontAwesomeIcon icon={faFolder} /> Mis assets</li></a>
-                                <li><FontAwesomeIcon icon={faDownload} /> Mis descargas</li>
-                                <li><FontAwesomeIcon icon={faCog} /> Configuración</li>
+                                <a href="/profile"><li><FontAwesomeIcon icon={faUser} /> Perfil</li></a>
+                                <a href="/my-assets"><li><FontAwesomeIcon icon={faFolder} /> Mis assets</li></a>
+                                <a href="/my-downloads"><li><FontAwesomeIcon icon={faDownload} /> Mis descargas</li></a>
+                                <a href="/profile-configuration"><li><FontAwesomeIcon icon={faCog} /> Configuración</li></a>
                                 <li className={styles.logout} onClick={handleLogout}><FontAwesomeIcon icon={faSignOutAlt} /> Cerrar sesión</li>
                             </ul>
                         </div>

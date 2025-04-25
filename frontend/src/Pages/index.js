@@ -7,6 +7,7 @@ import PostForm from "./PostForm/PostForm"
 import Detail from "./Detail/Detail"
 import Profile from "./Profile/Profile";
 import MyAssets from "./MyAssets/MyAssets";
+import MyDownloads from "./MyDownloads/MyDownloads";
 
 export { 
     Home, 
@@ -17,5 +18,6 @@ export {
     PostForm,
     Detail,
     Profile,
-    MyAssets
+    MyAssets,
+    MyDownloads
 };

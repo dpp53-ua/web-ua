@@ -54,7 +54,7 @@ export default function ProfileMenu() {
             <Link to="/my-assets">
                 <FontAwesomeIcon icon={faFolder} /> Mis Assets
             </Link>
-            <Link to="/downloads">
+            <Link to="/my-downloads">
                 <FontAwesomeIcon icon={faDownload} /> Mis descargas
             </Link>
             <Link to="/settings">

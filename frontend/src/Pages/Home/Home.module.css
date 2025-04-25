@@ -120,8 +120,30 @@
 .categories {
     display: flex;
     gap: 1em; 
-    justify-content: space-around;
+    justify-content: space-between;
+    scroll-snap-type: x mandatory;
+    overflow-x: auto;
+
 }
+::-webkit-scrollbar {
+    height: 0.7rem; /* altura de la barra en scroll horizontal */
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1; /* color del track (fondo) */
+    border-radius: 10px;
+    
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: #888; /* color del thumb (barra que se mueve) */
+    border-radius: 10px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555; /* color cuando pasas el mouse */
+  }
+  
 
 .category-footer {
     display: flex;
