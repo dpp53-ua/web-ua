@@ -31,7 +31,7 @@
   
   
   
-  .nav a::after {
+  .nav li::after {
     content: '';
     position: absolute;
     bottom: 0;
@@ -44,7 +44,7 @@
     transition: transform 0.3s ease-out;
   }
   
-  .nav a:hover::after {
+  .nav li:hover::after {
     transform: scaleX(1);
     transform-origin: bottom left;
   }

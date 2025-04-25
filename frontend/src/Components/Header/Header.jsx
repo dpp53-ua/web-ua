@@ -82,7 +82,7 @@ export default function Header( ) { //{ isAuth, setIsAuth } antes lo usaba
                     <Button  variant="headerButtonWhite" label="Subir asset" icon={faArrowUpFromBracket} onClickFunction={() => console.log("Redirigiendo a subir asset...")} to="/post-form"/> 
 
                     <div className={styles.drop} onClick={() => setProfileMenuOpen(!profileMenuOpen)} ref={profileButtonRef}>
-                        <img alt="foto de perfil" src={`http://localhost:5000/api/users/${userId}/foto`} />
+                        <img alt="foto de perfil" src={`http://localhost:5000/api/users/${userId}/foto`} onError={(e) => {e.target.src = '/profile.png';}}/>
                         <FontAwesomeIcon icon={faCaretDown} />
                     </div>
 

@@ -118,9 +118,9 @@ function Profile() {
           title: "¡Perfil actualizado!",
           text: "Tu perfil ha sido actualizado correctamente.",
           icon: "success",
-          confirmButtonText: "OK",
-          background: "#1e1e1e",      // 🖤 Fondo oscuro
-          color: "#ffffff",           // 🤍 Texto blanco
+          confirmButtonText: "Continuar",
+          background: "#1e1e1e",     
+          color: "#ffffff",         
           customClass: {
             confirmButton: "swal-confirm-btn",
           }
@@ -161,9 +161,10 @@ function Profile() {
             <div className={styles["pic-name-email-input"]}>
               <div className={styles["profile-pic-container"]}>
                 <img
-                  src={previewUrl || `http://localhost:5000/api/users/${userId}/foto`}
+                 src={previewUrl || `http://localhost:5000/api/users/${userId}/foto`}
                   alt="Foto de perfil"
                   className={styles["profile-pic"]}
+                  onError={(e) => {e.target.src = '/profile.png';}}
                 />
                 <input
                   type="file"
