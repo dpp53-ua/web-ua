@@ -149,6 +149,20 @@ app.put("/api/users/:id", upload.single("foto"), (req, res) => {
     }
 });
 
+// DELETE: Dar de baja usuario
+app.delete("/api/users/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      // opcional: eliminar assets relacionados en GridFS y publicaciones
+      await usersCollection.deleteOne({ _id: new ObjectId(id) });
+      res.json({ message: "Usuario eliminado" });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: "Error al eliminar usuario", error: err });
+    }
+  });
+  
+
 // 🔐 POST: Login básico sin encriptar
 app.post("/api/login", (req, res) => {
     const { name, password } = req.body;
