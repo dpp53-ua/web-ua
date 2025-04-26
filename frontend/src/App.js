@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { BasicLayout } from './Layouts';
 import { NotFound, Home, Login, Register, PostForm, Categories, Detail, Profile, ProfileConfiguration, MyAssets, MyDownloads, SearchResults } from './Pages';
 import {PrivateRoute} from './Components'; // Importar PrivateRoute
-// import SearchResults from './Pages/SearchResuts/SearchResults';
+
 
 function App() {
   return (

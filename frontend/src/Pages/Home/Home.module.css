@@ -20,6 +20,8 @@
     padding: .2em;
     transition: background-color, color 0.2s;
 
+    z-index: 1000; /* para que siempre esté encima */
+
     &:hover {
         background-color: black;
         color: white;

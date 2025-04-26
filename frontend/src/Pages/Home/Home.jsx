@@ -23,7 +23,12 @@ function Home() {
     return (
         <div className={styles["home-main-container"]}>
             
-            <FontAwesomeIcon icon={faArrowUp} className={styles.upButton}/>
+            <FontAwesomeIcon 
+                icon={faArrowUp} 
+                className={styles.upButton} 
+                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            />
+
 
             <section className={styles["home-welcome"]}>
                 <div>
