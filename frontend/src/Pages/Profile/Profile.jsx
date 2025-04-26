@@ -7,6 +7,7 @@ import Swal from "sweetalert2";
 import styles from "./Profile.module.css";
 
 function Profile() {
+  const [previewUrl, setPreviewUrl] = useState("");
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -117,8 +118,16 @@ function Profile() {
           title: "¡Perfil actualizado!",
           text: "Tu perfil ha sido actualizado correctamente.",
           icon: "success",
-          confirmButtonText: "OK"
+          confirmButtonText: "Continuar",
+          background: "#1e1e1e",     
+          color: "#ffffff",         
+          customClass: {
+            confirmButton: "swal-confirm-btn",
+          }
+        }).then(() => {
+          window.location.reload();
         });
+        
       }
     } catch (error) {
       setErrors((prevErrors) => ({ ...prevErrors, general: error.message }));
@@ -150,28 +159,34 @@ function Profile() {
           {errors.general && <p className={styles["error"]}>{errors.general}</p>}
           <div className={styles["seccion"]}>
             <div className={styles["pic-name-email-input"]}>
-            <div className={styles["profile-pic-container"]}>
-            <img
-  src={`http://localhost:5000/api/users/${userId}/foto`}
-  alt="Foto de perfil"
-  className={styles["profile-pic"]}
-/>
-              <input
-                type="file"
-                accept="image/*"
-                ref={fileInputRef}
-                style={{ display: "none" }}
-                id="fileUpload"
-              />
-              <button
-                type="button"
-                className={styles["update-button"]}
-                onClick={() => fileInputRef.current?.click()} // ✅ Abrimos el input al hacer clic
-              >
-                Cambiar foto
-              </button>
-            </div>
-
+              <div className={styles["profile-pic-container"]}>
+                <img
+                 src={previewUrl || `http://localhost:5000/api/users/${userId}/foto`}
+                  alt="Foto de perfil"
+                  className={styles["profile-pic"]}
+                  onError={(e) => {e.target.src = '/profile.png';}}
+                />
+                <input
+                  type="file"
+                  accept="image/*"
+                  ref={fileInputRef}
+                  style={{ display: "none" }}
+                  id="fileUpload"
+                  onChange={(e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                      setPreviewUrl(URL.createObjectURL(file));
+                    }
+                  }}
+                />
+                <button
+                  type="button"
+                  className={styles["update-button"]}
+                  onClick={() => fileInputRef.current?.click()} // ✅ Abrimos el input al hacer clic
+                >
+                  Cambiar foto
+                </button>
+              </div>
 
               <div className={styles["name-email-input"]}>
                 <InputField

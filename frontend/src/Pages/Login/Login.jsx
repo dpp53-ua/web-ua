@@ -94,7 +94,7 @@ function Login() {
           />
           <Link to="">¿Has olvidado tu contraseña?</Link>
           <div>
-            <Button type="reset" variant="red" label="Limpiar" onClick={() => setFormData({ user: "", password: "" })}/>
+            <Button type="reset" variant="red" label="Limpiar" onClick={() => setFormData({ name: "", password: "" })}/>
             <Button type="submit" variant="red" label="Aceptar" />
           </div>
         </form>

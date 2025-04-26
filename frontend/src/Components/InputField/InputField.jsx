@@ -39,7 +39,7 @@ const InputField = forwardRef((props, ref) => {
         ref={ref}
       >
         <option value="DEFAULT" disabled>
-          Seleccione una categoría ...
+          Seleccione una opción ...
         </option>
         {arrOptions?.map((option, index) => (
           <option key={index} value={option.value}>

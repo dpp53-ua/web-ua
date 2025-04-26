@@ -1,7 +1,7 @@
 .models {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Columnas dinámicas */
-    gap: 1em; /* Espacio entre elementos */
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Columnas dinámicas */
+    gap: 2em; /* Espacio entre elementos */
     justify-content: center; /* Centra la grid */
     place-items: center; /* Centra horizontal y verticalmente */
 }

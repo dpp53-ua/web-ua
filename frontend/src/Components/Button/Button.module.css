@@ -14,7 +14,7 @@ button {
     }
 }
 
-.red, .white {
+.red, .white, .white-red {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 
     &:hover {
@@ -74,6 +74,17 @@ button {
 
 .white {
     color: black;
+    background-color: var(--white);
+
+    &:active {
+        background-color: black;
+        color: var(--white);
+    }
+}
+
+
+.white-red {
+    color: var(--red);
     background-color: var(--white);
 
     &:active {

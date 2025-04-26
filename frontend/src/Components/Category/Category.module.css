@@ -1,9 +1,13 @@
 .article-category {
-    width: 200px;
-    height: 200px;
+    min-width: 12rem;
+    height: 12rem;
 
     display: flex;
     flex-direction: column;
+
+    white-space: nowrap; /* No se parta el texto */
+    cursor: pointer;
+    scroll-snap-align: start;
 }
 
 .category-header {

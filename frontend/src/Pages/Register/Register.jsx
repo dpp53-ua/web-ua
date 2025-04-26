@@ -1,6 +1,7 @@
 import { Button, InputField } from '../../Components';
 import { faUser, faLock, faEnvelope } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
+import Swal from "sweetalert2";
 
 /* Estilos */
 import styles from "./Register.module.css";
@@ -43,6 +44,18 @@ function Register() {
           throw new Error(result.message || "Error en el registro");
         }
       }
+      // Mostrar el pop-up de éxito
+      Swal.fire({
+        icon: 'success',
+        title: 'Registro exitoso',
+        text: '¡Tu cuenta ha sido creada!',
+        confirmButtonText: "Continuar",
+          background: "#1e1e1e",     
+          color: "#ffffff", 
+      }).then(() => {
+        // Redirigir al login después de que el usuario haga clic en "Aceptar"
+        window.location.href = "/login";
+      });
 
       console.log("Registro exitoso", result);
     } catch (error) {

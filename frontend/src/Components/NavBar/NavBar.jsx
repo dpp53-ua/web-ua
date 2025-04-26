@@ -4,10 +4,10 @@ export default function NavBar({ menuOpen }) {
     return (
         <nav className={`${styles.nav} ${menuOpen ? styles.showMenu : ""}`}>
             <ul>
-                <li><a href="/home">Inicio</a></li>
-                <li><a href="/categories">Categorías</a></li>
-                <li><a href="/comunity">Comunidad</a></li>
-                <li><a href="/contact">Contacto</a></li>
+                <a href="/home"><li>Inicio</li></a>
+                <a href="/categories"><li>Categorías</li></a>
+                <a href="/comunity"><li>Comunidad</li></a>
+                <a href="/contact"><li>Contacto</li></a>
             </ul>
         </nav>
     );
