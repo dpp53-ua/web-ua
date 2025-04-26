@@ -102,7 +102,7 @@ function PostForm() {
     // En este punto se haría el POST de la información al servidor.
   };
 
-  const fetchCategories = async () => {
+  /*const fetchCategories = async () => {
     // try {
     //   const response = await fetch('URL_DE_TU_API'); // Reemplaza con la URL de tu API
     //   const data = await response.json();
@@ -121,7 +121,24 @@ function PostForm() {
       { label: "Opcion1", value: "Opción 1" },
       { label: "Opcion2", value: "Opción 2" }
     ]);
+  }*/
+
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/categorias'); // Reemplaza si tu endpoint es otro
+      const data = await response.json();
+  
+      if (data && Array.isArray(data)) {
+        setArrOptions(data.map(category => ({
+          label: category.nombre,  // Esto depende de cómo venga tu objeto de categoría
+          value: category.id       // El ID de la categoría
+        })));
+      }
+    } catch (error) {
+      console.error('Error al obtener las categorías:', error);
+    }
   }
+  
 
   const handleClear = () => {
     setFormData({});

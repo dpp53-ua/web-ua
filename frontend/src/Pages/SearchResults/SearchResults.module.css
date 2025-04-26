@@ -1,0 +1,180 @@
+.searchResults-main-container {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--dark-grey);
+    min-height: 100vh; 
+    color: var(--white);
+}
+
+.upButton {
+    position: fixed;
+    bottom: 80px;     /* Distancia desde la parte inferior */
+    right: 60px;      /* Distancia desde la parte derecha */
+    font-size: 40px;
+    cursor: pointer;
+
+    background-color: white;
+    color: black;
+    border-radius: 50%;
+    aspect-ratio: 1/1;
+    padding: .2em;
+    transition: background-color, color 0.2s;
+
+    &:hover {
+        background-color: black;
+        color: white;
+    }
+}
+
+.home-welcome {
+    /* background: linear-gradient(90deg, var(--dark-red), var(--medium-red)); */
+    background-image: url("../../../public/banner4.png");
+    background-size: cover;  /* Cubre todo el contenedor */
+    background-position: center; /* Centra la imagen */
+    background-repeat: no-repeat; /* Evita repeticiones */
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 5em;
+    gap: 5rem;
+    height: fit-content;
+
+    > div:first-of-type{
+        width: 30%;
+        display: flex;
+        justify-content: right;
+        >img {
+            width: 40%;
+            height: 40%;
+            animation: spin 25s linear infinite;
+            margin-bottom: 1rem;
+        }
+    }
+    > div:last-of-type{
+        width: 50%;
+    
+        >img {
+            width: 30%;
+            height: 30%;
+            animation: spin 25s linear infinite;
+            margin-bottom: 1rem;
+        }
+    }
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.type-section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1em; 
+    justify-content: center; 
+    margin: 3em auto; 
+}
+
+.category-section, .product-section {
+    padding: 2rem;
+}
+
+.category-header, .product-header {
+    display: flex;
+    justify-content: space-between; 
+    align-items: center;
+}
+
+.category-arrows {
+    width: 100px;
+    display: flex;
+    justify-content: space-between;
+
+    > button svg {
+        color: #ffffff;
+      }
+}
+
+.circle-button {
+    display: flex; 
+    align-items: center;
+    justify-content: center; 
+    padding: 10px; 
+    aspect-ratio: 1 / 1; /* Mantiene el botón siempre circular */
+
+    border-radius: 50%; /* Lo hace circular */
+    background: none;
+    cursor: pointer;
+    transition: border 0.2s;
+  }
+  
+.circle-button:hover {
+    border: 2px solid rgb(255, 255, 255); /* Borde sin relleno */
+}
+
+.categories {
+    display: flex;
+    gap: 1em; 
+    justify-content: space-between;
+    scroll-snap-type: x mandatory;
+    overflow-x: auto;
+
+}
+::-webkit-scrollbar {
+    height: 0.7rem; /* altura de la barra en scroll horizontal */
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1; /* color del track (fondo) */
+    border-radius: 10px;
+    
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: #888; /* color del thumb (barra que se mueve) */
+    border-radius: 10px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555; /* color cuando pasas el mouse */
+  }
+  
+
+.category-footer {
+    display: flex;
+    justify-content: center; /* Centra el span en la pantalla */
+    padding: 1em;
+
+    > span {
+        display: flex;
+        width: 60px;
+        justify-content: space-between; 
+        align-items: center;
+
+        > svg {
+            color: #ffffff;
+            font-size: 10px; /* Ajusta el tamaño */
+        }
+    }
+}
+
+.model-footer {
+    display: flex;
+    justify-content: center;
+    padding: 2em;
+
+    > button {
+        padding: 2em;
+    }
+}
+
+@media (max-width: 1000px) {  /* Cuando la pantalla sea menor a 768px */
+    .home-welcome {
+        flex-direction: column; /* Apila los elementos en columna */
+    }
+}

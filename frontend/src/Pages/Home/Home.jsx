@@ -1,7 +1,7 @@
 /* Componentes */
 import { Link } from "react-router-dom";
+import { useState, useEffect } from "react"; // Añadimos useEffect
 import { Button, ModelGrid, Category } from '../../Components';
-import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight, faArrowLeft, faCircle, faCircleUp, faArrowUp } from "@fortawesome/free-solid-svg-icons";
 
@@ -9,6 +9,17 @@ import { faArrowRight, faArrowLeft, faCircle, faCircleUp, faArrowUp } from "@for
 import styles from "./Home.module.css";
 
 function Home() {
+
+    const [categories, setCategories] = useState([]);
+    
+    useEffect(() => {
+        fetch('http://localhost:5000/api/categorias')
+            .then(response => response.json())
+            .then(data => setCategories(data))
+            .catch(error => console.error('Error al traer las categorías:', error));
+    }, []);
+
+
     return (
         <div className={styles["home-main-container"]}>
             
@@ -45,13 +56,9 @@ function Home() {
                     </div>
                 </header>
                 <div className={styles["categories"]}>
-                    <Category/> 
-                    <Category/> 
-                    <Category/> 
-                    <Category/> 
-                    <Category/> 
-                    <Category/> 
-                    <Category/> 
+                    {categories.map((category) => (
+                        <Category key={category.id} id={category._id} nombre={category.nombre}/>
+                    ))}
                 </div>
                 <footer className={styles["category-footer"]}>
                     <span>
