@@ -209,6 +209,14 @@ export default function SearchBar() {
                 <label>
                   <input
                     type="checkbox"
+                    value="2D"
+                    checked={selectedAssetTypes.includes("2D")}
+                    onChange={handleAssetTypeChange}
+                  /> 2D
+                </label>
+                <label>
+                  <input
+                    type="checkbox"
                     value="3D"
                     checked={selectedAssetTypes.includes("3D")}
                     onChange={handleAssetTypeChange}
