@@ -17,7 +17,9 @@ function App() {
           <Route path="home" element={<Home />} />
           <Route path="categories" element={<Categories />} />
           <Route path="detail" element={<Detail />} />
-          <Route path="buscar/:idCategoria" element={<SearchResults />} /> {/* busquedas */}
+          {/*<Route path="buscar/:idCategoria" element={<SearchResults />} />   */}
+          <Route path="/buscar" element={<SearchResults />} />
+
         </Route>
 
         {/* Rutas privadas protegidas */}

@@ -62,7 +62,7 @@ function Home() {
                 </header>
                 <div className={styles["categories"]}>
                     {categories.map((category) => (
-                        <Category key={category.id} id={category._id} nombre={category.nombre}/>
+                        <Category key={category._id} id={category._id} nombre={category.nombre}/>
                     ))}
                 </div>
                 <footer className={styles["category-footer"]}>

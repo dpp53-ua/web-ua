@@ -477,17 +477,7 @@ app.post("/api/comentarios", async (req, res) => {
 
 // BLOQUE DE BÚSQUEDAS
 
-// Ejemplo con Express.js
-router.get('/api/modelos/categoria/:id', async (req, res) => {
-    const { id } = req.params;
-    try {
-      const modelos = await Modelo.findAll({ where: { categoriaId: id } });
-      res.json(modelos);
-    } catch (error) {
-      console.error('Error al traer modelos por categoría:', error);
-      res.status(500).json({ message: 'Error interno del servidor' });
-    }
-  });
+
   
 
 

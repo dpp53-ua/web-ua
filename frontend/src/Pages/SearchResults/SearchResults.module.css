@@ -80,7 +80,7 @@
     margin: 3em auto; 
 }
 
-.category-section, .product-section {
+.category-section, .product-section, .filter-section {
     padding: 2rem;
 }
 
@@ -177,4 +177,39 @@
     .home-welcome {
         flex-direction: column; /* Apila los elementos en columna */
     }
+}
+
+
+
+/* CRITERIOS */
+/* Asegúrate de que el contenedor de los tags utilice flexbox para alinear el contenido */
+.filterTags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1em;  /* Espacio entre los filtros */
+}
+
+/* Cada tag debe estar alineado correctamente */
+.filterTag {
+    display: flex;
+    align-items: center;  /* Centra el contenido verticalmente */
+    padding: 1em;
+    gap: 1em;  /* Espacio entre el texto y la X */
+    background-color: var(--grey);
+    border-radius: 12px;
+    color: var(--black);
+}
+
+/* Ajusta el tamaño y la ubicación de la X */
+.clearFilter {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    width: fit-content;
+    display: inline-block;
+}
+
+.clearFilter:hover {
+    color: var(--red);  /* Da un color rojo a la X cuando pasa el ratón */
 }
