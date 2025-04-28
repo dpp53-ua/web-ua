@@ -89,19 +89,21 @@
   padding-left: 0.5rem;
 }
 
-.filterPanel {
-  position: absolute;
-  top: calc(100% + 10px); /* separa del botón */
-  right: 0;
-  z-index: 10;
-  background-color: var(--medium-red);
-  color: white;
-  border-radius: 0.5rem;
-  margin-top: 0.5rem;
-  padding: 1rem;
-  width: 300px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /* Triángulo hacia arriba, centrado justo debajo del icono */
 .filterPanel::before {
@@ -114,11 +116,44 @@
   border-color: transparent transparent var(--medium-red) transparent;
 }
 
+.filterPanel {
+  position: absolute;
+  top: calc(100% + 10px); /* separa del botón */
+  right: 0;
+  z-index: 10;
+  background-color: var(--medium-red);
+  color: white;
+  border-radius: 0.5rem;
+  margin-top: 0.5rem;
+  padding: 1.5rem;
+  /* width: 300px; */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  max-width: 60vw; /* máximo 40% del ancho de la pantalla */
+  width: 500px; /* ancho ajustable al contenido */
+  margin-left: 5em;
+}
+
+.filters {
+  padding-bottom: 1em;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem; /* Espacio entre secciones */
+  justify-content: space-between;; /* Centra las secciones */
+  width: 100%; /* Asegura que ocupe todo el ancho disponible */
+}
 
 .filterSection {
-  margin-bottom: 1rem;
-  display:flex;
+  display: flex;
   flex-direction: column;
+  flex-basis: 220px; /* Establece el tamaño base de las secciones */
+  flex-grow: 1; /* Permite que las secciones crezcan */
+  min-width: 120px; /* Ancho mínimo */
+  max-width: 250px; /* Ancho máximo */
+}
+
+.filterSection h5 {
+  margin: 0; /* Espacio entre el título y las opciones */
+  width: fit-content;
 }
 
 .filterSection label {
@@ -142,4 +177,3 @@ input[type="checkbox"] {
 .span p {
   margin-left: .5em;
 }
-

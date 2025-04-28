@@ -30,25 +30,6 @@
     }
 }
 
-.upButton {
-  position: fixed;
-  bottom: 80px;     /* Distancia desde la parte inferior */
-  right: 60px;      /* Distancia desde la parte derecha */
-  font-size: 40px;
-  cursor: pointer;
-
-  background-color: white;
-  color: black;
-  border-radius: 50%;
-  aspect-ratio: 1/1;
-  padding: .2em;
-  transition: background-color, color 0.2s;
-
-  &:hover {
-      background-color: black;
-      color: white;
-  }
-}
 
 
 

@@ -1,17 +1,14 @@
-import { Button, ModelGrid, ProfileMenu } from '../../Components';
-import { faArrowUp } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Button, ModelGrid, ProfileMenu, UpButton } from '../../Components';
 
 
 /* Estilos */
 import styles from "./MyAssets.module.css";
 
 function MyAssets() {
-  
 
   return (
     <div className={styles["profile-main-container"]}>
-      <FontAwesomeIcon icon={faArrowUp} className={styles.upButton}/>
+      <UpButton/>
       <section className={styles["left-content"]}>
         <ProfileMenu />
       </section>

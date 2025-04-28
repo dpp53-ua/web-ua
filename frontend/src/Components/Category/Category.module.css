@@ -1,13 +1,20 @@
 .article-category {
     min-width: 12rem;
     height: 12rem;
-
+    
     display: flex;
     flex-direction: column;
 
     white-space: nowrap; /* No se parta el texto */
     cursor: pointer;
     scroll-snap-align: start;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Hover */
+.article-category:hover {
+    transform: scale(1.02);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
 }
 
 .category-header {

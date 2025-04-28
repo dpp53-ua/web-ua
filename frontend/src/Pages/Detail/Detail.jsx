@@ -59,6 +59,14 @@ function Detail() {
 
                 <section className={styles["comments"]}>
                     <h2>Comentarios</h2>
+                    <form className={styles["comment-form"]}>
+                        <textarea 
+                            placeholder="Escribe tu comentario..." 
+                            className={styles["comment-textarea"]}
+                        />
+                        <Button variant="red-rounded" label="Publicar" type="submit" />
+                    </form>
+
                     <div className={styles["comment-div"]}>
                         <Comment/>
                         <Comment/>

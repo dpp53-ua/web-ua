@@ -15,12 +15,20 @@ const mongoClient = new MongoClient("mongodb://127.0.0.1:27017");
 let bucket;
 let publicacionesDB;
 let usersCollection;
+let categoriasCollection;
+let comentariosCollection;
+
+
 
 mongoClient.connect().then(client => {
     const database = client.db("miBaseDeDatos");
     bucket = new GridFSBucket(database, { bucketName: "archivos" });
     publicacionesDB = database.collection("publicaciones");
     usersCollection = database.collection("users"); // Cambié esto para usar mongodb en lugar de mongojs
+    categoriasCollection = database.collection("categorias");
+    comentariosCollection = database.collection("comentarios");
+
+
 }).catch(console.error);
 
 const cors = require("cors");
@@ -200,8 +208,103 @@ app.post("/api/login", (req, res) => {
         .catch(err => res.status(500).json({ message: "Error en el servidor", error: err }));
 });
 
+
+// BLOQUE DE PUBLICACIONES
+
+// 🔵 GET: Obtener todas las publicaciones con datos del usuario
+app.get("/api/publicaciones", async (req, res) => {
+    try {
+        const publicaciones = await publicacionesDB.aggregate([
+            {
+                $addFields: {
+                    usuarioId: { $toObjectId: "$usuarioId" }
+                }
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "usuarioId",
+                    foreignField: "_id",
+                    as: "usuario"
+                }
+            },
+            { $unwind: "$usuario" },
+            {
+                $project: {
+                    titulo: 1,
+                    descripcion: 1,
+                    precio: 1,
+                    categoria: 1,
+                    archivoId: 1,
+                    archivoNombre: 1,
+                    fecha: 1,
+                    "usuario._id": 1,
+                    "usuario.name": 1,
+                    "usuario.email": 1
+                }
+            },
+            { $sort: { fecha: -1 } }
+        ]).toArray();
+
+
+        res.json(publicaciones);
+
+    } catch (err) {
+        console.error("❌ Error al obtener publicaciones:", err);
+        res.status(500).json({ message: "Error al procesar la solicitud", error: err.message });
+    }
+});
+
+// 🔵 GET: Obtener una publicación por ID con datos del usuario
+app.get("/api/publicaciones/:id", async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const objectId = new ObjectId(id);
+
+        const publicacion = await publicacionesDB.aggregate([
+            { $match: { _id: objectId } },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "usuarioId",
+                    foreignField: "_id",
+                    as: "usuario"
+                }
+            },
+            // { $unwind: "$usuario" }, // para obtener solo un usuario (no array)
+            {
+                $project: {
+                    titulo: 1,
+                    descripcion: 1,
+                    precio: 1,
+                    categoria: 1,
+                    archivoId: 1,
+                    archivoNombre: 1,
+                    fecha: 1,
+                    "usuario._id": 1,
+                    "usuario.name": 1,
+                    "usuario.email": 1
+                }
+            }
+        ]).toArray();
+
+        if (!publicacion || publicacion.length === 0) {
+            return res.status(404).json({ message: "Publicación no encontrada" });
+        }
+
+        res.json(publicacion[0]);
+
+    } catch (err) {
+        console.error("❌ Error al obtener la publicación:", err);
+        res.status(500).json({ message: "Error al procesar la solicitud", error: err.message });
+    }
+});
+
+
+
 // POST: Crear publicación
-app.post("/api/publicacion/:idUsuario", upload.single("archivo"), async (req, res) => {
+app.post("/api/publicaciones/:idUsuario", upload.single("archivo"), async (req, res) => {
     try {
         let { titulo, descripcion, precio, categoria } = req.body;
 
@@ -295,4 +398,98 @@ app.get("/api/users/:id/foto", async (req, res) => {
     }
 });
 
+
+// BLOQUE DE CATEGORIAS
+
+// 🟢 POST: Crear una categoría
+app.post("/api/categorias", async (req, res) => {
+    const { nombre } = req.body;
+
+    if (!nombre) {
+        return res.status(400).json({ message: "El nombre de la categoría es obligatorio" });
+    }
+
+    try {
+        // Verifica si ya existe una categoría con ese nombre (ignorando mayúsculas/minúsculas)
+        const categoriaExistente = await categoriasCollection.findOne({ nombre: { $regex: `^${nombre}$`, $options: "i" } });
+
+        if (categoriaExistente) {
+            return res.status(400).json({ message: "La categoría ya existe" });
+        }
+
+        const nuevaCategoria = { nombre };
+
+        const resultado = await categoriasCollection.insertOne(nuevaCategoria);
+
+        res.status(201).json({ message: "Categoría creada", categoria: { _id: resultado.insertedId, nombre } });
+    } catch (err) {
+        res.status(500).json({ message: "Error al crear la categoría", error: err });
+    }
+});
+
+// 🔵 GET: Obtener todas las categorías
+app.get("/api/categorias", async (req, res) => {
+    try {
+        const categorias = await categoriasCollection.find().toArray();
+        res.json(categorias);
+    } catch (err) {
+        res.status(500).json({ message: "Error al obtener categorías", error: err });
+    }
+});
+
+// BLOQUE DE COMENTARIOS
+
+// 🟢 POST: Crear un comentario sobre una publicación
+app.post("/api/comentarios", async (req, res) => {
+    const { usuarioId, publicacionId, titulo, mensaje } = req.body;
+
+    if (!usuarioId || !publicacionId || !titulo || !mensaje) {
+        return res.status(400).json({ message: "Faltan campos obligatorios" });
+    }
+
+    try {
+        // Verificar que el usuario existe
+        const usuario = await usersCollection.findOne({ _id: new ObjectId(usuarioId) });
+        if (!usuario) {
+            return res.status(404).json({ message: "Usuario no encontrado" });
+        }
+
+        // Verificar que la publicación existe
+        const publicacion = await publicacionesDB.findOne({ _id: new ObjectId(publicacionId) });
+        if (!publicacion) {
+            return res.status(404).json({ message: "Publicación no encontrada" });
+        }
+
+        // Crear el comentario
+        const nuevoComentario = {
+            usuarioId: new ObjectId(usuarioId),
+            publicacionId: new ObjectId(publicacionId),
+            titulo,
+            mensaje,
+            fecha: new Date()
+        };
+
+        const resultado = await comentariosCollection.insertOne(nuevoComentario);
+
+        res.status(201).json({
+            message: "Comentario creado",
+            comentario: {
+                _id: resultado.insertedId,
+                ...nuevoComentario
+            }
+        });
+    } catch (err) {
+        console.error("❌ Error al crear comentario:", err);
+        res.status(500).json({ message: "Error al crear comentario", error: err.message });
+    }
+});
+
+// BLOQUE DE BÚSQUEDAS
+
+
+  
+
+
 app.listen(PORT, () => console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`));
+
+

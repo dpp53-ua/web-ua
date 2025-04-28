@@ -1,18 +1,28 @@
 /* Componentes */
-import { Link } from "react-router-dom";
-import { Button, ModelGrid, Category } from '../../Components';
-import { useState } from "react";
+import { Button, ModelGrid, Category, UpButton } from '../../Components';
+import { useState, useEffect } from "react"; // Añadimos useEffect
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRight, faArrowLeft, faCircle, faCircleUp, faArrowUp } from "@fortawesome/free-solid-svg-icons";
+import { faArrowRight, faArrowLeft, faCircle} from "@fortawesome/free-solid-svg-icons";
 
 /* Estilos */
 import styles from "./Home.module.css";
 
 function Home() {
+
+    const [categories, setCategories] = useState([]);
+    
+    useEffect(() => {
+        fetch('http://localhost:5000/api/categorias')
+            .then(response => response.json())
+            .then(data => setCategories(data))
+            .catch(error => console.error('Error al traer las categorías:', error));
+    }, []);
+
+
     return (
         <div className={styles["home-main-container"]}>
             
-            <FontAwesomeIcon icon={faArrowUp} className={styles.upButton}/>
+            <UpButton/>
 
             <section className={styles["home-welcome"]}>
                 <div>
@@ -45,13 +55,9 @@ function Home() {
                     </div>
                 </header>
                 <div className={styles["categories"]}>
-                    <Category/> 
-                    <Category/> 
-                    <Category/> 
-                    <Category/> 
-                    <Category/> 
-                    <Category/> 
-                    <Category/> 
+                    {categories.map((category) => (
+                        <Category key={category._id} id={category._id} nombre={category.nombre}/>
+                    ))}
                 </div>
                 <footer className={styles["category-footer"]}>
                     <span>

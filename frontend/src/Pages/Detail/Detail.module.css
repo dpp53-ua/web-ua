@@ -86,6 +86,28 @@ p {
     flex-direction: column;
 }
 
+.comment-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+    margin-bottom: 2em;
+    width: 100%; /* Asegura que tome el 100% del section */
+}
+
+.comment-textarea {
+    width: 100%;
+    padding: 1em;
+    border-radius: 10px;
+    border: none;
+    resize: vertical;
+    font-family: inherit;
+    font-size: 1em;
+    background-color: var(--dark-grey); /* Igual al fondo */
+    color: var(--white);
+    box-sizing: border-box; /* MUY importante: padding incluido en el ancho */
+}
+
+
 
 
 @media (max-width: 1600px) {  /* Cuando la pantalla sea menor a 768px */

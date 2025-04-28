@@ -7,7 +7,7 @@ import Category from "./Category/Category";
 import ModelGrid from "./ModelGrid/ModelGrid";
 import DeleteableTag from "./DeleteableTag/DeleteableTag";
 import Comment from "./Comment/Comment";
-
+import UpButton from "./UpButton/UpButton";
 import ProfileMenu from "./ProfileMenu/ProfileMenu";
 /* Utils */
 import PrivateRoute from "./PrivateRoute/PrivateRoute";
@@ -23,4 +23,5 @@ export {
     DeleteableTag,
     Comment,
     ProfileMenu,
+    UpButton
 };
