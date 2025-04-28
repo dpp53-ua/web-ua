@@ -1,9 +1,8 @@
 /* Componentes */
-import { Link } from "react-router-dom";
+import { Button, ModelGrid, Category, UpButton } from '../../Components';
 import { useState, useEffect } from "react"; // Añadimos useEffect
-import { Button, ModelGrid, Category } from '../../Components';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRight, faArrowLeft, faCircle, faCircleUp, faArrowUp } from "@fortawesome/free-solid-svg-icons";
+import { faArrowRight, faArrowLeft, faCircle} from "@fortawesome/free-solid-svg-icons";
 
 /* Estilos */
 import styles from "./Home.module.css";
@@ -23,12 +22,7 @@ function Home() {
     return (
         <div className={styles["home-main-container"]}>
             
-            <FontAwesomeIcon 
-                icon={faArrowUp} 
-                className={styles.upButton} 
-                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            />
-
+            <UpButton/>
 
             <section className={styles["home-welcome"]}>
                 <div>
