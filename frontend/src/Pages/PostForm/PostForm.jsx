@@ -103,24 +103,24 @@ function PostForm() {
   };
 
   const fetchCategories = async () => {
-    // try {
-    //   const response = await fetch('URL_DE_TU_API'); // Reemplaza con la URL de tu API
-    //   const data = await response.json();
+    try {
+    const response = await fetch('http://localhost:5000/api/categorias');
+    const data = await response.json();
       
-    //   // Suponiendo que las categorías vienen como un array en la propiedad 'categories' de la respuesta.
-    //   if (data && Array.isArray(data.categories)) {
-    //     setArrOptions(data.categories.map(category => ({
-    //       label: category.name,  // Suponiendo que cada categoría tiene una propiedad 'name'
-    //       value: category.id     // Suponiendo que cada categoría tiene una propiedad 'id'
-    //     })));
-    //   }
-    // } catch (error) {
-    //   console.error('Error al obtener las categorías:', error);
-    // }
-    await setArrOptions([
-      { label: "Opcion1", value: "Opción 1" },
-      { label: "Opcion2", value: "Opción 2" }
-    ]);
+      // Suponiendo que las categorías vienen como un array en la propiedad 'categories' de la respuesta.
+      if (data && Array.isArray(data.categories)) {
+        setArrOptions(data.categories.map(category => ({
+          label: category.name,  // Suponiendo que cada categoría tiene una propiedad 'name'
+          value: category.id     // Suponiendo que cada categoría tiene una propiedad 'id'
+        })));
+      }
+    } catch (error) {
+      console.error('Error al obtener las categorías:', error);
+    }
+    // await setArrOptions([
+    //   { label: "Opcion1", value: "Opción 1" },
+    //   { label: "Opcion2", value: "Opción 2" }
+    // ]);
   }
 
   const handleClear = () => {

@@ -32,13 +32,11 @@ export function AuthProvider({ children }) {
   };
 
   useEffect(() => {
-    // Esto asegura que el estado siempre esté sincronizado con sessionStorage
     const storedId = sessionStorage.getItem('userId');
-    if (storedId && !userId) {
+    if (storedId) {
       setUserId(storedId);
     }
-
-    // Aplicar preferencias si existen en localStorage (al cargar la página)
+  
     const storedPrefs = localStorage.getItem('userPreferences');
     if (storedPrefs) {
       const parsedPrefs = JSON.parse(storedPrefs);
