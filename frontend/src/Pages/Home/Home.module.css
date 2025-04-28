@@ -6,27 +6,6 @@
     color: var(--white);
 }
 
-.upButton {
-    position: fixed;
-    bottom: 80px;     /* Distancia desde la parte inferior */
-    right: 60px;      /* Distancia desde la parte derecha */
-    font-size: 40px;
-    cursor: pointer;
-
-    background-color: white;
-    color: black;
-    border-radius: 50%;
-    aspect-ratio: 1/1;
-    padding: .2em;
-    transition: background-color, color 0.2s;
-
-    z-index: 1000; /* para que siempre esté encima */
-
-    &:hover {
-        background-color: black;
-        color: white;
-    }
-}
 
 .home-welcome {
     /* background: linear-gradient(90deg, var(--dark-red), var(--medium-red)); */
@@ -125,6 +104,8 @@
     justify-content: space-between;
     scroll-snap-type: x mandatory;
     overflow-x: auto;
+    overflow-y: hidden;
+    padding: 0.25rem;
 
 }
 ::-webkit-scrollbar {

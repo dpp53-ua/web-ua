@@ -1,7 +1,7 @@
 .article-category {
     min-width: 12rem;
     height: 12rem;
-
+    
     display: flex;
     flex-direction: column;
 
