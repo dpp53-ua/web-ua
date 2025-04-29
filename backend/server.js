@@ -10,6 +10,7 @@ const multer = require("multer");
 const fs = require("fs");
 
 const upload = multer({ dest: 'uploads/' });
+const path = require('path');
 
 const mongoClient = new MongoClient("mongodb://127.0.0.1:27017");
 let bucket;
@@ -169,16 +170,16 @@ app.put("/api/users/:id", upload.single("foto"), (req, res) => {
 // DELETE: Dar de baja usuario
 app.delete("/api/users/:id", async (req, res) => {
     try {
-      const { id } = req.params;
-      // opcional: eliminar assets relacionados en GridFS y publicaciones
-      await usersCollection.deleteOne({ _id: new ObjectId(id) });
-      res.json({ message: "Usuario eliminado" });
+        const { id } = req.params;
+        // opcional: eliminar assets relacionados en GridFS y publicaciones
+        await usersCollection.deleteOne({ _id: new ObjectId(id) });
+        res.json({ message: "Usuario eliminado" });
     } catch (err) {
-      console.error(err);
-      res.status(500).json({ message: "Error al eliminar usuario", error: err });
+        console.error(err);
+        res.status(500).json({ message: "Error al eliminar usuario", error: err });
     }
-  });
-  
+});
+
 
 // 🔐 POST: Login básico sin encriptar
 app.post("/api/login", (req, res) => {
@@ -277,10 +278,8 @@ app.get("/api/publicaciones/:id", async (req, res) => {
                 $project: {
                     titulo: 1,
                     descripcion: 1,
-                    precio: 1,
                     categoria: 1,
-                    archivoId: 1,
-                    archivoNombre: 1,
+                    archivos: 1, // Incluye el array de archivos [{ id, nombre }]
                     fecha: 1,
                     "usuario._id": 1,
                     "usuario.name": 1,
@@ -305,54 +304,54 @@ app.get("/api/publicaciones/:id", async (req, res) => {
 
 // Reemplaza upload.single(...) por upload.array(...)
 app.post("/api/publicaciones/:idUsuario", upload.array("archivo", 10), async (req, res) => {
-      try {
+    try {
         let { titulo, descripcion, categoria } = req.body;
         if (!Array.isArray(categoria)) categoria = [categoria];
-  
+
         const files = req.files;    // ahora es array
         const idUsuario = req.params.idUsuario;
         if (!titulo || !descripcion || !categoria.length || !files.length || !idUsuario) {
-          return res.status(400).json({ message: "Faltan campos obligatorios" });
+            return res.status(400).json({ message: "Faltan campos obligatorios" });
         }
-  
+
         const usuario = await usersCollection.findOne({ _id: new ObjectId(idUsuario) });
         if (!usuario) return res.status(404).json({ message: "Usuario no encontrado" });
-  
+
         // Subir cada fichero a GridFS
         const archivoIds = [];
         for (const file of files) {
-          const readStream  = fs.createReadStream(file.path);
-          const uploadStream = bucket.openUploadStream(file.originalname);
-          await new Promise((ok, ko) => {
-            readStream.pipe(uploadStream)
-              .on("error", ko)
-              .on("finish", () => ok());
-          });
-          archivoIds.push({ id: uploadStream.id, nombre: file.originalname });
-          fs.unlinkSync(file.path);
+            const readStream = fs.createReadStream(file.path);
+            const uploadStream = bucket.openUploadStream(file.originalname);
+            await new Promise((ok, ko) => {
+                readStream.pipe(uploadStream)
+                    .on("error", ko)
+                    .on("finish", () => ok());
+            });
+            archivoIds.push({ id: uploadStream.id, nombre: file.originalname });
+            fs.unlinkSync(file.path);
         }
-  
+
         const nuevaPublicacion = {
-          usuarioId: idUsuario,
-          titulo,
-          descripcion,
-          categoria,
-          archivos: archivoIds,
-          fecha: new Date()
+            usuarioId: idUsuario,
+            titulo,
+            descripcion,
+            categoria,
+            archivos: archivoIds,
+            fecha: new Date()
         };
-  
+
         const insertResult = await publicacionesDB.insertOne(nuevaPublicacion);
         res.status(201).json({
-          message: "Publicación creada",
-          publicacion: { _id: insertResult.insertedId, ...nuevaPublicacion }
+            message: "Publicación creada",
+            publicacion: { _id: insertResult.insertedId, ...nuevaPublicacion }
         });
-  
-      } catch (err) {
+
+    } catch (err) {
         console.error("❌ Error en publicación:", err);
         res.status(500).json({ message: "Error al procesar la publicación", error: err.message });
-      }
     }
-  );  
+}
+);
 
 // Endpoint para obtener la imagen del perfil desde GridFS
 app.get("/api/users/:id/foto", async (req, res) => {
@@ -470,7 +469,46 @@ app.post("/api/comentarios", async (req, res) => {
 // BLOQUE DE BÚSQUEDAS
 
 
-  
+app.get("/api/publicaciones/:id/modelo", async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        // Buscar la publicación
+        const publicacion = await publicacionesDB.findOne({ _id: new ObjectId(id) });
+
+        if (!publicacion || !publicacion.archivos || !publicacion.archivos.some(file => file.nombre.endsWith('.glb'))) {
+            return res.status(404).json({ message: "Modelo no encontrado" });
+        }
+
+        // Buscar el archivo .glb relacionado
+        const archivo = publicacion.archivos.find(file => file.nombre.endsWith(".glb"));
+
+        // Buscar en GridFS por filename
+        const files = await bucket.find({ filename: archivo.nombre }).toArray();
+        if (!files || files.length === 0) {
+            return res.status(404).json({ message: "Archivo no encontrado en GridFS" });
+        }
+
+        // Establecer el tipo de contenido correcto
+        res.setHeader('Content-Type', 'model/gltf-binary');
+        res.setHeader('Content-Disposition', `inline; filename="${archivo.nombre}"`);
+
+        // Stream desde GridFS
+        const downloadStream = bucket.openDownloadStreamByName(archivo.nombre);
+        downloadStream.pipe(res).on("error", (err) => {
+            console.error("Error al leer el archivo desde GridFS:", err);
+            res.status(500).json({ message: "Error al leer el archivo" });
+        });
+
+    } catch (error) {
+        console.error("Error al obtener el modelo 3D:", error);
+        res.status(500).json({ message: "Error interno del servidor" });
+    }
+});
+
+
+
+
 
 
 app.listen(PORT, () => console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`));

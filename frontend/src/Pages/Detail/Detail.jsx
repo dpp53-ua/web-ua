@@ -1,29 +1,57 @@
-/* Componentes */
-import { Link } from "react-router-dom";
-import { Button, Comment } from '../../Components';
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { Button, Comment, ModelViewer } from '../../Components';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar, faStarHalf, faDownload, faHeart } from "@fortawesome/free-solid-svg-icons";
-
-/* Estilos */
 import styles from "./Detail.module.css";
 
 function Detail() {
+    const { id } = useParams();
+    const [publicacion, setPublicacion] = useState(null);
+    console.log("ID de la publicación:", id);
+
+    useEffect(() => {
+        console.log('useEffect ejecutado para el id:', id); // Log adicional
+        fetch(`http://localhost:5000/api/publicaciones/${id}`)
+            .then(async res => {
+                if (!res.ok) {
+                    const errorText = await res.text();
+                    throw new Error(`Error ${res.status}: ${errorText}`);
+                }
+                return res.json();
+            })
+            .then(data => {
+                if (!data || Object.keys(data).length === 0) {
+                    alert("Publicación no encontrada");
+                    console.warn("⚠️ Publicación vacía:", data);
+                }
+                setPublicacion(data);
+            })
+            .catch(err => {
+                console.error("❌ Error al obtener la publicación:", err);
+                alert("Error al cargar la publicación. Consulta la consola para más detalles.");
+            });
+    }, [id]);
+    
+
+    if (!publicacion) {
+        return <p>Cargando publicación...</p>;
+    }
+
     return (
         <div className={styles["detail-main-container"]}>
-            
-            {/* Parte Izquierda: Imágenes */}
+            {/* Parte Izquierda: Visor 3D */}
             <section className={styles["detail-images"]}>
-                <img className={styles["detail-image"]} src="imageholder.png" alt="Imagen del modelo" />
+                <ModelViewer modelUrl={`http://localhost:5000/api/publicaciones/${id}/modelo`} />
             </section>
 
             {/* Parte Derecha: Información */}
             <section className={styles["detail-info"]}>
 
-               {/* 🔵 Bloque Autor + Botones + Título + Descripción */}
-               <section className={styles["author-block"]}>
+                <section className={styles["author-block"]}>
                     <div className={styles["author"]}>
                         <img className={styles["author-image"]} src="imageholder.png" alt="Imagen del autor" />
-                        <h3>Trece</h3>
+                        <h3>{publicacion.usuario?.[0]?.name || "Autor desconocido"}</h3>
                     </div>
 
                     <div className={styles["buttons"]}>
@@ -31,20 +59,18 @@ function Detail() {
                         <Button variant="green-rounded" label=" Me gusta" icon={faHeart} />
                     </div>
 
-                    <h2 className={styles["title"]}>Título del modelo</h2>
+                    <h2 className={styles["title"]}>{publicacion.titulo}</h2>
 
                     <p className={styles["description"]}>
-                        Descripción nueva del modelo con texto de prueba para simular el contenido real
-                        y comprobar el ajuste en el diseño. Aquí iría la descripción larga.
+                        {publicacion.descripcion}
                     </p>
                 </section>
 
-                {/* Bloque Detalles */}
                 <section className={styles["details"]}>
                     <h2>Detalles</h2>
                     <div className={styles["span"]}>
                         <p>Formato:</p>
-                        <p>.blend</p>
+                        <p>.glb</p>
                     </div>
                     <div className={styles["span"]}>
                         <p>Me gusta:</p>
@@ -57,7 +83,6 @@ function Detail() {
                     </div>
                 </section>
 
-                {/* Bloque Tags */}
                 <section className={styles["tags"]}>
                     <h2>Tags</h2>
                     <div className={styles["tag-cloud"]}>
@@ -66,7 +91,6 @@ function Detail() {
                     </div>
                 </section>
 
-                {/* Bloque Comentarios */}
                 <section className={styles["comments"]}>
                     <h2>Comentarios</h2>
                     <form className={styles["comment-form"]}>
@@ -87,5 +111,4 @@ function Detail() {
         </div>
     );
 }
-
 export default Detail;
