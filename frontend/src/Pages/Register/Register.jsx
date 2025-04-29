@@ -119,7 +119,7 @@ function Register() {
         </form>
       </section>
       <section className={styles["right-section"]}>
-        <img alt="logo" src="/atom.png"/>
+        <img alt="logo" src="/logo.png"/>
         <h1>Bienvenido</h1>
         <p>¿Ya tienes una cuenta?</p>
         <Button variant="white" label="Inicia sesión" to="/login"/>

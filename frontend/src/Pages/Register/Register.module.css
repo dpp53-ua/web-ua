@@ -65,6 +65,10 @@
         gap: 1rem;
         /* padding-inline: 6rem; */
         background: linear-gradient(90deg, var(--dark-red), var(--medium-red));
+        background-image: url("../../../public/bannner2.png");
+        background-size: cover;  /* Cubre todo el contenedor */
+        background-position: left; /* Centra la imagen */
+        background-repeat: no-repeat; /* Evita repeticiones */
 
         > img {
             /* width: 20rem; */
