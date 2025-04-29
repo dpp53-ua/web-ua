@@ -1,31 +1,35 @@
 import { useState, useRef, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCloudArrowUp } from "@fortawesome/free-solid-svg-icons";
 import { Button, InputField, DeleteableTag } from '../../Components';
 import styles from "./PostForm.module.css";
 
 function PostForm() {
-  const [formData, setFormData] = useState({
-    postTitle: "",
-    postDescription: "",
-  });
-  
+  const { id } = useParams(); 
+  const isEditMode = Boolean(id);
+
+  const [formData, setFormData] = useState({ postTitle: "", postDescription: "" });
   const [uploadedFiles, setUploadedFiles] = useState([]);
+  const [initialFiles, setInitialFiles] = useState([]); // para detectar cambios
   const [arrOptions, setArrOptions] = useState([]);
   const [selectedTags, setSelectedTags] = useState([]);
+  const [initialTags, setInitialTags] = useState([]);
   const [errors, setErrors] = useState({});
+  const [fechaModificacion, setFechaModificacion] = useState(null);
+
   const dropAreaRef = useRef(null);
   const fileInputRef = useRef(null);
   const MAX_FILES = 10;
+
+  const isDuplicate = (fileName) =>
+    uploadedFiles.some((f) => f.name === fileName);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
     setErrors(prev => ({ ...prev, [name]: "" }));
   };
-
-  const isDuplicate = (fileName) =>
-    uploadedFiles.some((f) => f.name === fileName);
 
   const addFiles = (files) => {
     const newFiles = [];
@@ -43,30 +47,18 @@ function PostForm() {
     }
 
     if (newFiles.length) {
-      setUploadedFiles(prev => {
-        const updatedFiles = [...prev, ...newFiles];
-        console.log(updatedFiles); 
-        return updatedFiles;
-      });
+      setUploadedFiles(prev => [...prev, ...newFiles]);
     }
 
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const handleFileInput = (e) => {
-    const files = Array.from(e.target.files);
-    addFiles(files);
-    console.log(uploadedFiles);
+    addFiles(Array.from(e.target.files));
   };
 
   const handleDeleteFile = (fileName) => {
-    setUploadedFiles(prev => {
-      const updatedFiles = prev.filter(f => f.name !== fileName);
-      console.log(updatedFiles);
-      return updatedFiles;
-    });
+    setUploadedFiles(prev => prev.filter(f => f.name !== fileName));
   };
 
   const addTag = (e) => {
@@ -82,151 +74,149 @@ function PostForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const newErrors = {};
   
-    if (!formData.postTitle)       newErrors.postTitle       = "El título es obligatorio";
+    console.log("📦 Enviando datos:");
+    console.log("Título:", formData.postTitle);
+    console.log("Descripción:", formData.postDescription);
+    console.log("Categorías:", selectedTags);
+    console.log("Archivos nuevos:", uploadedFiles.map(f => f.name));
+    console.log("Modo edición:", isEditMode);
+  
+    const newErrors = {};
+    if (!formData.postTitle)       newErrors.postTitle = "El título es obligatorio";
     if (!formData.postDescription) newErrors.postDescription = "La descripción es obligatoria";
-    if (!uploadedFiles.length)     newErrors.postFile        = "Debe subir al menos un archivo";
-    if (!selectedTags.length)      newErrors.postCategories  = "Seleccione al menos una categoría";
+    if (!uploadedFiles.length && !initialFiles.length)
+      newErrors.postFile = "Debe subir al menos un archivo";
+    if (!selectedTags.length)      newErrors.postCategories = "Seleccione al menos una categoría";
   
     if (Object.keys(newErrors).length) {
       setErrors(newErrors);
       return;
     }
   
-    try {
-      const formPayload = new FormData();
-      formPayload.append("titulo", formData.postTitle);
-      formPayload.append("descripcion", formData.postDescription);
-      // cada categoría bajo el mismo nombre 'categoria'
-      selectedTags.forEach(tag => formPayload.append("categoria", tag));
-      // ¡solo un archivo y con la clave 'archivo'!
-      formPayload.append("archivo", uploadedFiles[0]);
+    const formPayload = new FormData();
+    formPayload.append("titulo", formData.postTitle);
+    formPayload.append("descripcion", formData.postDescription);
+    selectedTags.forEach(tag => formPayload.append("categoria", tag));
   
-      const idUsuario = sessionStorage.getItem("userId");
-
-      console.log("Datos del formulario a enviar:");
-      for (let [key, val] of formPayload.entries()) {
-        console.log(key, val);
+    // 🔍 Detectar archivos eliminados
+    const filesToDelete = initialFiles.filter(initialFile =>
+      !uploadedFiles.some(file => file.name === initialFile.nombre)
+    );
+    filesToDelete.forEach(file => formPayload.append("eliminarArchivo", file.nombre)); // opcional, si lo usas
+  
+    // ✅ Subir solo los archivos nuevos (instancias File reales)
+    uploadedFiles.forEach(file => formPayload.append("archivo", file));
+  
+    const userId = sessionStorage.getItem("userId");
+  
+    if (isEditMode) {
+      const sinCambios =
+        formData.postTitle === initialFormData.postTitle &&
+        formData.postDescription === initialFormData.postDescription &&
+        JSON.stringify(selectedTags) === JSON.stringify(initialTags) &&
+        uploadedFiles.length === 0 &&
+        filesToDelete.length === 0;
+  
+      if (sinCambios) {
+        alert("No se han realizado cambios.");
+        return;
       }
-      
-
-      const response = await fetch(
-        `http://localhost:5000/api/publicaciones/${idUsuario}`,
-        { method: "POST", body: formPayload }
-      );
+    }
+  
+    try {
+      const endpoint = isEditMode
+        ? `http://localhost:5000/api/publicaciones/${id}`
+        : `http://localhost:5000/api/publicaciones/${userId}`;
+  
+      const response = await fetch(endpoint, {
+        method: isEditMode ? "PUT" : "POST",
+        body: formPayload,
+      });
   
       if (!response.ok) {
-        // para debug: imprime el HTML o error que venga
         const text = await response.text();
-        console.error("Respuesta cruda del servidor:", text);
-        throw new Error(`Error ${response.status}`);
+        throw new Error(`Error ${response.status}: ${text}`);
       }
   
       const result = await response.json();
-      console.log("✅ Publicación creada:", result);
-      alert("Publicación creada correctamente");
+      alert(isEditMode ? "Publicación actualizada correctamente" : "Publicación creada correctamente");
       handleClear();
+  
     } catch (err) {
       console.error("Error al enviar publicación:", err);
       setErrors(prev => ({ ...prev, general: err.message }));
     }
   };
   
-
-  /*const fetchCategories = async () => {
-    // try {
-    //   const response = await fetch('URL_DE_TU_API'); // Reemplaza con la URL de tu API
-    //   const data = await response.json();
-      
-    //   // Suponiendo que las categorías vienen como un array en la propiedad 'categories' de la respuesta.
-    //   if (data && Array.isArray(data.categories)) {
-    //     setArrOptions(data.categories.map(category => ({
-    //       label: category.name,  // Suponiendo que cada categoría tiene una propiedad 'name'
-    //       value: category.id     // Suponiendo que cada categoría tiene una propiedad 'id'
-    //     })));
-    //   }
-    // } catch (error) {
-    //   console.error('Error al obtener las categorías:', error);
-    // }
-    await setArrOptions([
-      { label: "Opcion1", value: "Opción 1" },
-      { label: "Opcion2", value: "Opción 2" }
-    ]);
-  }*/
+  
+  const handleClear = () => {
+    setFormData({ postTitle: "", postDescription: "" });
+    setUploadedFiles([]);
+    setInitialFiles([]);
+    setSelectedTags([]);
+    setInitialTags([]);
+    setErrors({});
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+  
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/categorias'); // Reemplaza si tu endpoint es otro
+      const response = await fetch('http://localhost:5000/api/categorias');
       const data = await response.json();
-  
-      if (data && Array.isArray(data)) {
+
+      if (Array.isArray(data)) {
         setArrOptions(data.map(category => ({
-          label: category.nombre, 
-          value: category.id
+          label: category.nombre,
+          value: category.id,
         })));
       }
     } catch (error) {
       console.error('Error al obtener las categorías:', error);
     }
-  }
-  
+  };
 
-  const handleClear = () => {
-    setFormData({ postTitle: "", postDescription: "" });
-    setUploadedFiles([]);
-    setSelectedTags([]);
-    setErrors({});
-    if (fileInputRef.current) fileInputRef.current.value = "";
+  const [initialFormData, setInitialFormData] = useState({ postTitle: "", postDescription: "" });
+
+  const fetchPost = async () => {
+    try {
+      const res = await fetch(`http://localhost:5000/api/publicaciones/${id}`);
+      const data = await res.json();
+  
+      setFormData({
+        postTitle: data.titulo,
+        postDescription: data.descripcion,
+      });
+      setInitialFormData({
+        postTitle: data.titulo,
+        postDescription: data.descripcion,
+      });
+  
+      // ⚠️ Archivos existentes se cargan directamente como parte de uploadedFiles
+      const fakeFiles = data.archivos.map(file =>
+        new File([""], file.nombre, { type: "application/octet-stream" })
+      );
+  
+      setUploadedFiles(fakeFiles);  // Se usan archivos simulados
+      setInitialFiles(data.archivos);
+      setSelectedTags(data.categoria);
+      setInitialTags(data.categoria);
+      setFechaModificacion(new Date(data.fecha));
+    } catch (err) {
+      console.error("Error al cargar publicación:", err);
+    }
   };
   
-  
-
   useEffect(() => {
     fetchCategories();
-  }, []);
-
-  useEffect(() => {
-    const dropArea = dropAreaRef.current;
-    if (!dropArea) return;
-
-    const preventDefaults = (e) => e.preventDefault();
-    const highlight = () => (dropArea.style.opacity = "0.6");
-    const unhighlight = () => (dropArea.style.opacity = "1");
-    const handleDrop = (e) => {
-      const files = Array.from(e.dataTransfer.files);
-      addFiles(files);
-    };
-
-    ["dragenter", "dragover", "dragleave", "drop"].forEach(event =>
-      dropArea.addEventListener(event, preventDefaults)
-    );
-    ["dragenter", "dragover"].forEach(event =>
-      dropArea.addEventListener(event, highlight)
-    );
-    ["dragleave", "drop"].forEach(event =>
-      dropArea.addEventListener(event, unhighlight)
-    );
-    dropArea.addEventListener("drop", handleDrop);
-
-    return () => {
-      ["dragenter", "dragover", "dragleave", "drop"].forEach(event =>
-        dropArea.removeEventListener(event, preventDefaults)
-      );
-      ["dragenter", "dragover"].forEach(event =>
-        dropArea.removeEventListener(event, highlight)
-      );
-      ["dragleave", "drop"].forEach(event =>
-        dropArea.removeEventListener(event, unhighlight)
-      );
-      dropArea.removeEventListener("drop", handleDrop);
-    };
-  }, [uploadedFiles]);
+    if (isEditMode) fetchPost();
+  }, [id]);
 
   return (
     <div className={styles["post-main-container"]}>
       <section className={styles["left-section"]}>
-        <h1>Formulario de publicación</h1>
+        <h1>{isEditMode ? "Editar publicación" : "Nueva publicación"}</h1>
         {errors.general && <p className={styles["error"]}>{errors.general}</p>}
         <form onSubmit={handleSubmit} onReset={handleClear}>
           <InputField
@@ -252,22 +242,23 @@ function PostForm() {
           <InputField
             id="postFile"
             type="file"
-            label="Archivo"
+            label="Archivos"
             name="postFile"
-            placeholder="Seleccionar archivo"
+            placeholder="Seleccionar archivos"
             onChange={handleFileInput}
             explicativeText={errors.postFile}
+            multiple // 👈 permite múltiples archivos
             ref={fileInputRef}
           />
-
           <div className={styles["grid-list"]}>
             <ul>
               {uploadedFiles.map((file) => (
                 <DeleteableTag
-                  key={file.name}
-                  file={file}
-                  onDelete={() => handleDeleteFile(file.name)}
-                />
+                key={file.name}
+                file={file}
+                onDelete={() => handleDeleteFile(file.name)}
+              />
+
               ))}
             </ul>
           </div>
@@ -293,13 +284,15 @@ function PostForm() {
           </div>
           <div>
             <Button type="reset" variant="red" label="Limpiar"/>
-            <Button type="submit" variant="red" label="Aceptar" />
+            <Button type="submit" variant="red" label={isEditMode ? "Actualizar" : "Aceptar"} />
           </div>
         </form>
       </section>
 
       <section className={styles["right-section"]}>
-        <h1>Última editado: XX/XX/XXXX</h1>
+        {isEditMode && fechaModificacion && (
+          <h1>Última edición: {fechaModificacion.toLocaleDateString()}</h1>
+        )}
         <div
           className={styles["droparea"]}
           ref={dropAreaRef}

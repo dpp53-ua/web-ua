@@ -1,3 +1,7 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Odibee+Sans&display=swap');
+
+
 .header {
   background: linear-gradient(30deg, var(--dark-red), var(--medium-red));
   padding: 0 2rem;
@@ -18,10 +22,35 @@
   gap: 2em;
   padding: 1em;
 
-  img{
-    width: 2.75rem;
-    height:2.75rem;
+  .topNav{
+    margin-right: 2rem;
   }
+  .topNav a{
+    display: flex;
+    gap: 0;
+    align-items: center;
+    text-decoration: none;
+    color: var(--white);
+    transition: transform 0.3s ease;
+
+    .logo {
+      width: 2.8rem;
+      height: auto;
+      margin-right: 0.5rem;
+    }
+    .logofont{
+      font-size: 28px;
+      font-family: "Odibee Sans", sans-serif;
+      font-weight: 400;
+      font-style: normal;
+    }
+
+    &:hover {
+      transform: scale(1.15); /* Efecto de ampliación */
+      cursor: pointer;
+    }
+  }
+  
 }
 
 
@@ -51,17 +80,7 @@
     }
   }
 
-.logo {
-  width: 2rem;
-  height: auto;
-  transition: transform 0.3s ease;
-  margin-right: 1rem;
 
-  &:hover {
-    transform: scale(1.15); /* Efecto de ampliación */
-    cursor: pointer;
-  }
-}
 
 
 
@@ -178,6 +197,22 @@
 }
 
 
+
+
+
+@media (max-width: 1716px) {
+  .header{
+    flex-direction: column;
+
+  }
+
+  .logoDiv {
+    width: 100%;
+    display: flex;
+  }
+
+} 
+
 @media (max-width: 1200px) {
   .header {
     flex-direction: column;
@@ -185,13 +220,10 @@
   .leftContent {
     flex-direction: column;
   }
-  .logoDiv {
-    width: 100%;
-    display: flex;
-  }
+
 }
 
-@media (max-width: 550px) {
+@media (max-width: 760px) {
   .menuIcon {
     display: block; /* Mostrar icono de menú */
   }

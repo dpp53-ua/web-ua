@@ -12,7 +12,7 @@
   background-color: var(--white);
   border-radius: 5px;
   padding: 5px;
-  min-width: 223px;
+  min-width: 15rem;
 
   flex-grow: 1;
   transition: box-shadow 0.3s ease, transform 0.3s ease; /* Transición suave para sombra y transformación */
@@ -165,3 +165,17 @@ input[type="checkbox"] {
 .span p {
   margin-left: .5em;
 }
+
+
+@media (min-width: 700px) {
+  .searchBar > div {
+    min-width: 20rem;
+  }
+}
+
+@media (min-width: 1200px) {
+  .searchBar > div {
+    min-width: 10rem;
+  }
+}
+
