@@ -3,6 +3,7 @@
   justify-content: space-between;
   align-items: center;
   gap: 10px;
+
 }
 
 .searchBar > div {
@@ -79,6 +80,9 @@
 
 .searchBarWrapper {
   position: relative;
+  align-items: center;
+  display: flex;
+  justify-content: center;
 }
 
 
@@ -88,22 +92,6 @@
   outline: none;
   padding-left: 0.5rem;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /* Triángulo hacia arriba, centrado justo debajo del icono */
 .filterPanel::before {

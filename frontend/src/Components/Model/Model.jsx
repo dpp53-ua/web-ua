@@ -10,8 +10,8 @@ function Model() {
                 <img className={styles["model-image"]} src="imageholder.png" alt="Imagen del modelo" />
             </header>
             <footer className={styles["model-footer"]}>
-                <h3>Títuloooooooooooooooooooooooooooooooooooooooo</h3>
-                <p>Artistaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+                <h3>Título</h3>
+                <p>Artista</p>
                 <span>
                     <FontAwesomeIcon icon={faStar} />
                     <FontAwesomeIcon icon={faStar} />

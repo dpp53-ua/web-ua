@@ -26,7 +26,7 @@ function Home() {
 
             <section className={styles["home-welcome"]}>
                 <div>
-                    <img alt="logo" src="/atom.png"/>
+                    <img alt="logo" src="/logo.png"/>
                 </div>
                 <div>
                     <h1>Bienvenido</h1>

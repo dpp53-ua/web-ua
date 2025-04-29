@@ -64,7 +64,7 @@ export default function Header( ) { //{ isAuth, setIsAuth } antes lo usaba
             <div className={styles.leftContent}>
                 <div className={styles.navigation}>
                      <div className={styles.topNav}>
-                     <a href="/home"><img className={styles.logo} alt="logo" src="/atom.png"/></a>
+                     <a href="/home"><img className={styles.logo} alt="logo" src="/logo.png"/></a>
                         <FontAwesomeIcon icon={faBars} className={styles.menuIcon} onClick={() => setMenuOpen(!menuOpen)}/>
                     </div> 
                     <NavBar menuOpen={menuOpen} />  {/* Pasamos el estado a NavBar */}

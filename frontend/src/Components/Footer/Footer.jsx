@@ -15,7 +15,7 @@ export default function Footer() {
                     <p>Copyright</p>
                     <FontAwesomeIcon icon={faCopyright} />
                 </div>
-                <p>2020. All rights reserved.</p>
+                <p>{new Date().getFullYear()}. Todos los derechos reservados.</p>
             </div>
         </footer>
     );

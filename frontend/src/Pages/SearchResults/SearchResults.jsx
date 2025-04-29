@@ -210,7 +210,7 @@ function SearchResults() {
 
             <section className={styles["product-section"]}>
                 <header className={styles["product-header"]}>
-                    <h2>Todos los productos</h2>
+                    <h2>Resultados</h2>
                 </header>
                 <ModelGrid/>
                 <footer className={styles["model-footer"]}>
