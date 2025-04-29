@@ -3,6 +3,7 @@ import { BasicLayout } from './Layouts';
 import { NotFound, Home, Login, Register, PostForm, Categories, Detail, Profile, ProfileConfiguration, MyAssets, MyDownloads, SearchResults } from './Pages';
 import { PrivateRoute } from './Components'; // Importar PrivateRoute
 
+
 function App() {
   return (
     <Router>
@@ -15,7 +16,8 @@ function App() {
           <Route path="home" element={<Home />} />
           <Route path="categories" element={<Categories />} />
           <Route path="detail" element={<Detail />} />
-          {/* <Route path="buscar/:idCategoria" element={<SearchResults />} /> */}
+          <Route path="detail/:id" element={<Detail />} />
+          {/*<Route path="buscar/:idCategoria" element={<SearchResults />} />   */}
           <Route path="/buscar" element={<SearchResults />} />
 
           {/* Rutas privadas */}

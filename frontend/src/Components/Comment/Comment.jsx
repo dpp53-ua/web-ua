@@ -17,12 +17,11 @@ function Comment() {
                 <h3>Trece</h3>
             </div>
             <div className={styles["comment-content"]}> 
-                <FontAwesomeIcon icon={faArrowTurnUp} rotation={90} />
-                <p className={styles["text-comment"]}>Me gusta mucho XD  oooooooooooo
-                    oooooooooooooooooooooo
-                    oooooooooooooooooooooooooo ooooooooooooooooo
-                    iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii
-                    sdddddddddddddddddddddddd
+                {/* <FontAwesomeIcon icon={faArrowTurnUp} rotation={90} /> */}
+                <p className={styles["text-comment"]}>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a diam lectus. Sed sit amet ipsum mauris.
+                    Maecenas congue ligula ac quam viverra nec consectetur ante hendrerit. Donec et mollis dolor. 
+                    Praesent et diam eget libero egestas mattis sit amet vitae augue.
                 </p>
             </div>
         </article>
