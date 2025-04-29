@@ -58,6 +58,7 @@ const InputField = forwardRef((props, ref) => {
         onChange={onChange}
         value={value}
         ref={ref}
+        multiple
       />
     );
   }
