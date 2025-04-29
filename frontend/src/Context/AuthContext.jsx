@@ -11,7 +11,7 @@ export function AuthProvider({ children }) {
   const login = async (id) => {
     sessionStorage.setItem('userId', id);
     setUserId(id);
-  
+
     try {
       const res = await fetch(`http://localhost:5000/api/users/${id}`);
       if (!res.ok) throw new Error();
@@ -31,19 +31,23 @@ export function AuthProvider({ children }) {
     setUserId(null);
   };
 
+  // useEffect para recuperar el userId al cargar
   useEffect(() => {
     const storedId = sessionStorage.getItem('userId');
     if (storedId) {
       setUserId(storedId);
     }
-  
+  }, [userId]);
+
+  // useEffect para aplicar las preferencias al cargar
+  useEffect(() => {
     const storedPrefs = localStorage.getItem('userPreferences');
     if (storedPrefs) {
-      const parsedPrefs = JSON.parse(storedPrefs);
-      applyUserPreferences(parsedPrefs);
+      const { theme, fontSize } = JSON.parse(storedPrefs);
+      console.log(theme, fontSize);
+      applyUserPreferences({ theme: theme, fontSize: fontSize });
     }
-
-  }, [userId]);  // Solo se ejecuta cuando userId cambia
+  }, []);
 
   return (
     <AuthContext.Provider value={{ userId, isAuth, login, logout }}>
@@ -52,7 +56,6 @@ export function AuthProvider({ children }) {
   );
 }
 
-// Hook personalizado para usar el contexto fácilmente
 export function useAuth() {
   return useContext(AuthContext);
 }

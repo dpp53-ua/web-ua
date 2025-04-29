@@ -98,6 +98,11 @@ function ProfileConfiguration() {
           throw new Error(`Status ${res.status}: ${text}`);
         }
 
+        localStorage.setItem(
+          'userPreferences',
+          JSON.stringify({ theme: preferences.theme, fontSize: preferences.fontSize })
+        );
+        
         applyUserPreferences({ theme: preferences.theme, fontSize: preferences.fontSize });
 
         await res.json();

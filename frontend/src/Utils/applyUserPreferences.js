@@ -1,6 +1,6 @@
 const applyUserPreferences = ({ theme, fontSize }) => {
     const root = document.documentElement;
-    
+
     // Fuente base
     switch (fontSize) {
         case "small":

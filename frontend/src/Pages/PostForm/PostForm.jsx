@@ -5,7 +5,11 @@ import { Button, InputField, DeleteableTag } from '../../Components';
 import styles from "./PostForm.module.css";
 
 function PostForm() {
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState({
+    postTitle: "",
+    postDescription: "",
+  });
+  
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [arrOptions, setArrOptions] = useState([]);
   const [selectedTags, setSelectedTags] = useState([]);
@@ -79,28 +83,56 @@ function PostForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = {};
-
-    // Validación
-    if (!formData.postTitle) newErrors.postTitle = "El título es obligatorio";
+  
+    if (!formData.postTitle)       newErrors.postTitle       = "El título es obligatorio";
     if (!formData.postDescription) newErrors.postDescription = "La descripción es obligatoria";
-    if (!uploadedFiles.length) newErrors.postFile = "Debe subir almenos un archivo";
-
-
-    if (Object.keys(newErrors).length > 0) {
+    if (!uploadedFiles.length)     newErrors.postFile        = "Debe subir al menos un archivo";
+    if (!selectedTags.length)      newErrors.postCategories  = "Seleccione al menos una categoría";
+  
+    if (Object.keys(newErrors).length) {
       setErrors(newErrors);
       return;
     }
+  
+    try {
+      const formPayload = new FormData();
+      formPayload.append("titulo", formData.postTitle);
+      formPayload.append("descripcion", formData.postDescription);
+      // cada categoría bajo el mismo nombre 'categoria'
+      selectedTags.forEach(tag => formPayload.append("categoria", tag));
+      // ¡solo un archivo y con la clave 'archivo'!
+      formPayload.append("archivo", uploadedFiles[0]);
+  
+      const idUsuario = sessionStorage.getItem("userId");
 
-    // Console log con los datos que se enviarán
-    console.log("Datos a enviar:");
-    console.log("Título:", formData.postTitle);
-    console.log("Descripción:", formData.postDescription);
-    console.log("Archivos:", uploadedFiles);
-    console.log("Categorías:", selectedTags);
+      console.log("Datos del formulario a enviar:");
+      for (let [key, val] of formPayload.entries()) {
+        console.log(key, val);
+      }
+      
 
-    // Aquí la lógica de envío.
-    // En este punto se haría el POST de la información al servidor.
+      const response = await fetch(
+        `http://localhost:5000/api/publicaciones/${idUsuario}`,
+        { method: "POST", body: formPayload }
+      );
+  
+      if (!response.ok) {
+        // para debug: imprime el HTML o error que venga
+        const text = await response.text();
+        console.error("Respuesta cruda del servidor:", text);
+        throw new Error(`Error ${response.status}`);
+      }
+  
+      const result = await response.json();
+      console.log("✅ Publicación creada:", result);
+      alert("Publicación creada correctamente");
+      handleClear();
+    } catch (err) {
+      console.error("Error al enviar publicación:", err);
+      setErrors(prev => ({ ...prev, general: err.message }));
+    }
   };
+  
 
   /*const fetchCategories = async () => {
     // try {
@@ -130,8 +162,8 @@ function PostForm() {
   
       if (data && Array.isArray(data)) {
         setArrOptions(data.map(category => ({
-          label: category.nombre,  // Esto depende de cómo venga tu objeto de categoría
-          value: category.id       // El ID de la categoría
+          label: category.nombre, 
+          value: category.id
         })));
       }
     } catch (error) {
@@ -141,14 +173,13 @@ function PostForm() {
   
 
   const handleClear = () => {
-    setFormData({});
+    setFormData({ postTitle: "", postDescription: "" });
     setUploadedFiles([]);
     setSelectedTags([]);
     setErrors({});
-    if (fileInputRef.current) {
-      fileInputRef.current.value = ""; // limpiar input file
-    }
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
+  
   
 
   useEffect(() => {

@@ -303,73 +303,56 @@ app.get("/api/publicaciones/:id", async (req, res) => {
 
 
 
-// POST: Crear publicación
-app.post("/api/publicaciones/:idUsuario", upload.single("archivo"), async (req, res) => {
-    try {
-        let { titulo, descripcion, precio, categoria } = req.body;
-
-        // Asegurar que categoria sea un array (por si solo se envía una)
-        if (!Array.isArray(categoria)) {
-            categoria = [categoria];
-        }
-
-        const file = req.file;
+// Reemplaza upload.single(...) por upload.array(...)
+app.post("/api/publicaciones/:idUsuario", upload.array("archivo", 10), async (req, res) => {
+      try {
+        let { titulo, descripcion, categoria } = req.body;
+        if (!Array.isArray(categoria)) categoria = [categoria];
+  
+        const files = req.files;    // ahora es array
         const idUsuario = req.params.idUsuario;
-
-        if (!titulo || !descripcion || !precio || !categoria.length || !file || !idUsuario) {
-            return res.status(400).json({ message: "Faltan campos obligatorios" });
+        if (!titulo || !descripcion || !categoria.length || !files.length || !idUsuario) {
+          return res.status(400).json({ message: "Faltan campos obligatorios" });
         }
-
-        // Verificar si el usuario existe
+  
         const usuario = await usersCollection.findOne({ _id: new ObjectId(idUsuario) });
-
-        if (!usuario) {
-            return res.status(404).json({ message: "Usuario no encontrado" });
-        }
-
-        console.log("📥 Archivo recibido:", file.originalname);
-
-        const filePath = file.path;
-        const readStream = fs.createReadStream(filePath);
-
-        const uploadResult = await new Promise((resolve, reject) => {
-            const uploadStream = bucket.openUploadStream(file.originalname);
+        if (!usuario) return res.status(404).json({ message: "Usuario no encontrado" });
+  
+        // Subir cada fichero a GridFS
+        const archivoIds = [];
+        for (const file of files) {
+          const readStream  = fs.createReadStream(file.path);
+          const uploadStream = bucket.openUploadStream(file.originalname);
+          await new Promise((ok, ko) => {
             readStream.pipe(uploadStream)
-                .on("error", reject)
-                .on("finish", () => resolve(uploadStream));
-        });
-
-        fs.unlinkSync(filePath);
-        console.log("✅ Archivo subido a GridFS");
-
+              .on("error", ko)
+              .on("finish", () => ok());
+          });
+          archivoIds.push({ id: uploadStream.id, nombre: file.originalname });
+          fs.unlinkSync(file.path);
+        }
+  
         const nuevaPublicacion = {
-            usuarioId: idUsuario, // ID del usuario que publica
-            titulo,
-            descripcion,
-            precio: parseFloat(precio),
-            categoria,
-            archivoId: uploadResult.id,
-            archivoNombre: file.originalname,
-            fecha: new Date()
+          usuarioId: idUsuario,
+          titulo,
+          descripcion,
+          categoria,
+          archivos: archivoIds,
+          fecha: new Date()
         };
-
+  
         const insertResult = await publicacionesDB.insertOne(nuevaPublicacion);
-
-        console.log("📝 Publicación guardada correctamente");
-
         res.status(201).json({
-            message: "Publicación creada",
-            publicacion: {
-                _id: insertResult.insertedId,
-                ...nuevaPublicacion
-            }
+          message: "Publicación creada",
+          publicacion: { _id: insertResult.insertedId, ...nuevaPublicacion }
         });
-
-    } catch (err) {
+  
+      } catch (err) {
         console.error("❌ Error en publicación:", err);
         res.status(500).json({ message: "Error al procesar la publicación", error: err.message });
+      }
     }
-});
+  );  
 
 // Endpoint para obtener la imagen del perfil desde GridFS
 app.get("/api/users/:id/foto", async (req, res) => {
