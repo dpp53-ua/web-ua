@@ -24,6 +24,6 @@ export {
     DeleteableTag,
     Comment,
     ProfileMenu,
-    UpButton
+    UpButton,
     ModelViewer,
 };
