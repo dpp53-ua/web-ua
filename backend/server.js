@@ -233,10 +233,8 @@ app.get("/api/publicaciones", async (req, res) => {
                 $project: {
                     titulo: 1,
                     descripcion: 1,
-                    precio: 1,
                     categoria: 1,
-                    archivoId: 1,
-                    archivoNombre: 1,
+                    archivos: 1, // Incluye el array de archivos [{ id, nombre }]
                     fecha: 1,
                     "usuario._id": 1,
                     "usuario.name": 1,
@@ -277,15 +275,13 @@ app.get("/api/publicaciones/:id", async (req, res) => {
                 $project: {
                     titulo: 1,
                     descripcion: 1,
-                    precio: 1,
                     categoria: 1,
-                    archivoId: 1,
-                    archivoNombre: 1,
+                    archivos: 1, // Incluye el array de archivos [{ id, nombre }]
                     fecha: 1,
                     "usuario._id": 1,
                     "usuario.name": 1,
                     "usuario.email": 1
-                }
+                  }
             }
         ]).toArray();
 
@@ -353,6 +349,64 @@ app.post("/api/publicaciones/:idUsuario", upload.array("archivo", 10), async (re
       }
     }
   );  
+
+// 🟡 PUT: Editar publicación (reemplazar completamente los archivos)
+app.put("/api/publicaciones/:id", upload.array("archivo", 10), async (req, res) => {
+    console.log("Archivos recibidos:", req.files);
+    try {
+        const { id } = req.params;
+        let { titulo, descripcion, categoria } = req.body;
+        if (!Array.isArray(categoria)) categoria = [categoria];
+
+        // Buscar la publicación original
+        const publicacion = await publicacionesDB.findOne({ _id: new ObjectId(id) });
+        if (!publicacion) {
+            return res.status(404).json({ message: "Publicación no encontrada" });
+        }
+
+        const updateFields = {};
+        if (titulo) updateFields.titulo = titulo;
+        if (descripcion) updateFields.descripcion = descripcion;
+        if (categoria) updateFields.categoria = categoria;
+
+        // Vaciamos los archivos actuales en la base de datos
+        updateFields.archivos = [];
+
+        // Subir los archivos nuevos
+        if (req.files && req.files.length > 0) {
+            const nuevosArchivos = [];
+
+            for (const file of req.files) {
+                const readStream = fs.createReadStream(file.path);
+                const uploadStream = bucket.openUploadStream(file.originalname);
+                await new Promise((resolve, reject) => {
+                    readStream.pipe(uploadStream)
+                        .on("error", reject)
+                        .on("finish", () => resolve());
+                });
+
+                nuevosArchivos.push({ id: uploadStream.id, nombre: file.originalname });
+                fs.unlinkSync(file.path);  // Eliminar el archivo temporal después de subirlo
+            }
+
+            // Reemplazamos los archivos en la base de datos con los nuevos
+            updateFields.archivos = nuevosArchivos;
+        }
+
+        // Actualizamos la publicación con los nuevos campos, incluidos los archivos
+        await publicacionesDB.updateOne(
+            { _id: new ObjectId(id) },
+            { $set: updateFields }
+        );
+
+        res.json({ message: "Publicación actualizada correctamente" });
+    } catch (err) {
+        console.error("❌ Error al actualizar publicación:", err);
+        res.status(500).json({ message: "Error al actualizar publicación", error: err.message });
+    }
+});
+
+
 
 // Endpoint para obtener la imagen del perfil desde GridFS
 app.get("/api/users/:id/foto", async (req, res) => {

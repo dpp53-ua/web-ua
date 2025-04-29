@@ -23,6 +23,7 @@ function App() {
           {/* Rutas privadas */}
           <Route element={<PrivateRoute />}>
             <Route path="post-form" element={<PostForm />} />
+            <Route path="post-form/:id" element={<PostForm />} />
             <Route path="profile" element={<Profile />} />
             <Route path="profile-configuration" element={<ProfileConfiguration />} />
             <Route path="my-assets" element={<MyAssets />} />
