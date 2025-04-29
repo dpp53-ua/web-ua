@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { BasicLayout } from './Layouts';
-import { NotFound, Home, Login, Register, PostForm, Categories, Detail, Profile, ProfileConfiguration, MyAssets, MyDownloads, SearchResults } from './Pages';
+import { NotFound, Home, Login, Register, PostForm, Categories, Detail, Profile, ProfileConfiguration, MyAssets, MyDownloads, SearchResults, Support } from './Pages';
 import { PrivateRoute } from './Components'; // Importar PrivateRoute
 
 
@@ -19,6 +19,7 @@ function App() {
           <Route path="detail/:id" element={<Detail />} />
           {/*<Route path="buscar/:idCategoria" element={<SearchResults />} />   */}
           <Route path="/buscar" element={<SearchResults />} />
+          <Route path="/support" element={<Support />} />
 
           {/* Rutas privadas */}
           <Route element={<PrivateRoute />}>

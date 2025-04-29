@@ -10,6 +10,7 @@ import ProfileConfiguration from "./ProfileConfiguration/ProfileConfiguration";
 import MyAssets from "./MyAssets/MyAssets";
 import MyDownloads from "./MyDownloads/MyDownloads";
 import SearchResults from './SearchResults/SearchResults';
+import Support from './Support/Support';
 
 export { 
     Home, 
@@ -23,5 +24,6 @@ export {
     ProfileConfiguration,
     MyAssets,
     MyDownloads,
-    SearchResults
+    SearchResults,
+    Support
 };
