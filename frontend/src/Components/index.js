@@ -11,11 +11,12 @@ import Comment from "./Comment/Comment";
 import ProfileMenu from "./ProfileMenu/ProfileMenu";
 /* Utils */
 import PrivateRoute from "./PrivateRoute/PrivateRoute";
+import ModelViewer from "./ModelViewer/ModelViewer";
 /* Retorna los componentes */
-export { 
-    Header, 
-    Footer,  
-    InputField, 
+export {
+    Header,
+    Footer,
+    InputField,
     Button,
     PrivateRoute,
     Category,
@@ -23,4 +24,5 @@ export {
     DeleteableTag,
     Comment,
     ProfileMenu,
+    ModelViewer,
 };

@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { BasicLayout } from './Layouts';
 import { NotFound, Home, Login, Register, PostForm, Categories, Detail, Profile, ProfileConfiguration, MyAssets, MyDownloads, SearchResults } from './Pages';
-import {PrivateRoute} from './Components'; // Importar PrivateRoute
+import { PrivateRoute } from './Components'; // Importar PrivateRoute
 
 
 function App() {
@@ -17,6 +17,7 @@ function App() {
           <Route path="home" element={<Home />} />
           <Route path="categories" element={<Categories />} />
           <Route path="detail" element={<Detail />} />
+          <Route path="detail/:id" element={<Detail />} />
           {/*<Route path="buscar/:idCategoria" element={<SearchResults />} />   */}
           <Route path="/buscar" element={<SearchResults />} />
 
@@ -29,7 +30,7 @@ function App() {
             <Route path="home" element={<Home />} />
             <Route path="post-form" element={<PostForm />} />
             <Route path="profile" element={<Profile />} />
-            <Route path="profile-configuration" element={<ProfileConfiguration/>} />
+            <Route path="profile-configuration" element={<ProfileConfiguration />} />
             <Route path="my-assets" element={<MyAssets />} />
             <Route path="my-downloads" element={<MyDownloads />} />
           </Route>

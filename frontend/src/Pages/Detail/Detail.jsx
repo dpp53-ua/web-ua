@@ -1,7 +1,6 @@
 /* Componentes */
 import { Link } from "react-router-dom";
-import { Button, ModelGrid, Category, Comment } from '../../Components';
-import { useState } from "react";
+import { Button, Comment } from '../../Components';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar, faStarHalf, faDownload, faHeart } from "@fortawesome/free-solid-svg-icons";
 
@@ -11,52 +10,63 @@ import styles from "./Detail.module.css";
 function Detail() {
     return (
         <div className={styles["detail-main-container"]}>
-
+            
+            {/* Parte Izquierda: Imágenes */}
             <section className={styles["detail-images"]}>
-                <img className={styles["detail-image"]} src="imageholder.png" alt="Imagen del modelo" />
                 <img className={styles["detail-image"]} src="imageholder.png" alt="Imagen del modelo" />
             </section>
 
+            {/* Parte Derecha: Información */}
             <section className={styles["detail-info"]}>
-                <section className={styles["details"]}>
-                    <h2>Título del modelo</h2>
-                    <p>Descripción  nwvoennownonoooooooooooooooooooooooooooooooooooooooooooooo
-                        oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
-                        oooooooooooooooooooooooooo
-                    </p>
-                    <span className={styles["span"]}>
-                        <p>Formato: </p>
-                        <p>.blend</p>
-                    </span>
-                    <span className={styles["span"]}>
-                        <FontAwesomeIcon icon={faStar} />
-                        <FontAwesomeIcon icon={faStar} />
-                        <FontAwesomeIcon icon={faStar} />
-                        <FontAwesomeIcon icon={faStarHalf} />
-                    </span>
+
+               {/* 🔵 Bloque Autor + Botones + Título + Descripción */}
+               <section className={styles["author-block"]}>
+                    <div className={styles["author"]}>
+                        <img className={styles["author-image"]} src="imageholder.png" alt="Imagen del autor" />
+                        <h3>Trece</h3>
+                    </div>
+
                     <div className={styles["buttons"]}>
-                        <Button  variant="blue-rounded" label=" Descargar" icon={faDownload} /> 
-                        <Button variant="green-rounded" label=" Me gusta" icon={faHeart}/>
+                        <Button variant="blue-rounded" label=" Descargar" icon={faDownload} />
+                        <Button variant="green-rounded" label=" Me gusta" icon={faHeart} />
+                    </div>
+
+                    <h2 className={styles["title"]}>Título del modelo</h2>
+
+                    <p className={styles["description"]}>
+                        Descripción nueva del modelo con texto de prueba para simular el contenido real
+                        y comprobar el ajuste en el diseño. Aquí iría la descripción larga.
+                    </p>
+                </section>
+
+                {/* Bloque Detalles */}
+                <section className={styles["details"]}>
+                    <h2>Detalles</h2>
+                    <div className={styles["span"]}>
+                        <p>Formato:</p>
+                        <p>.blend</p>
+                    </div>
+                    <div className={styles["span"]}>
+                        <p>Me gusta:</p>
+                        <div>
+                            <FontAwesomeIcon icon={faStar} />
+                            <FontAwesomeIcon icon={faStar} />
+                            <FontAwesomeIcon icon={faStar} />
+                            <FontAwesomeIcon icon={faStarHalf} />
+                        </div>
                     </div>
                 </section>
 
-                <section className={styles["author"]}>
-                    <img className={styles["author-image"]} src="imageholder.png" alt="Imagen del modelo" />
-                    <h3>Trece</h3>
-                </section>
-                
+                {/* Bloque Tags */}
                 <section className={styles["tags"]}>
-                    <h2>Etiquetas</h2>
+                    <h2>Tags</h2>
                     <div className={styles["tag-cloud"]}>
-                        <Button variant="grey-rounded" label="tag" to="/home"/>
-                        <Button variant="grey-rounded" label="tag" to="/home"/>
-                        <Button variant="grey-rounded" label="tag" to="/home"/>
-                        <Button variant="grey-rounded" label="tag" to="/home"/>
-                        <Button variant="grey-rounded" label="tag" to="/home"/>
-                        <Button variant="grey-rounded" label="tag" to="/home"/>
+                        <Button variant="grey-rounded" label="Digital 3D" to="/home" />
+                        <Button variant="grey-rounded" label="Fan Art" to="/home" />
                     </div>
                 </section>
 
+                {/* Bloque Comentarios */}
                 <section className={styles["comments"]}>
                     <h2>Comentarios</h2>
                     <form className={styles["comment-form"]}>
@@ -68,13 +78,12 @@ function Detail() {
                     </form>
 
                     <div className={styles["comment-div"]}>
-                        <Comment/>
-                        <Comment/>
-                        <Comment/>
+                        <Comment />
+                        <Comment />
                     </div>
                 </section>
+
             </section>
-            
         </div>
     );
 }

@@ -1,120 +1,160 @@
 .detail-main-container {
-    display: flex;
-    background-color: var(--dark-grey);
-    min-height: 100vh; 
-    color: var(--white);
+  display: flex;
+  background-color: var(--dark-grey);
+  min-height: 100vh;
+  color: var(--white);
 }
 
 p {
-    word-wrap: break-word; /* Rompe el texto en palabras largas */
-    overflow-wrap: break-word; /* Rompe palabras largas si es necesario */
-    text-align: left;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  text-align: left;
 }
 
 .detail-images {
-    display: flex;
-    flex-direction: column;
-    width: 75%;
+  display: flex;
+  flex-direction: column;
+  width: 75%;
 
-    >img {
-        width: 100%;
-    }
+  > img {
+    width: 100%;
+    object-fit: cover;
+  }
 }
 
 .detail-info {
-    display: flex;
-    flex-direction: column;
-    gap: 2em; 
-    padding: 2em;
-    width: 25%;
-
-    > section {
-        background-color: var(--medium-grey);
-        padding: 1.5em 3em 1.5em 3em;
-        border-radius: 10px;
-        display: flex;
-    }
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  padding: 1em;
+  width: 25%;
 }
 
-.details {
-    flex-direction: column;
-    gap: 1em;
+/* 🔵 Bloque principal de autor + botones + título + descripción */
+.author-block {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  background-color: var(--medium-grey);
+  padding: 1em;
+  border-radius: 10px;
 }
 
-.buttons {
-    display: flex;
-    justify-content: center;
-    padding: 1em;
-    gap: 2em;
-
-    > button {
-        padding: 1em;
-    }
-}
-
-.span {
-    display: flex;
-    justify-content: space-between;
-    width: 40%;
-}
-
+/* 🔵 Parte superior: autor */
 .author {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
+  display: flex;
+  align-items: center;
+  gap: 1em;
 }
 
+/* Imagen del autor */
 .author-image {
-    width: 100px;
-    aspect-ratio: 1/1;
-    border-radius: 50%;
-    object-fit: cover; /* Ajusta la imagen sin deformarla */
+  width: 80px;
+  aspect-ratio: 1/1;
+  border-radius: 50%;
+  object-fit: cover;
 }
 
-.tags {
-    flex-direction: column;
-}
-.tag-cloud {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1em; 
-    justify-content: center; 
-    margin: 1em auto; 
-}
+/* 🔵 Botones */
+.buttons {
+  display: flex;
+  gap: 3em;
 
-.comments {
-    flex-direction: column;
-}
-
-.comment-form {
-    display: flex;
-    flex-direction: column;
-    gap: 1em;
-    margin-bottom: 2em;
-    width: 100%; /* Asegura que tome el 100% del section */
-}
-
-.comment-textarea {
-    width: 100%;
-    padding: 1em;
+  > button {
+    padding: 0.8em 1.2em;
     border-radius: 10px;
-    border: none;
-    resize: vertical;
-    font-family: inherit;
-    font-size: 1em;
-    background-color: var(--dark-grey); /* Igual al fondo */
-    color: var(--white);
-    box-sizing: border-box; /* MUY importante: padding incluido en el ancho */
+    font-size: medium;
+  }
 }
 
-
-
-
-@media (max-width: 1600px) {  /* Cuando la pantalla sea menor a 768px */
-    .detail-main-container {
-        flex-direction: column; /* Apila los elementos en columna */
-    }
-    .detail-images, .detail-info {
-        width: 100%;
-    }
+/* 🔵 Título y Descripción */
+.title {
+  font-size: 1.5em;
+  font-weight: bold;
+  margin-bottom: -0.1em;
 }
+
+.description {
+  color: var(--white);
+}
+
+/* 🔵 Bloque Detalles */
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+  background-color: var(--medium-grey);
+  padding: 1em;
+  border-radius: 10px;
+}
+
+/* Fila de detalles */
+.span {
+  display: flex;
+  justify-content: space-between;
+}
+
+/* 🔵 Bloque Tags */
+.tags {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--medium-grey);
+  padding: 1em;
+  border-radius: 10px;
+}
+
+/* Nube de etiquetas */
+.tag-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5em;
+}
+
+/* Etiquetas individuales de botón */
+.tag-cloud button {
+  font-size: 10px;
+}
+
+/* 🔵 Bloque Comentarios */
+.comments {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--medium-grey);
+  padding: 1em;
+  border-radius: 10px;
+}
+
+/* Formulario de comentario */
+.comment-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  margin-bottom: 1em;
+  width: 100%;
+}
+
+/* Textarea del comentario */
+.comment-textarea {
+  width: 100%;
+  padding: 1em;
+  border-radius: 10px;
+  border: none;
+  resize: vertical;
+  font-family: inherit;
+  font-size: 1em;
+  background-color: var(--dark-grey);
+  color: var(--white);
+  box-sizing: border-box;
+}
+
+/* Responsive */
+/* @media (max-width: 1600px) {
+  .detail-main-container {
+    flex-direction: column;
+  }
+
+  .detail-images,
+  .detail-info {
+    width: 100%;
+  }
+} */
