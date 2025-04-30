@@ -201,8 +201,46 @@ app.post("/api/login", (req, res) => {
 });
 
 app.get("/api/publicaciones", async (req, res) => {
+    const { query, categories, formats, types, ratings } = req.query;
+    console.log("🔎 Parámetros recibidos:", req.query);
+
+    // Crea el objeto `match` que usaremos en la agregación para filtrar los resultados
+    const match = {};
+
+    // Filtro por categorías (si existe el parámetro `categories`)
+    if (categories) {
+        const categoryArray = categories.split(',').map(c => c.trim()); // 👈 Limpia espacios
+        console.log("💡 categoryArray:", categoryArray);
+        match.categoria = { $in: categoryArray };
+    }
+            
+
+    // Filtro por formatos (si existe el parámetro `formats`)
+    if (formats) {
+        const formatArray = formats.split(',');
+        match.formato = { $in: formatArray };  // Suponiendo que el campo 'formato' es un array
+    }
+
+    // Filtro por tipos (si existe el parámetro `types`)
+    if (types) {
+        const typeArray = types.split(',');
+        match.tipo = { $in: typeArray };  // Suponiendo que el campo 'tipo' es un array
+    }
+
+    // Filtro por estrellas (si existe el parámetro `ratings`)
+    if (ratings) {
+        match.valoracion = { $gte: parseInt(ratings) };  // Filtra por valoraciones mayores o iguales a la proporcionada
+    }
+
+    // Búsqueda de texto (si existe el parámetro `query`)
+    if (query) {
+        match.$text = { $search: query };  // Suponiendo que tienes un índice de texto en el campo correspondiente
+    }
+
     try {
+        // Realiza la agregación con los filtros aplicados
         const publicaciones = await publicacionesDB.aggregate([
+            { $match: match },  // Aplica el filtro basado en el objeto `match`
             {
                 $addFields: {
                     usuarioId: { $toObjectId: "$usuarioId" }
@@ -229,17 +267,18 @@ app.get("/api/publicaciones", async (req, res) => {
                     "usuario.email": 1
                 }
             },
-            { $sort: { fecha: -1 } }
+            { $sort: { fecha: -1 } } // Ordena por fecha (de más reciente a más antigua)
         ]).toArray();
 
-
         res.json(publicaciones);
+        console.log("🔎 Respuesta:", publicaciones);
 
     } catch (err) {
         console.error("❌ Error al obtener publicaciones:", err);
         res.status(500).json({ message: "Error al procesar la solicitud", error: err.message });
     }
 });
+
 
 app.get("/api/publicaciones/:id", async (req, res) => {
     const { id } = req.params;
@@ -293,6 +332,53 @@ app.get("/api/publicaciones/:id", async (req, res) => {
         res.status(500).json({ message: "Error al procesar la solicitud", error: err.message });
     }
 });
+app.get("/api/publicaciones/usuario/:idUsuario", async (req, res) => {
+    try {
+        const idUsuario = req.params.idUsuario;
+
+        const publicaciones = await publicacionesDB.aggregate([
+            {
+                $addFields: {
+                    usuarioId: { $toObjectId: "$usuarioId" }
+                }
+            },
+            {
+                $match: {
+                    usuarioId: new ObjectId(idUsuario)
+                }
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "usuarioId",
+                    foreignField: "_id",
+                    as: "usuario"
+                }
+            },
+            { $unwind: "$usuario" },
+            {
+                $project: {
+                    titulo: 1,
+                    descripcion: 1,
+                    categoria: 1,
+                    archivos: 1,
+                    fecha: 1,
+                    "usuario._id": 1,
+                    "usuario.name": 1,
+                    "usuario.email": 1
+                }
+            },
+            { $sort: { fecha: -1 } }
+        ]).toArray();
+
+        res.json(publicaciones);
+
+    } catch (err) {
+        console.error("❌ Error al obtener publicaciones:", err);
+        res.status(500).json({ message: "Error al procesar la solicitud", error: err.message });
+    }
+});
+
 
 app.post("/api/publicaciones/:idUsuario", upload.array("archivo", 10), async (req, res) => {
     try {

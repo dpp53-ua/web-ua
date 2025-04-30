@@ -1,25 +1,32 @@
-import { Button, ModelGrid, ProfileMenu, UpButton } from '../../Components';
-
-
-/* Estilos */
+import { useEffect, useState } from "react";
+import { Button, ModelGrid, ProfileMenu, UpButton } from "../../Components";
 import styles from "./MyAssets.module.css";
+import { useAuth } from "../../Context"; 
 
 function MyAssets() {
+  const [publicaciones, setPublicaciones] = useState([]);
+  const { userId } = useAuth();
+
+  useEffect(() => {
+    fetch(`http://localhost:5000/api/publicaciones/usuario/${userId}`)
+      .then(res => res.json())
+      .then(data => setPublicaciones(data))
+      .catch(err => console.error("❌ Error al cargar publicaciones:", err));
+  }, [userId]);
 
   return (
     <div className={styles["profile-main-container"]}>
-      <UpButton/>
+      <UpButton />
       <section className={styles["left-content"]}>
         <ProfileMenu />
       </section>
-
       <section className={styles["right-content"]}>
-        <header >
+        <header>
           <h1>Mis assets</h1>
         </header>
-        <ModelGrid/> 
+        <ModelGrid publicaciones={publicaciones} />
         <footer className={styles["model-footer"]}>
-            <Button variant="red-rounded" label="Mostrar más +" to="/home"/>
+          <Button variant="red-rounded" label="Mostrar más +" to="/home" />
         </footer>
       </section>
     </div>
