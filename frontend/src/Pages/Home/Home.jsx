@@ -1,14 +1,17 @@
 import { Button, ModelGrid, Category, UpButton } from '../../Components';
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRight, faArrowLeft, faCircle } from "@fortawesome/free-solid-svg-icons";
 
 import styles from "./Home.module.css";
 
 function Home() {
     const [categories, setCategories] = useState([]);
     const [publicaciones, setPublicaciones] = useState([]);
+    const [visibleCount, setVisibleCount] = useState(5);
+
+    const handleMostrarMas = () => {
+        setVisibleCount(prev => prev + 5);
+    };
 
     useEffect(() => {
         fetch('http://localhost:5000/api/categorias')
@@ -86,9 +89,9 @@ function Home() {
                 <header className={styles["product-header"]}>
                     <h2>Todas las publicaciones</h2>
                 </header>
-                <ModelGrid publicaciones={publicaciones} />
+                <ModelGrid publicaciones={publicaciones.slice(0, visibleCount)} />
                 <footer className={styles["model-footer"]}>
-                    <Button variant="red-rounded" label="Mostrar más +" to="/home" />
+                    <Button variant="red-rounded" label="Mostrar más +" onClick={handleMostrarMas} />
                 </footer>
             </section>
         </div>

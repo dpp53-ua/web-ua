@@ -8,7 +8,12 @@ import styles from "./SearchResults.module.css";
 function SearchResults() {
     const [categories, setCategories] = useState([]);
     const [publicaciones, setPublicaciones] = useState([]);
+    const [visibleCount, setVisibleCount] = useState(5);
 
+    const handleMostrarMas = () => {
+        setVisibleCount(prev => prev + 5);
+    };
+        
     // BUSQUEDA
     const [searchParams] = useSearchParams();
     const query = searchParams.get('query') || '';
@@ -237,9 +242,9 @@ function SearchResults() {
                 </header>
                 {publicaciones.length > 0 ? (
                     <>
-                        <ModelGrid publicaciones={publicaciones} />
+                        <ModelGrid publicaciones={publicaciones.slice(0, visibleCount)} />
                         <footer className={styles["model-footer"]}>
-                            <Button variant="red-rounded" label="Mostrar más +" to="/home" />
+                            <Button variant="red-rounded" label="Mostrar más +" onClick={handleMostrarMas} />
                         </footer>
                     </>
                 ) : (
