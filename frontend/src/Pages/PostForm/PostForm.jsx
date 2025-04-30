@@ -193,7 +193,6 @@ function PostForm() {
         postDescription: data.descripcion,
       });
   
-      // ⚠️ Archivos existentes se cargan directamente como parte de uploadedFiles
       const fakeFiles = data.archivos.map(file =>
         new File([""], file.nombre, { type: "application/octet-stream" })
       );
