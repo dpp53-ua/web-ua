@@ -1,7 +1,9 @@
 import { Button, InputField } from '../../Components';
 import { faUser, faLock, faEnvelope } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import Swal from "sweetalert2";
+import { getCSSVariable } from '../../Utils';
 
 /* Estilos */
 import styles from "./Register.module.css";
@@ -9,6 +11,8 @@ import styles from "./Register.module.css";
 function Register() {
   const [formData, setFormData] = useState({ email: "", name: "", password: "", password_rep: "" });
   const [errors, setErrors] = useState({});
+  const navigate = useNavigate();
+
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -39,27 +43,52 @@ function Register() {
       const result = await response.json();
       if (!response.ok) {
         if (response.status === 400) {
-          setErrors((prevErrors) => ({ ...prevErrors, name: "Este usuario o correo electrónico ya existe" }));
+          setErrors((prevErrors) => ({
+            ...prevErrors,
+            name: "Este usuario o correo electrónico ya existe"
+          }));
         } else {
           throw new Error(result.message || "Error en el registro");
         }
+        return; // 👈 IMPORTANTE: evita seguir si hubo error
       }
-      // Mostrar el pop-up de éxito
+      
+      // ✅ Solo se ejecuta si todo fue bien
       Swal.fire({
         icon: 'success',
         title: 'Registro exitoso',
         text: '¡Tu cuenta ha sido creada!',
         confirmButtonText: "Continuar",
-          background: "#1e1e1e",     
-          color: "#ffffff", 
+        background: "#1e1e1e",
+        color: "#ffffff",
       }).then(() => {
-        // Redirigir al login después de que el usuario haga clic en "Aceptar"
-        window.location.href = "/login";
-      });
+        navigate("/login");
+      });      
 
       console.log("Registro exitoso", result);
     } catch (error) {
       setErrors((prevErrors) => ({ ...prevErrors, general: error.message }));
+    }
+  };
+
+  const handleClear = async () => {
+    const result = await Swal.fire({
+      title: '¿Limpiar formulario?',
+      text: '¿Deseas borrar todos los campos introducidos?',
+      icon: 'warning',
+      background: getCSSVariable('--dark-grey'),
+      color: getCSSVariable('--white'),
+      customClass: {
+        confirmButton: "swal-confirm-btn",
+      },
+      showCancelButton: true,
+      confirmButtonText: 'Sí, borrar',
+      cancelButtonText: 'Cancelar'
+    });
+  
+    if (result.isConfirmed) {
+      setFormData({ email: "", name: "", password: "", password_rep: "" });
+      setErrors({});
     }
   };
 
@@ -113,7 +142,7 @@ function Register() {
             explicativeText={errors.password_rep} 
           />
           <div>
-            <Button type="reset" variant="red" label="Limpiar" onClick={() => setFormData({ email: "", name: "", password: "", password_rep: "" })}/>
+            <Button type="reset" variant="red" label="Limpiar" onClick={handleClear}/>
             <Button type="submit" variant="red" label="Aceptar" />
           </div>
         </form>

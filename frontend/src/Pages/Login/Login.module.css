@@ -72,7 +72,7 @@
 
         > img {
             /* width: 20rem; */
-            width: 60%;
+            width: 50%;
             height: auto;
             animation: spin 25s linear infinite;
             margin-bottom: 1rem;
@@ -81,6 +81,7 @@
         > p {
             color: var(--white);
             font-size: var(--font-large);
+            margin-bottom: 2rem;
         }
     }
 }

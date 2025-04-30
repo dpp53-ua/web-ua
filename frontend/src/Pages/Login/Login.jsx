@@ -4,6 +4,8 @@ import { Button, InputField } from '../../Components';
 import { faUser, faLock } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
 import { useAuth } from "../../Context";
+import { getCSSVariable } from "../../Utils";
+import Swal from 'sweetalert2';
 
 /* Estilos */
 import styles from "./Login.module.css";
@@ -64,6 +66,28 @@ function Login() {
     }
   };
 
+  const handleClear = async () => {
+    const result = await Swal.fire({
+      title: '¿Limpiar formulario?',
+      text: '¿Deseas borrar todos los campos introducidos?',
+      icon: 'warning',
+      background: getCSSVariable('--dark-grey'),
+      color: getCSSVariable('--white'),
+      customClass: {
+        confirmButton: "swal-confirm-btn",
+      },
+      showCancelButton: true,
+      confirmButtonText: 'Sí, borrar',
+      cancelButtonText: 'Cancelar'
+    });
+  
+    if (result.isConfirmed) {
+      setFormData({ name: "", password: "" });
+      setErrors({});
+    }
+  };
+  
+
   return (
     <div className={styles["login-main-container"]}>
       <section className={styles["left-section"]}>
@@ -92,9 +116,8 @@ function Login() {
             onChange={handleChange} 
             explicativeText={errors.password}
           />
-          <Link to="">¿Has olvidado tu contraseña?</Link>
           <div>
-            <Button type="reset" variant="red" label="Limpiar" onClick={() => setFormData({ name: "", password: "" })}/>
+            <Button type="reset" variant="red" label="Limpiar" onClick={handleClear}/>
             <Button type="submit" variant="red" label="Aceptar" />
           </div>
         </form>

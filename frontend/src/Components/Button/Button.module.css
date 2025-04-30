@@ -29,29 +29,39 @@ button {
   color: var(--white);
   background-color: var(--red);
 
-  &:active {
-    background-color: var(--dark-red);
-  }
+    &:active {
+        background-color: var(--dark-red);
+    }
+    
+    text-decoration-color: var(--white);
 }
 
 .red-rounded {
-  color: var(--white);
-  background-color: var(--red);
+    color: var(--white);
+    background-color: var(--red);
+
+    text-decoration-color: var(--white);
 }
 
 .grey-rounded {
-  color: var(--white);
-  background-color: var(--medium-light-grey);
+    color: var(--white);
+    background-color: var(--medium-light-grey);
+
+    text-decoration-color: var(--white);
 }
 
 .blue-rounded {
-  color: var(--white);
-  background-color: var(--blue);
+    color: var(--white);
+    background-color: var(--blue);
+
+    text-decoration-color: var(--white);
 }
 
 .green-rounded {
-  color: var(--white);
-  background-color: var(--green);
+    color: var(--white);
+    background-color: var(--green);
+
+    text-decoration-color: var(--white);
 }
 
 .grey-rounded,
@@ -78,20 +88,24 @@ button {
   color: black;
   background-color: var(--white);
 
-  &:active {
-    background-color: black;
-    color: var(--white);
-  }
+    &:active {
+        background-color: black;
+        color: var(--white);
+    }
+
+    text-decoration-color: var(--black);
 }
 
 .white-red {
   color: var(--red);
   background-color: var(--white);
 
-  &:active {
-    background-color: black;
-    color: var(--white);
-  }
+    &:active {
+        background-color: black;
+        color: var(--white);
+    }
+
+    text-decoration-color: var(--black);
 }
 
 .white-rounded {
@@ -99,20 +113,24 @@ button {
   background-color: var(--white);
   border-radius: 1rem;
 
-  &:active {
-    background-color: black;
-    color: var(--white);
-  }
+    &:active {
+        background-color: black;
+        color: var(--white);
+    }
+
+    text-decoration-color: var(--black);
 }
 
 .black {
-  color: var(--white);
-  background-color: black;
+    color: var(--white);
+    background-color: black;
+    
+    &:active {
+        background-color: var(--white);
+        color: black;
+    }
 
-  &:active {
-    background-color: var(--white);
-    color: black;
-  }
+    text-decoration-color: var(--white);
 }
 
 .black-rounded {
@@ -120,10 +138,12 @@ button {
   background-color: black;
   border-radius: 1rem;
 
-  &:active {
-    background-color: var(--white);
-    color: black;
-  }
+    &:active {
+        background-color: var(--white);
+        color: black;
+    }
+
+    text-decoration-color: var(--white);
 }
 
 /* .headerButtonWhite */
@@ -140,9 +160,11 @@ button {
 }
 
 .headerButtonWhite:hover {
-  transform: scale(1.05); /* Efecto de ampliación */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Sombra sutil */
-  cursor: pointer;
+    transform: scale(1.05); /* Efecto de ampliación */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Sombra sutil */
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-color: var(--black);
 }
 .headerButtonWhite:active {
   transform: scale(0.98); /* Reducir el tamaño del botón */
@@ -168,11 +190,13 @@ button {
 }
 
 .headerButtonBlack:hover {
-  background-color: var(--medium-grey); /* Fondo más claro en hover */
-  transform: scale(1.05); /* Efecto de ampliación */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); /* Sombra más pronunciada */
-  color: var(--light-grey); /* Cambiar color del texto */
-  cursor: pointer;
+    background-color: var(--medium-grey); /* Fondo más claro en hover */
+    transform: scale(1.05); /* Efecto de ampliación */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); /* Sombra más pronunciada */
+    color: var(--light-grey); /* Cambiar color del texto */
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-color: var(--white);
 }
 
 .headerButtonBlack:active {
@@ -201,7 +225,7 @@ button {
   }
 }
 
-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+a {
+    all: unset;
 }
+  

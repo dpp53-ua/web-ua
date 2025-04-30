@@ -38,7 +38,16 @@ function ProfileConfiguration() {
         setInitial({ theme, fontSize });
       } catch (err) {
         console.error("Error cargando usuario:", err);
-        Swal.fire('Error', 'No se pudieron cargar tus preferencias', 'error');
+        Swal.fire({
+          title: 'Error',
+          text: 'No se pudieron cargar tus preferencias',
+          icon: 'error',
+          background: getCSSVariable('--dark-grey'),     
+          color: getCSSVariable('--white'),           
+          customClass: {
+            confirmButton: "swal-confirm-btn",
+          },
+        });
       } finally {
         setLoading(false);
       }
@@ -120,7 +129,16 @@ function ProfileConfiguration() {
         setInitial({ ...preferences });
       } catch (err) {
         console.error('Error al actualizar:', err);
-        Swal.fire('Error', 'No se pudieron guardar los cambios', 'error');
+        Swal.fire({
+          title: 'Error',
+          text: 'No se pudieron guardar los cambios',
+          icon: 'error',
+          background: getCSSVariable('--dark-grey'),     
+          color: getCSSVariable('--white'),           
+          customClass: {
+            confirmButton: "swal-confirm-btn",
+          },
+        });
       }
     }
   };
@@ -162,7 +180,16 @@ function ProfileConfiguration() {
           logout();
 
         } catch {
-          Swal.fire('Error', 'No se pudo dar de baja tu cuenta', 'error');
+          Swal.fire({
+            title: 'Error',
+            text: 'No se pudo dar de baja tu cuenta',
+            icon: 'error',
+            background: getCSSVariable('--dark-grey'),     
+            color: getCSSVariable('--white'),           
+            customClass: {
+              confirmButton: "swal-confirm-btn",
+            },
+          });
         }
       }
     });
