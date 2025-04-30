@@ -8,7 +8,7 @@ function Model({ _id,titulo, autor, imagen }) {
         <article className={styles["article-model"]}>
            <Link to={`/detail/${_id}`}>  
                 <header className={styles["model-header"]}>
-                    <img className={styles["model-image"]} src={imagen || "imageholder.png"} alt="Imagen del modelo" />
+                    <img className={styles["model-image"]} src={imagen} alt="Imagen del modelo" onError={(e) => {e.target.src = '/imageholder.png';}} />
                 </header>
                 <footer className={styles["model-footer"]}>
                     <h3>{titulo}</h3>
