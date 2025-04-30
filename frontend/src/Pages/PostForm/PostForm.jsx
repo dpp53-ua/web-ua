@@ -3,20 +3,24 @@ import { useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCloudArrowUp } from "@fortawesome/free-solid-svg-icons";
 import { Button, InputField, DeleteableTag } from '../../Components';
+import { getCSSVariable } from "../../Utils";
+import Swal from "sweetalert2";
 import styles from "./PostForm.module.css";
 
+
 function PostForm() {
-  const { id } = useParams(); 
+  const { id } = useParams();
   const isEditMode = Boolean(id);
 
   const [formData, setFormData] = useState({ postTitle: "", postDescription: "" });
   const [uploadedFiles, setUploadedFiles] = useState([]);
-  const [initialFiles, setInitialFiles] = useState([]); // para detectar cambios
+  const [initialFiles, setInitialFiles] = useState([]);
   const [arrOptions, setArrOptions] = useState([]);
   const [selectedTags, setSelectedTags] = useState([]);
   const [initialTags, setInitialTags] = useState([]);
   const [errors, setErrors] = useState({});
   const [fechaModificacion, setFechaModificacion] = useState(null);
+  const [initialFormData, setInitialFormData] = useState({ postTitle: "", postDescription: "" });
 
   const dropAreaRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -41,7 +45,7 @@ function PostForm() {
     }
 
     if (newFiles.length < files.length) {
-      setErrors(prev => ({ ...prev, postFile: "Algunos archivos ya estaban añadidos." }));
+      setErrors(prev => ({ ...prev, postFile: "Algunos archivos ya estaban añadidos o exceden el límite." }));
     } else {
       setErrors(prev => ({ ...prev, postFile: "" }));
     }
@@ -75,18 +79,22 @@ function PostForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
   
-    console.log("📦 Enviando datos:");
-    console.log("Título:", formData.postTitle);
-    console.log("Descripción:", formData.postDescription);
-    console.log("Categorías:", selectedTags);
-    console.log("Archivos nuevos:", uploadedFiles.map(f => f.name));
-    console.log("Modo edición:", isEditMode);
+    const filesToDelete = initialFiles.filter(initialFile =>
+      !uploadedFiles.some(file => file.name === initialFile.nombre)
+    );
   
+    const hasNewFiles = uploadedFiles.some(file => file instanceof File);
+    const hasRemainingInitialFiles = initialFiles.some(initialFile =>
+      uploadedFiles.some(file => file.name === initialFile.nombre)
+    );
+  
+    // Validaciones
     const newErrors = {};
     if (!formData.postTitle)       newErrors.postTitle = "El título es obligatorio";
     if (!formData.postDescription) newErrors.postDescription = "La descripción es obligatoria";
-    if (!uploadedFiles.length && !initialFiles.length)
+    if (!hasNewFiles && !hasRemainingInitialFiles) {
       newErrors.postFile = "Debe subir al menos un archivo";
+    }
     if (!selectedTags.length)      newErrors.postCategories = "Seleccione al menos una categoría";
   
     if (Object.keys(newErrors).length) {
@@ -94,35 +102,82 @@ function PostForm() {
       return;
     }
   
+    const compareTags = (arr1, arr2) => {
+      if (arr1.length !== arr2.length) return false;
+      for (let i = 0; i < arr1.length; i++) {
+        if (arr1[i] !== arr2[i]) return false;
+      }
+      return true;
+    };
+    
+    if (isEditMode) {
+      const sinCambios =
+      formData.postTitle === initialFormData.postTitle &&
+      formData.postDescription === initialFormData.postDescription &&
+      compareTags(selectedTags.sort(), initialTags.sort()) &&
+      filesToDelete.length === 0; // Solo verificamos si hay archivos para eliminar
+    
+    
+  
+      console.log("SIN CAMBIOS:", sinCambios);
+
+      console.log('Selected Tags:', selectedTags);
+      console.log('Initial Tags:', initialTags);
+      console.log('Form Data:', formData);
+      console.log('Initial Form Data:', initialFormData);
+      console.log('Uploaded Files:', uploadedFiles);
+      console.log('Files to Delete:', filesToDelete);
+
+  
+      if (sinCambios) {
+        return Swal.fire({
+          title: 'Sin cambios',
+          text: 'No hay modificaciones para guardar',
+          icon: 'info',
+          background: getCSSVariable('--dark-grey'),
+          color: getCSSVariable('--white'),
+          customClass: {
+            confirmButton: "swal-confirm-btn",
+          },
+        });
+      }
+  
+      const result = await Swal.fire({
+        title: '¿Desea actualizar la publicación?',
+        text: 'Se sustituirán los datos antiguos por los nuevos',
+        icon: 'warning',
+        background: getCSSVariable('--dark-grey'),
+        color: getCSSVariable('--white'),
+        customClass: {
+          confirmButton: "swal-confirm-btn",
+        },
+        showCancelButton: true,
+        confirmButtonText: 'Sí, guardar cambios',
+        cancelButtonText: 'Cancelar'
+      });
+  
+      if (!result.isConfirmed) {
+        return;
+      }
+    }
+  
+    // Construir FormData
     const formPayload = new FormData();
     formPayload.append("titulo", formData.postTitle);
     formPayload.append("descripcion", formData.postDescription);
     selectedTags.forEach(tag => formPayload.append("categoria", tag));
   
-    // 🔍 Detectar archivos eliminados
-    const filesToDelete = initialFiles.filter(initialFile =>
-      !uploadedFiles.some(file => file.name === initialFile.nombre)
+    filesToDelete.forEach(file =>
+      formPayload.append("eliminarArchivo", file.nombre)
     );
-    filesToDelete.forEach(file => formPayload.append("eliminarArchivo", file.nombre)); // opcional, si lo usas
   
-    // ✅ Subir solo los archivos nuevos (instancias File reales)
-    uploadedFiles.forEach(file => formPayload.append("archivo", file));
+    uploadedFiles.forEach(file => {
+      if (file instanceof File) {
+        formPayload.append("archivo", file);
+      }
+    });
   
     const userId = sessionStorage.getItem("userId");
-  
-    if (isEditMode) {
-      const sinCambios =
-        formData.postTitle === initialFormData.postTitle &&
-        formData.postDescription === initialFormData.postDescription &&
-        JSON.stringify(selectedTags) === JSON.stringify(initialTags) &&
-        uploadedFiles.length === 0 &&
-        filesToDelete.length === 0;
-  
-      if (sinCambios) {
-        alert("No se han realizado cambios.");
-        return;
-      }
-    }
   
     try {
       const endpoint = isEditMode
@@ -140,8 +195,20 @@ function PostForm() {
       }
   
       const result = await response.json();
-      alert(isEditMode ? "Publicación actualizada correctamente" : "Publicación creada correctamente");
-      handleClear();
+      Swal.fire({
+        title: "¡Listo!",
+        text: isEditMode
+          ? 'La publicación se ha actualizado'
+          : 'Se ha añadido una nueva publicación',
+        icon: 'success',
+        background: getCSSVariable('--dark-grey'),
+        color: getCSSVariable('--white'),
+        customClass: {
+          confirmButton: "swal-confirm-btn",
+        }
+      });
+  
+      handleClear(false);
   
     } catch (err) {
       console.error("Error al enviar publicación:", err);
@@ -149,8 +216,36 @@ function PostForm() {
     }
   };
   
+
+  const handleClear = async (swal) => {
+    // Si no se desea mostrar el SweetAlert, limpiar directamente
+    if (!swal) {
+      clearForm();
+      return;
+    }
   
-  const handleClear = () => {
+    // Mostrar SweetAlert y esperar confirmación
+    const result = await Swal.fire({
+      title: '¿Limpiar formulario?',
+      text: '¿Deseas borrar todos los campos introducidos?',
+      icon: 'warning',
+      background: getCSSVariable('--dark-grey'),
+      color: getCSSVariable('--white'),
+      customClass: {
+        confirmButton: "swal-confirm-btn",
+      },
+      showCancelButton: true,
+      confirmButtonText: 'Sí, borrar',
+      cancelButtonText: 'Cancelar'
+    });
+  
+    if (result.isConfirmed) {
+      clearForm();
+    }
+  };
+  
+  // Función auxiliar para limpiar el formulario
+  const clearForm = () => {
     setFormData({ postTitle: "", postDescription: "" });
     setUploadedFiles([]);
     setInitialFiles([]);
@@ -177,13 +272,11 @@ function PostForm() {
     }
   };
 
-  const [initialFormData, setInitialFormData] = useState({ postTitle: "", postDescription: "" });
-
   const fetchPost = async () => {
     try {
       const res = await fetch(`http://localhost:5000/api/publicaciones/${id}`);
       const data = await res.json();
-  
+
       setFormData({
         postTitle: data.titulo,
         postDescription: data.descripcion,
@@ -192,12 +285,12 @@ function PostForm() {
         postTitle: data.titulo,
         postDescription: data.descripcion,
       });
-  
+
       const fakeFiles = data.archivos.map(file =>
         new File([""], file.nombre, { type: "application/octet-stream" })
       );
-  
-      setUploadedFiles(fakeFiles);  // Se usan archivos simulados
+
+      setUploadedFiles(fakeFiles);
       setInitialFiles(data.archivos);
       setSelectedTags(data.categoria);
       setInitialTags(data.categoria);
@@ -206,7 +299,7 @@ function PostForm() {
       console.error("Error al cargar publicación:", err);
     }
   };
-  
+
   useEffect(() => {
     fetchCategories();
     if (isEditMode) fetchPost();
@@ -217,7 +310,7 @@ function PostForm() {
       <section className={styles["left-section"]}>
         <h1>{isEditMode ? "Editar publicación" : "Nueva publicación"}</h1>
         {errors.general && <p className={styles["error"]}>{errors.general}</p>}
-        <form onSubmit={handleSubmit} onReset={handleClear}>
+        <form onSubmit={handleSubmit} onReset={() => handleClear(true)}>
           <InputField
             id="postTitle"
             type="text"
@@ -246,18 +339,17 @@ function PostForm() {
             placeholder="Seleccionar archivos"
             onChange={handleFileInput}
             explicativeText={errors.postFile}
-            multiple // 👈 permite múltiples archivos
+            multiple
             ref={fileInputRef}
           />
           <div className={styles["grid-list"]}>
             <ul>
               {uploadedFiles.map((file) => (
                 <DeleteableTag
-                key={file.name}
-                file={file}
-                onDelete={() => handleDeleteFile(file.name)}
-              />
-
+                  key={file.name}
+                  file={file}
+                  onDelete={() => handleDeleteFile(file.name)}
+                />
               ))}
             </ul>
           </div>
@@ -282,7 +374,7 @@ function PostForm() {
             </ul>
           </div>
           <div>
-            <Button type="reset" variant="red" label="Limpiar"/>
+            <Button type="reset" variant="red" label="Limpiar" />
             <Button type="submit" variant="red" label={isEditMode ? "Actualizar" : "Aceptar"} />
           </div>
         </form>

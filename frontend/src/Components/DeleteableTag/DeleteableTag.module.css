@@ -26,4 +26,9 @@
     input[type="file"] {
         display: none;
     }
+
+    &:hover {
+        background-color: var(--white);
+        color: var(--black);
+    }
 }

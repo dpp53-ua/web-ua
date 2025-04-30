@@ -77,6 +77,7 @@
 
 .profilemenu a:hover {
     background-color: #00000031; /* Fondo blanquecino translúcido */
+    cursor: pointer;
 }
 
 
