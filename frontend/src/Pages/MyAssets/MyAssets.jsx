@@ -6,6 +6,11 @@ import { useAuth } from "../../Context";
 function MyAssets() {
   const [publicaciones, setPublicaciones] = useState([]);
   const { userId } = useAuth();
+  const [visibleCount, setVisibleCount] = useState(4);
+
+  const handleMostrarMas = () => {
+    setVisibleCount(prev => prev + 4);
+  };
 
   useEffect(() => {
     fetch(`http://localhost:5000/api/publicaciones/usuario/${userId}`)
@@ -24,10 +29,10 @@ function MyAssets() {
         <header>
           <h1>Mis assets</h1>
         </header>
-        <ModelGrid publicaciones={publicaciones} />
+        <ModelGrid publicaciones={publicaciones.slice(0, visibleCount)} />
         <footer className={styles["model-footer"]}>
-          <Button variant="red-rounded" label="Mostrar más +" to="/home" />
-        </footer>
+                            <Button variant="red-rounded" label="Mostrar más +" onClick={handleMostrarMas} />
+                        </footer>
       </section>
     </div>
   );

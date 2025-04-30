@@ -7,10 +7,10 @@ import styles from "./Home.module.css";
 function Home() {
     const [categories, setCategories] = useState([]);
     const [publicaciones, setPublicaciones] = useState([]);
-    const [visibleCount, setVisibleCount] = useState(5);
+    const [visibleCount, setVisibleCount] = useState(4);
 
     const handleMostrarMas = () => {
-        setVisibleCount(prev => prev + 5);
+        setVisibleCount(prev => prev + 4);
     };
 
     useEffect(() => {

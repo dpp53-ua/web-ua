@@ -8,10 +8,10 @@ import styles from "./SearchResults.module.css";
 function SearchResults() {
     const [categories, setCategories] = useState([]);
     const [publicaciones, setPublicaciones] = useState([]);
-    const [visibleCount, setVisibleCount] = useState(5);
+    const [visibleCount, setVisibleCount] = useState(4);
 
     const handleMostrarMas = () => {
-        setVisibleCount(prev => prev + 5);
+        setVisibleCount(prev => prev + 4);
     };
         
     // BUSQUEDA
