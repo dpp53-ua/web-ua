@@ -17,7 +17,7 @@
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    padding: 5em;
+    padding: 3rem;
     gap: 5rem;
     height: fit-content;
 
@@ -52,7 +52,7 @@
     flex-wrap: wrap;
     gap: 1em; 
     justify-content: center; 
-    margin: 3em auto; 
+    margin: 3rem 3rem 1rem 3rem; 
 }
 
 .category-section, .product-section {

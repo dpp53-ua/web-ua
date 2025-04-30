@@ -3,10 +3,12 @@
   .nav ul {
     display: flex;
     align-items: center;
+    justify-content: center;
     list-style: none;
     gap: 1em;
     padding: 0;
     margin: 0;
+    width: 100%;
     height: 100%;
     font-size: 16px;
     font-weight: bold;
@@ -19,7 +21,7 @@
   }
   
   .nav li {
-    padding: 10px 15px;
+    padding: 0.5rem;
     position: relative; 
     overflow: hidden; /* Necesario para los efectos */
   }
@@ -28,7 +30,6 @@
     background-color: #00000031; /* Color de fondo cuando se pasa el ratón */
     border-radius: 5px; /* Bordes redondeados */
   }
-  
   
   
   .nav li::after {
