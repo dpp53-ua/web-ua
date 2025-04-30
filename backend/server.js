@@ -41,7 +41,6 @@ app.use(logger("dev")); // Logs de las peticiones
 app.use(cors()); // Permitir CORS
 app.use(express.json()); // Soporte para JSON
 
-// 🟢 POST: Crear usuario evitando duplicados
 app.post("/api/users", (req, res) => {
     const { email, name, password } = req.body;
 
@@ -71,16 +70,12 @@ app.post("/api/users", (req, res) => {
     }).catch(err => res.status(500).json({ message: "Error en el servidor", error: err }));
 });
 
-
-
-// 🔵 GET: Obtener todos los usuarios
 app.get("/api/users", (req, res) => {
     usersCollection.find().toArray()
         .then(users => res.json(users))
         .catch(err => res.status(500).json({ message: "Error en el servidor", error: err }));
 });
 
-// 🔵 GET: Obtener un usuario por ID
 app.get("/api/users/:id", (req, res) => {
     const { id } = req.params;
 
@@ -96,7 +91,6 @@ app.get("/api/users/:id", (req, res) => {
         .catch(err => res.status(500).json({ message: "Error en el servidor", error: err }));
 });
 
-// 🟡 UPDATE: Actualizar usuario parcialmente
 app.put("/api/users/:id", upload.single("foto"), (req, res) => {
     const { id } = req.params;
     const updateFields = {};
@@ -167,7 +161,6 @@ app.put("/api/users/:id", upload.single("foto"), (req, res) => {
     }
 });
 
-// DELETE: Dar de baja usuario
 app.delete("/api/users/:id", async (req, res) => {
     try {
         const { id } = req.params;
@@ -178,10 +171,8 @@ app.delete("/api/users/:id", async (req, res) => {
         console.error(err);
         res.status(500).json({ message: "Error al eliminar usuario", error: err });
     }
-});
-
-
-// 🔐 POST: Login básico sin encriptar
+  });
+  
 app.post("/api/login", (req, res) => {
     const { name, password } = req.body;
 
@@ -209,10 +200,6 @@ app.post("/api/login", (req, res) => {
         .catch(err => res.status(500).json({ message: "Error en el servidor", error: err }));
 });
 
-
-// BLOQUE DE PUBLICACIONES
-
-// 🔵 GET: Obtener todas las publicaciones con datos del usuario
 app.get("/api/publicaciones", async (req, res) => {
     try {
         const publicaciones = await publicacionesDB.aggregate([
@@ -254,7 +241,6 @@ app.get("/api/publicaciones", async (req, res) => {
     }
 });
 
-// 🔵 GET: Obtener una publicación por ID con datos del usuario
 app.get("/api/publicaciones/:id", async (req, res) => {
     const { id } = req.params;
 
@@ -264,25 +250,35 @@ app.get("/api/publicaciones/:id", async (req, res) => {
         const publicacion = await publicacionesDB.aggregate([
             { $match: { _id: objectId } },
             {
+                $addFields: {
+                    usuarioObjectId: { $toObjectId: "$usuarioId" }
+                }
+            },
+            {
                 $lookup: {
                     from: "users",
-                    localField: "usuarioId",
+                    localField: "usuarioObjectId",
                     foreignField: "_id",
                     as: "usuario"
                 }
             },
-            // { $unwind: "$usuario" }, // para obtener solo un usuario (no array)
+            {
+                $unwind: {
+                    path: "$usuario",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
             {
                 $project: {
                     titulo: 1,
                     descripcion: 1,
                     categoria: 1,
-                    archivos: 1, // Incluye el array de archivos [{ id, nombre }]
+                    archivos: 1,
                     fecha: 1,
                     "usuario._id": 1,
                     "usuario.name": 1,
                     "usuario.email": 1
-                  }
+                }
             }
         ]).toArray();
 
@@ -293,14 +289,11 @@ app.get("/api/publicaciones/:id", async (req, res) => {
         res.json(publicacion[0]);
 
     } catch (err) {
-        console.error("❌ Error al obtener la publicación:", err);
+        console.error("Error al obtener la publicación:", err);
         res.status(500).json({ message: "Error al procesar la solicitud", error: err.message });
     }
 });
 
-
-
-// Reemplaza upload.single(...) por upload.array(...)
 app.post("/api/publicaciones/:idUsuario", upload.array("archivo", 10), async (req, res) => {
     try {
         let { titulo, descripcion, categoria } = req.body;
@@ -343,15 +336,14 @@ app.post("/api/publicaciones/:idUsuario", upload.array("archivo", 10), async (re
             message: "Publicación creada",
             publicacion: { _id: insertResult.insertedId, ...nuevaPublicacion }
         });
-
-    } catch (err) {
-        console.error("❌ Error en publicación:", err);
+  
+      } catch (err) {
+        console.error("Error en publicación:", err);
         res.status(500).json({ message: "Error al procesar la publicación", error: err.message });
     }
 }
 );
 
-// 🟡 PUT: Editar publicación (reemplazar completamente los archivos)
 app.put("/api/publicaciones/:id", upload.array("archivo", 10), async (req, res) => {
     console.log("Archivos recibidos:", req.files);
     try {
@@ -402,14 +394,11 @@ app.put("/api/publicaciones/:id", upload.array("archivo", 10), async (req, res) 
 
         res.json({ message: "Publicación actualizada correctamente" });
     } catch (err) {
-        console.error("❌ Error al actualizar publicación:", err);
+        console.error("Error al actualizar publicación:", err);
         res.status(500).json({ message: "Error al actualizar publicación", error: err.message });
     }
 });
 
-
-
-// Endpoint para obtener la imagen del perfil desde GridFS
 app.get("/api/users/:id/foto", async (req, res) => {
     const { id } = req.params;
 
@@ -436,10 +425,6 @@ app.get("/api/users/:id/foto", async (req, res) => {
     }
 });
 
-
-// BLOQUE DE CATEGORIAS
-
-// 🟢 POST: Crear una categoría
 app.post("/api/categorias", async (req, res) => {
     const { nombre } = req.body;
 
@@ -465,7 +450,6 @@ app.post("/api/categorias", async (req, res) => {
     }
 });
 
-// 🔵 GET: Obtener todas las categorías
 app.get("/api/categorias", async (req, res) => {
     try {
         const categorias = await categoriasCollection.find().toArray();
@@ -475,9 +459,6 @@ app.get("/api/categorias", async (req, res) => {
     }
 });
 
-// BLOQUE DE COMENTARIOS
-
-// 🟢 POST: Crear un comentario sobre una publicación
 app.post("/api/comentarios", async (req, res) => {
     const { usuarioId, publicacionId, titulo, mensaje } = req.body;
 
@@ -517,7 +498,7 @@ app.post("/api/comentarios", async (req, res) => {
             }
         });
     } catch (err) {
-        console.error("❌ Error al crear comentario:", err);
+        console.error("Error al crear comentario:", err);
         res.status(500).json({ message: "Error al crear comentario", error: err.message });
     }
 });
