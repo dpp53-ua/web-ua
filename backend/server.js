@@ -578,30 +578,63 @@ app.get("/api/users/:id/foto", async (req, res) => {
     }
 });
 
-app.post("/api/categorias", async (req, res) => {
+app.post("/api/categorias", upload.single("foto"), async (req, res) => {
     const { nombre } = req.body;
+    const foto = req.file;
 
     if (!nombre) {
         return res.status(400).json({ message: "El nombre de la categoría es obligatorio" });
     }
 
     try {
-        // Verifica si ya existe una categoría con ese nombre (ignorando mayúsculas/minúsculas)
-        const categoriaExistente = await categoriasCollection.findOne({ nombre: { $regex: `^${nombre}$`, $options: "i" } });
+        // Verificar si ya existe la categoría
+        const categoriaExistente = await categoriasCollection.findOne({
+            nombre: { $regex: `^${nombre}$`, $options: "i" }
+        });
 
         if (categoriaExistente) {
             return res.status(400).json({ message: "La categoría ya existe" });
         }
 
-        const nuevaCategoria = { nombre };
+        let fotoId = null;
+
+        // Si se ha subido una foto, guardarla en GridFS
+        if (foto) {
+            const readStream = fs.createReadStream(foto.path);
+            const uploadStream = bucket.openUploadStream(foto.originalname, {
+                contentType: foto.mimetype
+            });
+
+            readStream.pipe(uploadStream);
+
+            await new Promise((resolve, reject) => {
+                uploadStream.on("finish", () => {
+                    fotoId = uploadStream.id;
+                    fs.unlinkSync(foto.path); // elimina el archivo temporal
+                    resolve();
+                });
+                uploadStream.on("error", reject);
+            });
+        }
+
+        // Guardar categoría
+        const nuevaCategoria = {
+            nombre,
+            fotoId // puede ser null si no hay imagen
+        };
 
         const resultado = await categoriasCollection.insertOne(nuevaCategoria);
 
-        res.status(201).json({ message: "Categoría creada", categoria: { _id: resultado.insertedId, nombre } });
+        res.status(201).json({
+            message: "Categoría creada",
+            categoria: { _id: resultado.insertedId, ...nuevaCategoria }
+        });
     } catch (err) {
-        res.status(500).json({ message: "Error al crear la categoría", error: err });
+        console.error(err);
+        res.status(500).json({ message: "Error al crear la categoría", error: err.message });
     }
 });
+
 
 app.get("/api/categorias", async (req, res) => {
     try {
@@ -609,6 +642,21 @@ app.get("/api/categorias", async (req, res) => {
         res.json(categorias);
     } catch (err) {
         res.status(500).json({ message: "Error al obtener categorías", error: err });
+    }
+});
+app.get("/api/categorias/foto/:id", async (req, res) => {
+    try {
+        const id = new ObjectId(req.params.id);
+        const downloadStream = bucket.openDownloadStream(id);
+
+        downloadStream.on("error", () => {
+            res.status(404).json({ message: "Imagen no encontrada" });
+        });
+
+        res.set("Content-Type", "image/jpeg"); // o usa el tipo que corresponda
+        downloadStream.pipe(res);
+    } catch (err) {
+        res.status(500).json({ message: "Error al recuperar la imagen", error: err.message });
     }
 });
 
