@@ -337,6 +337,89 @@ app.get("/api/publicaciones/:id", async (req, res) => {
     }
 });
 
+app.get("/api/publicaciones/usuario/:idUsuario", async (req, res) => {
+    try {
+        const idUsuario = req.params.idUsuario;
+
+        const publicaciones = await publicacionesDB.aggregate([
+            {
+                $addFields: {
+                    usuarioId: { $toObjectId: "$usuarioId" }
+                }
+            },
+            {
+                $match: {
+                    usuarioId: new ObjectId(idUsuario)
+                }
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "usuarioId",
+                    foreignField: "_id",
+                    as: "usuario"
+                }
+            },
+            { $unwind: "$usuario" },
+            {
+                $project: {
+                    titulo: 1,
+                    descripcion: 1,
+                    categoria: 1,
+                    archivos: 1,
+                    fecha: 1,
+                    "usuario._id": 1,
+                    "usuario.name": 1,
+                    "usuario.email": 1
+                }
+            },
+            { $sort: { fecha: -1 } }
+        ]).toArray();
+
+        res.json(publicaciones);
+
+    } catch (err) {
+        console.error("❌ Error al obtener publicaciones:", err);
+        res.status(500).json({ message: "Error al procesar la solicitud", error: err.message });
+    }
+});
+
+// GET /api/publicaciones/:id/miniatura
+app.get("/api/publicaciones/:id/miniatura", async (req, res) => {
+    const { id } = req.params;
+  
+    try {
+      // Buscar la publicación para obtener el ID de la miniatura
+      const publicacion = await publicacionesDB.findOne({ _id: new ObjectId(id) });
+  
+      if (!publicacion || !publicacion.miniatura || !publicacion.miniatura.id) {
+        return res.status(404).json({ message: "Miniatura no encontrada" });
+      }
+  
+      const { miniatura } = publicacion;
+  
+      // Abrir un stream de lectura desde GridFS usando el ID de la miniatura
+      const downloadStream = bucket.openDownloadStream(miniatura.id);
+  
+      downloadStream.on("file", (file) => {
+        // Puedes mejorar esto si guardas el mime-type en la DB, por ahora lo ponemos como imagen JPEG
+        res.set("Content-Type", "image/jpeg");
+      });
+  
+      downloadStream.on("error", (err) => {
+        console.error("Error al leer la miniatura desde GridFS:", err);
+        res.status(500).json({ message: "Error al leer la miniatura" });
+      });
+  
+      downloadStream.pipe(res);
+    } catch (err) {
+      console.error("Error al procesar la miniatura:", err);
+      res.status(500).json({ message: "Error al procesar la miniatura", error: err.message });
+    }
+  });
+  
+  
+
 // POST /api/publicaciones/:idUsuario
 app.post("/api/publicaciones/:idUsuario", upload.fields([
     { name: "archivo",   maxCount: 10 },
