@@ -223,6 +223,7 @@ app.get("/api/publicaciones", async (req, res) => {
                     descripcion: 1,
                     categoria: 1,
                     archivos: 1, // Incluye el array de archivos [{ id, nombre }]
+                    miniatura: 1,
                     fecha: 1,
                     "usuario._id": 1,
                     "usuario.name": 1,
@@ -274,6 +275,7 @@ app.get("/api/publicaciones/:id", async (req, res) => {
                     descripcion: 1,
                     categoria: 1,
                     archivos: 1,
+                    miniatura: 1,
                     fecha: 1,
                     "usuario._id": 1,
                     "usuario.name": 1,
@@ -294,110 +296,141 @@ app.get("/api/publicaciones/:id", async (req, res) => {
     }
 });
 
-app.post("/api/publicaciones/:idUsuario", upload.array("archivo", 10), async (req, res) => {
+app.post("/api/publicaciones/:idUsuario", upload.fields([
+    { name: "archivo", maxCount: 10 },
+    { name: "miniatura", maxCount: 1 }
+  ]), async (req, res) => {
     try {
-        let { titulo, descripcion, categoria } = req.body;
-        if (!Array.isArray(categoria)) categoria = [categoria];
-
-        const files = req.files;    // ahora es array
-        const idUsuario = req.params.idUsuario;
-        if (!titulo || !descripcion || !categoria.length || !files.length || !idUsuario) {
-            return res.status(400).json({ message: "Faltan campos obligatorios" });
-        }
-
-        const usuario = await usersCollection.findOne({ _id: new ObjectId(idUsuario) });
-        if (!usuario) return res.status(404).json({ message: "Usuario no encontrado" });
-
-        // Subir cada fichero a GridFS
-        const archivoIds = [];
-        for (const file of files) {
-            const readStream = fs.createReadStream(file.path);
-            const uploadStream = bucket.openUploadStream(file.originalname);
-            await new Promise((ok, ko) => {
-                readStream.pipe(uploadStream)
-                    .on("error", ko)
-                    .on("finish", () => ok());
-            });
-            archivoIds.push({ id: uploadStream.id, nombre: file.originalname });
-            fs.unlinkSync(file.path);
-        }
-
-        const nuevaPublicacion = {
-            usuarioId: idUsuario,
-            titulo,
-            descripcion,
-            categoria,
-            archivos: archivoIds,
-            fecha: new Date()
-        };
-
-        const insertResult = await publicacionesDB.insertOne(nuevaPublicacion);
-        res.status(201).json({
-            message: "Publicación creada",
-            publicacion: { _id: insertResult.insertedId, ...nuevaPublicacion }
-        });
+      let { titulo, descripcion, categoria } = req.body;
+      if (!Array.isArray(categoria)) categoria = [categoria];
   
-      } catch (err) {
-        console.error("Error en publicación:", err);
-        res.status(500).json({ message: "Error al procesar la publicación", error: err.message });
+      const archivos = req.files["archivo"] || [];
+      const miniatura = req.files["miniatura"]?.[0];
+  
+      const idUsuario = req.params.idUsuario;
+      if (!titulo || !descripcion || !categoria.length || !archivos.length || !miniatura || !idUsuario) {
+        return res.status(400).json({ message: "Faltan campos obligatorios" });
+      }
+  
+      const usuario = await usersCollection.findOne({ _id: new ObjectId(idUsuario) });
+      if (!usuario) return res.status(404).json({ message: "Usuario no encontrado" });
+  
+      // Subir archivos
+      const archivoIds = [];
+      for (const file of archivos) {
+        const readStream = fs.createReadStream(file.path);
+        const uploadStream = bucket.openUploadStream(file.originalname);
+        await new Promise((ok, ko) => {
+          readStream.pipe(uploadStream)
+            .on("error", ko)
+            .on("finish", () => ok());
+        });
+        archivoIds.push({ id: uploadStream.id, nombre: file.originalname });
+        fs.unlinkSync(file.path);
+      }
+  
+      // Subir miniatura
+      const miniaturaStream = fs.createReadStream(miniatura.path);
+      const miniaturaUpload = bucket.openUploadStream(miniatura.originalname);
+      await new Promise((ok, ko) => {
+        miniaturaStream.pipe(miniaturaUpload)
+          .on("error", ko)
+          .on("finish", () => ok());
+      });
+      fs.unlinkSync(miniatura.path);
+  
+      const nuevaPublicacion = {
+        usuarioId: idUsuario,
+        titulo,
+        descripcion,
+        categoria,
+        archivos: archivoIds,
+        miniatura: {
+          id: miniaturaUpload.id,
+          nombre: miniatura.originalname
+        },
+        fecha: new Date()
+      };
+  
+      const insertResult = await publicacionesDB.insertOne(nuevaPublicacion);
+      res.status(201).json({
+        message: "Publicación creada",
+        publicacion: { _id: insertResult.insertedId, ...nuevaPublicacion }
+      });
+  
+    } catch (err) {
+      console.error("Error en publicación:", err);
+      res.status(500).json({ message: "Error al procesar la publicación", error: err.message });
     }
-}
-);
+  });
+  
 
-app.put("/api/publicaciones/:id", upload.array("archivo", 10), async (req, res) => {
+  app.put("/api/publicaciones/:id", upload.fields([
+    { name: "archivo", maxCount: 10 },
+    { name: "miniatura", maxCount: 1 }
+  ]), async (req, res) => {
     console.log("Archivos recibidos:", req.files);
     try {
-        const { id } = req.params;
-        let { titulo, descripcion, categoria } = req.body;
-        if (!Array.isArray(categoria)) categoria = [categoria];
-
-        // Buscar la publicación original
-        const publicacion = await publicacionesDB.findOne({ _id: new ObjectId(id) });
-        if (!publicacion) {
-            return res.status(404).json({ message: "Publicación no encontrada" });
+      const { id } = req.params;
+      let { titulo, descripcion, categoria } = req.body;
+      if (!Array.isArray(categoria)) categoria = [categoria];
+  
+      const archivos = req.files["archivo"] || [];
+      const miniatura = req.files["miniatura"]?.[0];
+  
+      const publicacion = await publicacionesDB.findOne({ _id: new ObjectId(id) });
+      if (!publicacion) {
+        return res.status(404).json({ message: "Publicación no encontrada" });
+      }
+  
+      const updateFields = {};
+      if (titulo) updateFields.titulo = titulo;
+      if (descripcion) updateFields.descripcion = descripcion;
+      if (categoria) updateFields.categoria = categoria;
+  
+      // Reemplazar archivos si hay nuevos
+      if (archivos.length > 0) {
+        const nuevosArchivos = [];
+        for (const file of archivos) {
+          const readStream = fs.createReadStream(file.path);
+          const uploadStream = bucket.openUploadStream(file.originalname);
+          await new Promise((resolve, reject) => {
+            readStream.pipe(uploadStream)
+              .on("error", reject)
+              .on("finish", () => resolve());
+          });
+          nuevosArchivos.push({ id: uploadStream.id, nombre: file.originalname });
+          fs.unlinkSync(file.path);
         }
-
-        const updateFields = {};
-        if (titulo) updateFields.titulo = titulo;
-        if (descripcion) updateFields.descripcion = descripcion;
-        if (categoria) updateFields.categoria = categoria;
-
-        // Vaciamos los archivos actuales en la base de datos
-        updateFields.archivos = [];
-
-        // Subir los archivos nuevos
-        if (req.files && req.files.length > 0) {
-            const nuevosArchivos = [];
-
-            for (const file of req.files) {
-                const readStream = fs.createReadStream(file.path);
-                const uploadStream = bucket.openUploadStream(file.originalname);
-                await new Promise((resolve, reject) => {
-                    readStream.pipe(uploadStream)
-                        .on("error", reject)
-                        .on("finish", () => resolve());
-                });
-
-                nuevosArchivos.push({ id: uploadStream.id, nombre: file.originalname });
-                fs.unlinkSync(file.path);  // Eliminar el archivo temporal después de subirlo
-            }
-
-            // Reemplazamos los archivos en la base de datos con los nuevos
-            updateFields.archivos = nuevosArchivos;
-        }
-
-        // Actualizamos la publicación con los nuevos campos, incluidos los archivos
-        await publicacionesDB.updateOne(
-            { _id: new ObjectId(id) },
-            { $set: updateFields }
-        );
-
-        res.json({ message: "Publicación actualizada correctamente" });
+        updateFields.archivos = nuevosArchivos;
+      }
+  
+      // Reemplazar miniatura si se envió
+      if (miniatura) {
+        const readStream = fs.createReadStream(miniatura.path);
+        const uploadStream = bucket.openUploadStream(miniatura.originalname);
+        await new Promise((resolve, reject) => {
+          readStream.pipe(uploadStream)
+            .on("error", reject)
+            .on("finish", () => resolve());
+        });
+        fs.unlinkSync(miniatura.path);
+        updateFields.miniatura = { id: uploadStream.id, nombre: miniatura.originalname };
+      }
+  
+      await publicacionesDB.updateOne(
+        { _id: new ObjectId(id) },
+        { $set: updateFields }
+      );
+  
+      res.json({ message: "Publicación actualizada correctamente" });
+  
     } catch (err) {
-        console.error("Error al actualizar publicación:", err);
-        res.status(500).json({ message: "Error al actualizar publicación", error: err.message });
+      console.error("Error al actualizar publicación:", err);
+      res.status(500).json({ message: "Error al actualizar publicación", error: err.message });
     }
-});
+  });
+  
 
 app.get("/api/users/:id/foto", async (req, res) => {
     const { id } = req.params;

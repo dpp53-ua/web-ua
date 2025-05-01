@@ -15,6 +15,8 @@ function PostForm() {
   const [formData, setFormData] = useState({ postTitle: "", postDescription: "" });
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [initialFiles, setInitialFiles] = useState([]);
+  const [miniatureFile, setMiniatureFile] = useState(null);
+  const [initialMiniature, setInitialMiniature] = useState(null);
   const [arrOptions, setArrOptions] = useState([]);
   const [selectedTags, setSelectedTags] = useState([]);
   const [initialTags, setInitialTags] = useState([]);
@@ -58,8 +60,20 @@ function PostForm() {
   };
 
   const handleFileInput = (e) => {
-    addFiles(Array.from(e.target.files));
+    const { name, files } = e.target;
+  
+    if (name === "postFile") {
+      addFiles(Array.from(files));
+    } else if (name === "postMiniature") {
+      const file = files[0];
+      if (!file) return;
+      setMiniatureFile(file);
+      setErrors(prev => ({ ...prev, postMiniature: "" }));
+    }
+  
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
+  
 
   const handleDeleteFile = (fileName) => {
     setUploadedFiles(prev => prev.filter(f => f.name !== fileName));
@@ -95,6 +109,10 @@ function PostForm() {
     if (!hasNewFiles && !hasRemainingInitialFiles) {
       newErrors.postFile = "Debe subir al menos un archivo";
     }
+    if (!miniatureFile && !initialMiniature) {
+      newErrors.postMiniature = "Debe subir una miniatura obligatoriamente";
+    }    
+
     if (!selectedTags.length)      newErrors.postCategories = "Seleccione al menos una categoría";
   
     if (Object.keys(newErrors).length) {
@@ -110,27 +128,24 @@ function PostForm() {
       return true;
     };
     
+    
     if (isEditMode) {
+      const isMiniatureChanged = miniatureFile?.name !== initialMiniature?.nombre;
+      const hasNewFiles = uploadedFiles.some(file => file instanceof File);
+      const filesToDelete = initialFiles.filter(initialFile =>
+        !uploadedFiles.some(file => file.name === initialFile.nombre)
+      );
+      
       const sinCambios =
-      formData.postTitle === initialFormData.postTitle &&
-      formData.postDescription === initialFormData.postDescription &&
-      compareTags(selectedTags.sort(), initialTags.sort()) &&
-      filesToDelete.length === 0; // Solo verificamos si hay archivos para eliminar
-    
-    
-  
-      console.log("SIN CAMBIOS:", sinCambios);
-
-      console.log('Selected Tags:', selectedTags);
-      console.log('Initial Tags:', initialTags);
-      console.log('Form Data:', formData);
-      console.log('Initial Form Data:', initialFormData);
-      console.log('Uploaded Files:', uploadedFiles);
-      console.log('Files to Delete:', filesToDelete);
-
-  
+        formData.postTitle === initialFormData.postTitle &&
+        formData.postDescription === initialFormData.postDescription &&
+        compareTags(selectedTags.sort(), initialTags.sort()) &&
+        filesToDelete.length === 0 &&
+        !isMiniatureChanged &&
+        !hasNewFiles;
+      
       if (sinCambios) {
-        return Swal.fire({
+        await Swal.fire({
           title: 'Sin cambios',
           text: 'No hay modificaciones para guardar',
           icon: 'info',
@@ -176,6 +191,10 @@ function PostForm() {
         formPayload.append("archivo", file);
       }
     });
+
+    if (miniatureFile instanceof File) {
+      formPayload.append("miniatura", miniatureFile);
+    }    
   
     const userId = sessionStorage.getItem("userId");
   
@@ -194,8 +213,7 @@ function PostForm() {
         throw new Error(`Error ${response.status}: ${text}`);
       }
   
-      const result = await response.json();
-      Swal.fire({
+      await Swal.fire({
         title: "¡Listo!",
         text: isEditMode
           ? 'La publicación se ha actualizado'
@@ -250,6 +268,8 @@ function PostForm() {
     setFormData({ postTitle: "", postDescription: "" });
     setUploadedFiles([]);
     setInitialFiles([]);
+    setMiniatureFile(null);
+    setInitialMiniature(null);
     setSelectedTags([]);
     setInitialTags([]);
     setErrors({});
@@ -291,8 +311,13 @@ function PostForm() {
         new File([""], file.nombre, { type: "application/octet-stream" })
       );
 
+
+
+
       setUploadedFiles(fakeFiles);
       setInitialFiles(data.archivos);
+      setMiniatureFile(new File([""], data.miniatura.nombre, { type: "image/*" }));
+      setInitialMiniature(data.miniatura);
       setSelectedTags(data.categoria);
       setInitialTags(data.categoria);
       setFechaModificacion(new Date(data.fecha));
@@ -354,6 +379,28 @@ function PostForm() {
                 />
               ))}
             </ul>
+          </div>
+          <InputField
+            id="postMiniature"
+            type="file"
+            label="Miniatura (*)"
+            name="postMiniature"
+            placeholder="Seleccionar archivo"
+            onChange={handleFileInput}
+            explicativeText={errors.postMiniature}
+            ref={fileInputRef}
+          />
+          <div className={styles["grid-list"]}>
+            {miniatureFile && (
+              <DeleteableTag
+              key={miniatureFile.name}
+              file={miniatureFile}
+              onDelete={() => {
+                setMiniatureFile(null);
+                setInitialMiniature(null);
+              }}
+            />            
+            )}
           </div>
           <InputField
             id="postCategories"
