@@ -16,25 +16,36 @@ export default function ProfileMenu() {
     });
 
     useEffect(() => {
-        const fetchUserData = async () => {
+      const fetchUserData = async () => {
           if (!userId) return;
-    
+  
           try {
-            const response = await fetch(`http://localhost:5000/api/users/${userId}`);
-            const data = await response.json();
-            setUserData({
-              name: data.name || "Usuario",
-              foto: data.foto || "",
-            //   uploads: data.uploads || 0,
-            //   downloads: data.downloads || 0,
-            });
+              // Petición para datos básicos del usuario
+              const resUser = await fetch(`http://localhost:5000/api/users/${userId}`);
+              const dataUser = await resUser.json();
+  
+              // Petición para publicaciones subidas
+              const resUploads = await fetch(`http://localhost:5000/api/publicaciones/usuario/${userId}`);
+              const dataUploads = await resUploads.json();
+  
+              // Petición para descargas
+              const resDownloads = await fetch(`http://localhost:5000/api/users/${userId}/descargas`);
+              const dataDownloads = await resDownloads.json();
+  
+              setUserData({
+                  name: dataUser.name || "Usuario",
+                  foto: dataUser.foto || "",
+                  uploads: dataUploads.length || 0,
+                  downloads: dataDownloads.length || 0,
+              });
           } catch (error) {
-            console.error("Error al obtener los datos del usuario:", error);
+              console.error("Error al obtener los datos del usuario:", error);
           }
-        };
-    
-        fetchUserData();
-      }, [userId]);
+      };
+  
+      fetchUserData();
+  }, [userId]);
+  
 
     return (
         <div className={styles.profilemenu}>
@@ -44,8 +55,8 @@ export default function ProfileMenu() {
                     <p>{userData.name}</p>
                 </div>
                 <div className={styles.uploadsdownloads}>
-                    <p>x subidos</p>
-                    <p>x descargas</p>
+                  <p>{userData.uploads} Publicaciones</p>
+                  <p>{userData.downloads} Descargas</p>
                 </div>
             </div>
             <Link to="/profile">
