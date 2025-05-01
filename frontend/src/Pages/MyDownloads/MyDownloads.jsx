@@ -6,11 +6,11 @@ function MyDownloads() {
   const [descargas, setDescargas] = useState([]);
 
   useEffect(() => {
-    const userId = localStorage.getItem("userId"); // Asegúrate de que esté disponible
+    const userId = sessionStorage.getItem("userId"); // Asegúrate de que esté disponible
 
     if (!userId) return;
 
-    fetch(`/api/users/${userId}/descargas`)
+    fetch(`http://localhost:5000/api/users/${userId}/descargas`)
       .then(response => {
         if (!response.ok) {
           throw new Error("Error al obtener descargas");
