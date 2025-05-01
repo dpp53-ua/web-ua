@@ -195,7 +195,6 @@ function ProfileConfiguration() {
     });
   };
   
-
   if (loading) return <p>Cargando...</p>;
 
   return (

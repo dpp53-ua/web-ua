@@ -153,7 +153,9 @@ function Profile() {
       <section className={styles["right-content"]}>
         <header>
           <h1>Perfil</h1>
+          <small>Los campos con el carácter '*' son obligatorios</small>
         </header>
+        <hr></hr>
         <form onSubmit={handleSubmit}>
           <h3>Información personal</h3>
           {errors.general && <p className={styles["error"]}>{errors.general}</p>}
@@ -192,7 +194,7 @@ function Profile() {
                 <InputField
                   id="name"
                   type="text"
-                  label="NOMBRE *"
+                  label="Nombre (*)"
                   name="name"
                   placeholder="Usuario"
                   value={formData.name}
@@ -202,7 +204,7 @@ function Profile() {
                 <InputField
                   id="email"
                   type="text"
-                  label="EMAIL *"
+                  label="Email (*)"
                   name="email"
                   placeholder="usuario@gmail.com"
                   value={formData.email}
@@ -215,7 +217,7 @@ function Profile() {
             <InputField
               id="bio"
               type="textarea"
-              label="BIOGRAFÍA"
+              label="Biografía"
               name="bio"
               placeholder="Háblanos de ti"
               value={formData.bio}
@@ -223,13 +225,13 @@ function Profile() {
               explicativeText={errors.bio}
             />
           </div>
-
+          <hr></hr>
           <h3>Social</h3>
           <div className={styles["seccion"]}>
             <InputField
               id="web"
               type="text"
-              label="WEB"
+              label="Web"
               name="web"
               placeholder="Tu sitio web"
               value={formData.web}
@@ -240,7 +242,7 @@ function Profile() {
             <InputField
               id="twitter"
               type="text"
-              label="TWITTER"
+              label="Twitter"
               name="twitter"
               placeholder="@nombre twitter"
               value={formData.twitter}
@@ -250,7 +252,7 @@ function Profile() {
             <InputField
               id="insta"
               type="text"
-              label="INSTAGRAM"
+              label="Instagram"
               name="insta"
               placeholder="@nombre instagram"
               value={formData.insta}
@@ -258,7 +260,7 @@ function Profile() {
               explicativeText={errors.insta}
             />
           </div>
-
+          <hr></hr>
           <h4 onClick={togglePasswordFields} className={styles["change-password-header"]}>
             <FontAwesomeIcon icon={faLock} />
             <span> Cambiar contraseña </span>
@@ -289,7 +291,7 @@ function Profile() {
               />
             </div>
           )}
-
+          <hr></hr>
           <div className={styles["profile-buttons"]}>
             <Button
               className={styles.btn_regist}
