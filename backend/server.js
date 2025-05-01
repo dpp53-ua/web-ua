@@ -8,6 +8,7 @@ const { MongoClient, GridFSBucket, ObjectId } = require("mongodb");
 
 const multer = require("multer");
 const fs = require("fs");
+const archiver = require("archiver");
 
 const upload = multer({ dest: 'uploads/' });
 const path = require('path');
@@ -59,7 +60,8 @@ app.post("/api/users", (req, res) => {
             name,
             password,
             theme: "night",
-            fontSize: "medium"
+            fontSize: "medium",
+            descargas: []
         };
 
         usersCollection.insertOne(nuevoUsuario)
@@ -337,6 +339,144 @@ app.get("/api/publicaciones/:id", async (req, res) => {
     }
 });
 
+app.get("/api/publicaciones/:id/descargar/:userId", async (req, res) => {
+    const { id, userId } = req.params;
+
+    try {
+        const publicacion = await publicacionesDB.findOne({ _id: new ObjectId(id) });
+        if (!publicacion) return res.status(404).json({ message: "Publicación no encontrada" });
+
+        const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+        if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
+
+        if (!user.descargas?.includes(id)) {
+            await usersCollection.updateOne(
+                { _id: new ObjectId(userId) },
+                { $push: { descargas: id } }
+            );
+        }
+
+        const archivos = publicacion.archivos || [];
+
+        // Si solo hay un archivo, descargarlo directamente
+        if (archivos.length === 1) {
+            const archivoId = archivos[0].id;
+            const downloadStream = bucket.openDownloadStream(new ObjectId(archivoId));
+            res.set("Content-Type", "application/octet-stream");
+            res.set("Content-Disposition", `attachment; filename="${archivos[0].nombre || 'archivo'}"`);
+            return downloadStream.pipe(res);
+        }
+
+        // Si hay más de un archivo, crear un ZIP en streaming
+        res.set("Content-Type", "application/zip");
+        res.set("Content-Disposition", `attachment; filename="publicacion_${id}.zip"`);
+
+        const archive = archiver("zip", { zlib: { level: 9 } });
+        archive.on("error", err => { throw err; });
+
+        archive.pipe(res);
+
+        for (const archivo of archivos) {
+            const stream = bucket.openDownloadStream(new ObjectId(archivo.id));
+            archive.append(stream, { name: archivo.nombre || `archivo_${archivo.id}` });
+        }
+
+        archive.finalize();
+
+    } catch (err) {
+        console.error("Error en descarga:", err);
+        res.status(500).json({ message: "Error en la descarga", error: err });
+    }
+});
+
+app.get("/api/users/:id/descargas", async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const user = await usersCollection.findOne({ _id: new ObjectId(id) });
+        if (!user || !user.descargas) {
+            return res.json([]);
+        }
+
+        const publicaciones = await publicacionesDB
+            .find({ _id: { $in: user.descargas.map(d => new ObjectId(d)) } })
+            .toArray();
+
+        res.json(publicaciones);
+    } catch (err) {
+        res.status(500).json({ message: "Error al obtener descargas", error: err });
+    }
+});
+
+app.get("/api/publicaciones/:id/descargar/:userId", async (req, res) => {
+    const { id, userId } = req.params;
+
+    try {
+        const publicacion = await publicacionesDB.findOne({ _id: new ObjectId(id) });
+        if (!publicacion) return res.status(404).json({ message: "Publicación no encontrada" });
+
+        const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+        if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
+
+        if (!user.descargas?.includes(id)) {
+            await usersCollection.updateOne(
+                { _id: new ObjectId(userId) },
+                { $push: { descargas: id } }
+            );
+        }
+
+        const archivos = publicacion.archivos || [];
+
+        // Si solo hay un archivo, descargarlo directamente
+        if (archivos.length === 1) {
+            const archivoId = archivos[0].id;
+            const downloadStream = bucket.openDownloadStream(new ObjectId(archivoId));
+            res.set("Content-Type", "application/octet-stream");
+            res.set("Content-Disposition", `attachment; filename="${archivos[0].nombre || 'archivo'}"`);
+            return downloadStream.pipe(res);
+        }
+
+        // Si hay más de un archivo, crear un ZIP en streaming
+        res.set("Content-Type", "application/zip");
+        res.set("Content-Disposition", `attachment; filename="publicacion_${id}.zip"`);
+
+        const archive = archiver("zip", { zlib: { level: 9 } });
+        archive.on("error", err => { throw err; });
+
+        archive.pipe(res);
+
+        for (const archivo of archivos) {
+            const stream = bucket.openDownloadStream(new ObjectId(archivo.id));
+            archive.append(stream, { name: archivo.nombre || `archivo_${archivo.id}` });
+        }
+
+        archive.finalize();
+
+    } catch (err) {
+        console.error("Error en descarga:", err);
+        res.status(500).json({ message: "Error en la descarga", error: err });
+    }
+});
+
+app.get("/api/users/:id/descargas", async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const user = await usersCollection.findOne({ _id: new ObjectId(id) });
+        if (!user || !user.descargas) {
+            return res.json([]);
+        }
+
+        const publicaciones = await publicacionesDB
+            .find({ _id: { $in: user.descargas.map(d => new ObjectId(d)) } })
+            .toArray();
+
+        res.json(publicaciones);
+    } catch (err) {
+        res.status(500).json({ message: "Error al obtener descargas", error: err });
+    }
+});
+
 app.get("/api/publicaciones/usuario/:idUsuario", async (req, res) => {
     try {
         const idUsuario = req.params.idUsuario;
@@ -379,7 +519,7 @@ app.get("/api/publicaciones/usuario/:idUsuario", async (req, res) => {
         res.json(publicaciones);
 
     } catch (err) {
-        console.error("❌ Error al obtener publicaciones:", err);
+        console.error("Error al obtener publicaciones:", err);
         res.status(500).json({ message: "Error al procesar la solicitud", error: err.message });
     }
 });
