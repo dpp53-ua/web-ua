@@ -1,9 +1,14 @@
 import { Button, InputField } from '../../Components';
+import Swal from 'sweetalert2';
+import getCSSVariable from 'sweetalert2';
 import styles from "./Support.module.css";
 import { useState } from 'react';
+import { useRef } from 'react';
 import { faCheck, faRotateLeft} from "@fortawesome/free-solid-svg-icons";
 
 function Support() {
+  const fileInputRef = useRef(null);
+  const selectRef = useRef(null);
   const [form, setForm] = useState({
     issueType: "",
     description: "",
@@ -21,8 +26,35 @@ function Support() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Aquí puedes agregar lógica para enviar el formulario
   };
+
+  const handleClear = async () => {
+    const result = await Swal.fire({
+      title: '¿Limpiar formulario?',
+      text: 'Se borrarán todos los campos llenados. ¿Deseas continuar?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, limpiar',
+      cancelButtonText: 'No, cancelar',
+      background: '#2b2b2b',
+      color: '#fff',
+    });
+  
+    if (!result.isConfirmed) return;
+  
+    // Reiniciar estado
+    setForm({
+      issueType: "",
+      description: "",
+      attachment: null
+    });
+  
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  
+    if (selectRef.current) selectRef.current.value = "DEFAULT";
+  };
+  
+  
   return (
     <div className={styles["profile-main-container"]}>
 
@@ -60,6 +92,7 @@ function Support() {
               ]}
               value={form.issueType}
               onChange={handleChange}
+              ref={selectRef}
             />
 
             <InputField
@@ -78,6 +111,7 @@ function Support() {
               name="attachment"
               label="Adjuntar archivo"
               onChange={handleFileChange}
+              ref={fileInputRef}
             />
 
             <div className={styles["profile-buttons"]}>
@@ -87,6 +121,7 @@ function Support() {
                 label="Limpiar"
                 icon={faRotateLeft}
                 type="button"
+                onClick={() => handleClear()}
               />
               <Button variant="red" label="Enviar" icon={faCheck} type="submit" />
             </div>

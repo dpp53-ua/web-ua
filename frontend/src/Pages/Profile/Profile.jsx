@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react"; // 🔄 CAMBIO
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useAuth } from "../../Context";
 import Swal from "sweetalert2";
+import { getCSSVariable } from '../../Utils';
 import styles from "./Profile.module.css";
 
 function Profile() {
@@ -139,6 +140,59 @@ function Profile() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     setErrors((prevErrors) => ({ ...prevErrors, [e.target.name]: "" }));
   };
+
+  const handleReset = async () => {
+    const result = await Swal.fire({
+      title: '¿Reestablecer formulario?',
+      text: 'Se volverán a insertar tus datos actuales. ¿Deseas continuar?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, reestablecer',
+      cancelButtonText: 'No, cancelar',
+      background: getCSSVariable('--dark-grey'),
+      color: getCSSVariable('--white'),
+      customClass: {
+        confirmButton: 'swal-confirm-btn',
+        cancelButton:  'swal-cancel-btn'
+      }
+    });
+  
+    if (!result.isConfirmed) return;
+  
+    try {
+      const res = await fetch(`http://localhost:5000/api/users/${userId}`);
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(`Error ${res.status}: ${text}`);
+      }
+      const data = await res.json();
+  
+      setFormData({
+        name: data.name      || '',
+        email: data.email    || '',
+        bio: data.biografia  || '',
+        web: data.web        || '',
+        twitter: data.twitter|| '',
+        insta: data.instagram|| '',
+        currentPassword: '',
+        newPassword: ''
+      });
+      setPreviewUrl('');      // o recarga la imagen si lo deseas
+      setErrors({});
+    } catch (err) {
+      console.error('Error al resetear formulario:', err);
+      Swal.fire({
+        title: 'Error',
+        text: 'No se pudo reestablecer el formulario',
+        icon: 'error',
+        background: getCSSVariable('--dark-grey'),
+        color: getCSSVariable('--white'),
+        customClass: { confirmButton: 'swal-confirm-btn' }
+      });
+    }
+  };
+  
+
 
   const togglePasswordFields = () => {
     setShowPasswordFields(!showPasswordFields);
@@ -299,18 +353,7 @@ function Profile() {
               label="Reestablecer"
               icon={faRotateLeft}
               type="button"
-              onClick={() =>
-                setFormData({
-                  name: "",
-                  email: "",
-                  bio: "",
-                  web: "",
-                  twitter: "",
-                  insta: "",
-                  currentPassword: "",
-                  newPassword: "",
-                })
-              }
+              onClick={() => handleReset()}
             />
             <Button variant="red" label="Actualizar" icon={faCheck} type="submit" />
           </div>
