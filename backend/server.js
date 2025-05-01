@@ -829,6 +829,15 @@ app.get("/api/publicaciones/:id/modelo", async (req, res) => {
 });
 
 
+app.delete("/api/publicaciones", async (req, res) => {
+    try {
+        const result = await publicacionesDB.deleteMany({});
+        res.json({ message: "Todas las publicaciones eliminadas", deletedCount: result.deletedCount });
+    } catch (error) {
+        console.error("Error al eliminar publicaciones:", error);
+        res.status(500).json({ message: "Error al eliminar publicaciones" });
+    }
+});
 
 
 
