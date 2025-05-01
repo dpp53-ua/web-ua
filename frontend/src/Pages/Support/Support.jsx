@@ -83,12 +83,12 @@ function Support() {
             <div className={styles["profile-buttons"]}>
               <Button
                 className={styles.btn_regist}
-                variant="headerButtonBlack"
+                variant="red"
                 label="Limpiar"
                 icon={faRotateLeft}
                 type="button"
               />
-              <Button variant="headerButtonWhite" label="Enviar" icon={faCheck} type="submit" />
+              <Button variant="red" label="Enviar" icon={faCheck} type="submit" />
             </div>
           </form>
         </div>

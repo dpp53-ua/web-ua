@@ -1,5 +1,5 @@
 import { Button, InputField } from '../../Components';
-import { faUser, faLock, faEnvelope } from "@fortawesome/free-solid-svg-icons";
+import { faUser, faLock, faEnvelope, faRotateLeft, faCheck } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import Swal from "sweetalert2";
@@ -143,8 +143,8 @@ function Register() {
             explicativeText={errors.password_rep} 
           />
           <div>
-            <Button type="reset" variant="red" label="Limpiar" onClick={handleClear}/>
-            <Button type="submit" variant="red" label="Aceptar" />
+            <Button type="reset" variant="red" label="Limpiar" onClick={handleClear} icon={faRotateLeft}/>
+            <Button type="submit" variant="red" label="Aceptar" icon={faCheck}/>
           </div>
         </form>
       </section>

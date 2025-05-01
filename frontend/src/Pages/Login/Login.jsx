@@ -1,7 +1,7 @@
 /* Componentes */
 import { Link, useNavigate } from "react-router-dom";
 import { Button, InputField } from '../../Components';
-import { faUser, faLock } from "@fortawesome/free-solid-svg-icons";
+import { faUser, faLock, faCheck, faRotateLeft, faRotate } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
 import { useAuth } from "../../Context";
 import { getCSSVariable } from "../../Utils";
@@ -118,8 +118,8 @@ function Login() {
             explicativeText={errors.password}
           />
           <div>
-            <Button type="reset" variant="red" label="Limpiar" onClick={handleClear}/>
-            <Button type="submit" variant="red" label="Aceptar" />
+            <Button type="reset" variant="red" label="Limpiar" onClick={handleClear} icon={faRotateLeft}/>
+            <Button type="submit" variant="red" label="Aceptar" icon={faCheck} />
           </div>
         </form>
       </section>

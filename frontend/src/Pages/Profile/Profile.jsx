@@ -295,7 +295,7 @@ function Profile() {
           <div className={styles["profile-buttons"]}>
             <Button
               className={styles.btn_regist}
-              variant="headerButtonBlack"
+              variant="red"
               label="Reestablecer"
               icon={faRotateLeft}
               type="button"
@@ -312,7 +312,7 @@ function Profile() {
                 })
               }
             />
-            <Button variant="headerButtonWhite" label="Actualizar" icon={faCheck} type="submit" />
+            <Button variant="red" label="Actualizar" icon={faCheck} type="submit" />
           </div>
         </form>
       </section>

@@ -14,6 +14,7 @@
     text-overflow: ellipsis;
 
     align-items: center;
+    color: var(--black);
 
     > .delete-icon {
         font-size: 1rem;

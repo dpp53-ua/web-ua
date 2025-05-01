@@ -6,6 +6,7 @@ import { applyUserPreferences, getCSSVariable } from '../../Utils';
 
 /* Estilos */
 import styles from "./ProfileConfiguration.module.css";
+import { faCheck } from '@fortawesome/free-solid-svg-icons';
 
 function ProfileConfiguration() {
   const { userId, logout } = useAuth();
@@ -257,10 +258,10 @@ function ProfileConfiguration() {
             />
           </div>
         </section>
-
-        <hr />
-
-        <Button onClick={handleSubmit} label="Confirmar cambios" variant="white" />
+        <hr/>
+          <div className={styles['actions']}>
+            <Button onClick={handleSubmit} label="Confirmar cambios" variant="red" icon={faCheck}/>
+          </div>
       </section>
     </div>
   );

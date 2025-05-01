@@ -17,8 +17,10 @@ button {
 .red,
 .white,
 .white-red {
+  display: flex;
+  gap: 0.5em;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-
+  justify-content: center;
   &:hover {
     transform: scale(1.05); /* Efecto de ampliación */
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Sombra sutil */

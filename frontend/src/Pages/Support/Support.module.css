@@ -125,6 +125,10 @@
     display: flex;
     flex-direction: row !important;
     justify-content: space-between;
+    > button {
+      width: fit-content;
+    }
+    
   }
 }
 
