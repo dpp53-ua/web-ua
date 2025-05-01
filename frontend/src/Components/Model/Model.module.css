@@ -85,5 +85,17 @@
     opacity: 0.5;
     cursor: not-allowed;
   }
+  
+  .download-button {
+    width: fit-content;
+    border-radius: 0.5rem;
+    position: absolute;
+    align-self: right;
+    margin: 0.25rem;
+    margin-left: 11rem;
+  }
 
+  
+  
+  
   

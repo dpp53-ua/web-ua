@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import styles from "./Model.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faStar, faStarHalf, faHeart } from "@fortawesome/free-solid-svg-icons";
+import { faStar, faStarHalf, faHeart, faDownload } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 
-function Model({ _id, titulo, autor, imagen }) {
+function Model({ _id, titulo, autor, imagen, mostrarBotonDescarga= false }) {
   const [likes, setLikes] = useState(0);
   const [liked, setLiked] = useState(false);
 
@@ -53,8 +53,47 @@ function Model({ _id, titulo, autor, imagen }) {
       .catch(err => console.error("Error al dar like:", err));
   };
 
+  const handleDownload = async () => {
+    try {
+      const userId = sessionStorage.getItem("userId");
+      if (!userId) return alert("Debes estar logueado para descargar.");
+  
+      const response = await fetch(`http://localhost:5000/api/publicaciones/${_id}/descargar/${userId}`);
+  
+      if (!response.ok) {
+        throw new Error("Error en la descarga");
+      }
+  
+      const fileName = "descarga";
+  
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+  
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error en la descarga:", error);
+      alert("No se pudo descargar el archivo");
+    }
+  };
+
   return (
     <article className={styles["article-model"]}>
+      {mostrarBotonDescarga && (
+        <button
+        className={styles["download-button"]}
+        onClick={()=>handleDownload()}
+        title="Descargar"
+        >
+        <FontAwesomeIcon icon={faDownload} />
+      </button>
+
+      )}
       <Link to={`/detail/${_id}`}>
         <header className={styles["model-header"]}>
           <img
