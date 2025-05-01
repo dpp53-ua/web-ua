@@ -237,7 +237,7 @@ app.get("/api/publicaciones", async (req, res) => {
         res.json(publicaciones);
 
     } catch (err) {
-        console.error("❌ Error al obtener publicaciones:", err);
+        console.error("Error al obtener publicaciones:", err);
         res.status(500).json({ message: "Error al procesar la solicitud", error: err.message });
     }
 });
@@ -296,152 +296,171 @@ app.get("/api/publicaciones/:id", async (req, res) => {
     }
 });
 
+// POST /api/publicaciones/:idUsuario
 app.post("/api/publicaciones/:idUsuario", upload.fields([
-    { name: "archivo", maxCount: 10 },
-    { name: "miniatura", maxCount: 1 }
+    { name: "archivo",   maxCount: 10 },
+    { name: "miniatura", maxCount: 1  }
   ]), async (req, res) => {
     try {
+      const { idUsuario } = req.params;
       let { titulo, descripcion, categoria } = req.body;
-
-        // Normalizar a array y limpiar falsy
-        categoria = Array.isArray(categoria) ? categoria.filter(Boolean)
-                : categoria ? [categoria]
-                : [];
-
-        // Si después de limpiar no hay categorías, poner "Sin categoría"
-        if (categoria.length === 0) {
-        categoria = ["Sin categoría"];
-        } else {
-        // Eliminar "Sin categoría" si llegan otras categorías válidas
-        categoria = categoria.filter(c => c !== "Sin categoría");
-        }
   
+      // —— NORMALIZAR CATEGORÍAS ——
+      if (Array.isArray(categoria)) {
+        categoria = categoria.filter(c => Boolean(c));
+      } else if (typeof categoria === "string") {
+        categoria = categoria.trim() ? [categoria.trim()] : [];
+      } else {
+        categoria = [];
+      }
+      if (categoria.length === 0) {
+        categoria = ["Sin categoría"];
+      } else {
+        categoria = categoria.filter(c => c !== "Sin categoría");
+      }
+      // ——————————————————————
+  
+      // validación de campos obligatorios
       const archivos = req.files["archivo"] || [];
       const miniatura = req.files["miniatura"]?.[0];
-  
-      const idUsuario = req.params.idUsuario;
-      if (!titulo || !descripcion || !archivos.length || !miniatura || !idUsuario) {
+      if (!titulo || !descripcion || archivos.length === 0 || !miniatura) {
         return res.status(400).json({ message: "Faltan campos obligatorios" });
       }
   
+      // comprobar existencia de usuario
       const usuario = await usersCollection.findOne({ _id: new ObjectId(idUsuario) });
-      if (!usuario) return res.status(404).json({ message: "Usuario no encontrado" });
+      if (!usuario) {
+        return res.status(404).json({ message: "Usuario no encontrado" });
+      }
   
-      // Subir archivos
+      // subir archivos
       const archivoIds = [];
       for (const file of archivos) {
         const readStream = fs.createReadStream(file.path);
         const uploadStream = bucket.openUploadStream(file.originalname);
-        await new Promise((ok, ko) => {
+        await new Promise((ok, ko) =>
           readStream.pipe(uploadStream)
             .on("error", ko)
-            .on("finish", () => ok());
-        });
+            .on("finish", ok)
+        );
         archivoIds.push({ id: uploadStream.id, nombre: file.originalname });
         fs.unlinkSync(file.path);
       }
   
-      // Subir miniatura
-      const miniaturaStream = fs.createReadStream(miniatura.path);
-      const miniaturaUpload = bucket.openUploadStream(miniatura.originalname);
-      await new Promise((ok, ko) => {
-        miniaturaStream.pipe(miniaturaUpload)
+      // subir miniatura
+      const miniRead = fs.createReadStream(miniatura.path);
+      const miniUpload = bucket.openUploadStream(miniatura.originalname);
+      await new Promise((ok, ko) =>
+        miniRead.pipe(miniUpload)
           .on("error", ko)
-          .on("finish", () => ok());
-      });
+          .on("finish", ok)
+      );
       fs.unlinkSync(miniatura.path);
   
+      // crear documento
       const nuevaPublicacion = {
         usuarioId: idUsuario,
         titulo,
         descripcion,
         categoria,
         archivos: archivoIds,
-        miniatura: {
-          id: miniaturaUpload.id,
-          nombre: miniatura.originalname
-        },
+        miniatura: { id: miniUpload.id, nombre: miniatura.originalname },
         fecha: new Date()
       };
-  
       const insertResult = await publicacionesDB.insertOne(nuevaPublicacion);
+  
       res.status(201).json({
         message: "Publicación creada",
         publicacion: { _id: insertResult.insertedId, ...nuevaPublicacion }
       });
-  
     } catch (err) {
       console.error("Error en publicación:", err);
       res.status(500).json({ message: "Error al procesar la publicación", error: err.message });
     }
   });
   
-
+  
+  // PUT /api/publicaciones/:id
   app.put("/api/publicaciones/:id", upload.fields([
-    { name: "archivo", maxCount: 10 },
-    { name: "miniatura", maxCount: 1 }
+    { name: "archivo",   maxCount: 10 },
+    { name: "miniatura", maxCount: 1  }
   ]), async (req, res) => {
-    console.log("Archivos recibidos:", req.files);
     try {
       const { id } = req.params;
       let { titulo, descripcion, categoria } = req.body;
-      if (!Array.isArray(categoria)) categoria = [categoria];
   
-      const archivos = req.files["archivo"] || [];
-      const miniatura = req.files["miniatura"]?.[0];
+      // —— NORMALIZAR CATEGORÍAS ——
+      if (Array.isArray(categoria)) {
+        categoria = categoria.filter(c => Boolean(c));
+      } else if (typeof categoria === "string") {
+        categoria = categoria.trim() ? [categoria.trim()] : [];
+      } else {
+        categoria = [];
+      }
+      if (categoria.length === 0) {
+        categoria = ["Sin categoría"];
+      } else {
+        categoria = categoria.filter(c => c !== "Sin categoría");
+      }
+      // ——————————————————————
   
+      // obtener publicación existente
       const publicacion = await publicacionesDB.findOne({ _id: new ObjectId(id) });
       if (!publicacion) {
         return res.status(404).json({ message: "Publicación no encontrada" });
       }
   
+      // preparar campos a actualizar
       const updateFields = {};
-      if (titulo) updateFields.titulo = titulo;
+      if (titulo)      updateFields.titulo      = titulo;
       if (descripcion) updateFields.descripcion = descripcion;
-      if (categoria) updateFields.categoria = categoria;
+      updateFields.categoria = categoria;
   
-      // Reemplazar archivos si hay nuevos
+      // manejar nuevos archivos (si los hay)
+      const archivos = req.files["archivo"] || [];
       if (archivos.length > 0) {
         const nuevosArchivos = [];
         for (const file of archivos) {
           const readStream = fs.createReadStream(file.path);
           const uploadStream = bucket.openUploadStream(file.originalname);
-          await new Promise((resolve, reject) => {
+          await new Promise((ok, ko) =>
             readStream.pipe(uploadStream)
-              .on("error", reject)
-              .on("finish", () => resolve());
-          });
+              .on("error", ko)
+              .on("finish", ok)
+          );
           nuevosArchivos.push({ id: uploadStream.id, nombre: file.originalname });
           fs.unlinkSync(file.path);
         }
         updateFields.archivos = nuevosArchivos;
       }
   
-      // Reemplazar miniatura si se envió
+      // manejar nueva miniatura (si se ha enviado)
+      const miniatura = req.files["miniatura"]?.[0];
       if (miniatura) {
-        const readStream = fs.createReadStream(miniatura.path);
-        const uploadStream = bucket.openUploadStream(miniatura.originalname);
-        await new Promise((resolve, reject) => {
-          readStream.pipe(uploadStream)
-            .on("error", reject)
-            .on("finish", () => resolve());
-        });
+        const miniRead = fs.createReadStream(miniatura.path);
+        const miniUpload = bucket.openUploadStream(miniatura.originalname);
+        await new Promise((ok, ko) =>
+          miniRead.pipe(miniUpload)
+            .on("error", ko)
+            .on("finish", ok)
+        );
         fs.unlinkSync(miniatura.path);
-        updateFields.miniatura = { id: uploadStream.id, nombre: miniatura.originalname };
+        updateFields.miniatura = { id: miniUpload.id, nombre: miniatura.originalname };
       }
   
+      // ejecutar actualización
       await publicacionesDB.updateOne(
         { _id: new ObjectId(id) },
         { $set: updateFields }
       );
   
       res.json({ message: "Publicación actualizada correctamente" });
-  
     } catch (err) {
       console.error("Error al actualizar publicación:", err);
       res.status(500).json({ message: "Error al actualizar publicación", error: err.message });
     }
   });
+  
   
 
 app.get("/api/users/:id/foto", async (req, res) => {

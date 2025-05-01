@@ -81,13 +81,10 @@ function PostForm() {
 
   const addTag = (e) => {
     const newTag = e.target.value;
-  
     if (newTag && !selectedTags.includes(newTag)) {
-      setSelectedTags(prevTags =>
-        [...prevTags.filter(tag => tag !== "Sin categoría"), newTag]
-      );
+      setSelectedTags(prev => [...prev, newTag]);
     }
-  };  
+  };   
 
   const deleteTag = (tagToDelete) => {
     setSelectedTags(prevTags => prevTags.filter(tag => tag !== tagToDelete));
@@ -182,12 +179,7 @@ function PostForm() {
     formPayload.append("titulo", formData.postTitle);
     formPayload.append("descripcion", formData.postDescription);
 
-    const categoriasFinales = selectedTags.length > 0 ? selectedTags : ["Sin categoría"];
-    categoriasFinales.forEach(tag => formPayload.append("categoria", tag));
-
-
     selectedTags.forEach(tag => formPayload.append("categoria", tag));
-
   
     filesToDelete.forEach(file =>
       formPayload.append("eliminarArchivo", file.nombre)
@@ -204,7 +196,11 @@ function PostForm() {
     }    
   
     const userId = sessionStorage.getItem("userId");
-  
+
+    for (const [key, value] of formPayload.entries()) {
+      console.log(key, value);
+    }
+
     try {
       const endpoint = isEditMode
         ? `http://localhost:5000/api/publicaciones/${id}`
