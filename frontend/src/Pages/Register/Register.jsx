@@ -96,11 +96,12 @@ function Register() {
     <div className={styles["login-main-container"]}>
       <section className={styles["left-section"]}>
         <h1>Regístrate</h1>
+        <small>Los campos con el carácter '*' son obligatorios</small>
         <form onSubmit={handleSubmit}>
           <InputField 
             id="email"
             type="email"
-            label="Correo electrónico"
+            label="Correo electrónico (*)"
             name="email"
             placeholder="Correo"
             icon={faEnvelope}
@@ -111,7 +112,7 @@ function Register() {
           <InputField 
             id="user"
             type="text"
-            label="Nombre de usuario"
+            label="Nombre de usuario (*)"
             name="name"
             placeholder="Usuario"
             icon={faUser}
@@ -122,7 +123,7 @@ function Register() {
           <InputField 
             id="password"
             type="password"
-            label="Contraseña"
+            label="Contraseña (*)"
             name="password"
             placeholder="Contraseña"
             icon={faLock}
@@ -133,7 +134,7 @@ function Register() {
           <InputField 
             id="password_rep"
             type="password"
-            label="Repetir contraseña"
+            label="Repetir contraseña (*)"
             name="password_rep"
             placeholder="Contraseña"
             icon={faLock}

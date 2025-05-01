@@ -209,7 +209,8 @@ function PostForm() {
       });
   
       handleClear(false);
-  
+      window.location.href = "/post-form";
+
     } catch (err) {
       console.error("Error al enviar publicación:", err);
       setErrors(prev => ({ ...prev, general: err.message }));
@@ -309,12 +310,13 @@ function PostForm() {
     <div className={styles["post-main-container"]}>
       <section className={styles["left-section"]}>
         <h1>{isEditMode ? "Editar publicación" : "Nueva publicación"}</h1>
+        <small>Los campos con el carácter '*' son obligatorios</small>
         {errors.general && <p className={styles["error"]}>{errors.general}</p>}
         <form onSubmit={handleSubmit} onReset={() => handleClear(true)}>
           <InputField
             id="postTitle"
             type="text"
-            label="Título"
+            label="Título (*)"
             name="postTitle"
             placeholder="Título"
             value={formData.postTitle}
@@ -324,7 +326,7 @@ function PostForm() {
           <InputField
             id="postDescription"
             type="textarea"
-            label="Descripción"
+            label="Descripción (*)"
             name="postDescription"
             placeholder="Descripción"
             value={formData.postDescription}
@@ -334,7 +336,7 @@ function PostForm() {
           <InputField
             id="postFile"
             type="file"
-            label="Archivos"
+            label="Archivos (*)"
             name="postFile"
             placeholder="Seleccionar archivos"
             onChange={handleFileInput}

@@ -92,12 +92,13 @@ function Login() {
     <div className={styles["login-main-container"]}>
       <section className={styles["left-section"]}>
         <h1>Inicia sesión</h1>
+        <small>Los campos con el carácter '*' son obligatorios</small>
         {errors.general && <p className={styles["error"]}>{errors.general}</p>}
         <form onSubmit={handleSubmit}>
           <InputField 
             id="name" 
             type="text" 
-            label="Nombre de usuario" 
+            label="Nombre de usuario (*)" 
             name="name" 
             placeholder="Usuario" 
             icon={faUser} 
@@ -108,7 +109,7 @@ function Login() {
           <InputField 
             id="password" 
             type="password" 
-            label="Contraseña" 
+            label="Contraseña (*)" 
             name="password" 
             placeholder="Contraseña" 
             icon={faLock} 

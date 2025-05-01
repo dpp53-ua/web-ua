@@ -31,7 +31,7 @@ function Support() {
           <h1>Soporte</h1>
           <p>Encuentra respuestas o reporta un problema relacionado con los assets o la plataforma.</p>
         </header>
-
+        <hr></hr>
         {/* FAQs */}
         <div className={styles["faq-section"]}>
           <h2>Preguntas Frecuentes</h2>
@@ -42,16 +42,17 @@ function Support() {
             <li><strong>No puedo previsualizar un asset</strong> Asegúrate de que el formato sea compatible o contacta soporte.</li>
           </ul>
         </div>
-
+        <hr></hr>
         {/* Formulario de reporte */}
         <div className={styles["form-section"]}>
           <h2>Reportar un problema</h2>
+          <small>Los campos con el carácter '*' son obligatorios</small>
           <form className={styles["support-form"]} onSubmit={handleSubmit}>
             <InputField
               id="issue-type"
               type="select"
               name="issueType"
-              label="Tipo de problema:"
+              label="Tipo de problema (*)"
               arrOptions={[
                 { value: "bug", label: "Bug" },
                 { value: "mejora", label: "Sugerencia" },
@@ -65,7 +66,7 @@ function Support() {
               id="description"
               type="textarea"
               name="description"
-              label="Descripción:"
+              label="Descripción (*)"
               placeholder="Describe el problema o sugerencia..."
               value={form.description}
               onChange={handleChange}
@@ -75,7 +76,7 @@ function Support() {
               id="attachment"
               type="file"
               name="attachment"
-              label="Adjuntar archivo (opcional):"
+              label="Adjuntar archivo"
               onChange={handleFileChange}
             />
 

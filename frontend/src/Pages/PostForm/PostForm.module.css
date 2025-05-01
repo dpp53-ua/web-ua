@@ -36,6 +36,14 @@
         > h1 {
             font-size: var(--font-larger);
             color: var(--white);
+            margin: 0;
+            margin-top: 1rem;
+        }
+
+        > small {
+            color: var(--white);
+            font-weight: bold;
+            margin-block: 0.5rem;
         }
 
         > form  {
