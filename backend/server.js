@@ -171,8 +171,8 @@ app.delete("/api/users/:id", async (req, res) => {
         console.error(err);
         res.status(500).json({ message: "Error al eliminar usuario", error: err });
     }
-  });
-  
+});
+
 app.post("/api/login", (req, res) => {
     const { name, password } = req.body;
 
@@ -275,9 +275,11 @@ app.get("/api/publicaciones/:id", async (req, res) => {
                     categoria: 1,
                     archivos: 1,
                     fecha: 1,
+                    likes: 1,
                     "usuario._id": 1,
                     "usuario.name": 1,
-                    "usuario.email": 1
+                    "usuario.email": 1,
+                    "usuario.foto": 1
                 }
             }
         ]).toArray();
@@ -328,7 +330,8 @@ app.post("/api/publicaciones/:idUsuario", upload.array("archivo", 10), async (re
             descripcion,
             categoria,
             archivos: archivoIds,
-            fecha: new Date()
+            fecha: new Date(),
+            likes: 0
         };
 
         const insertResult = await publicacionesDB.insertOne(nuevaPublicacion);
@@ -336,8 +339,8 @@ app.post("/api/publicaciones/:idUsuario", upload.array("archivo", 10), async (re
             message: "Publicación creada",
             publicacion: { _id: insertResult.insertedId, ...nuevaPublicacion }
         });
-  
-      } catch (err) {
+
+    } catch (err) {
         console.error("Error en publicación:", err);
         res.status(500).json({ message: "Error al procesar la publicación", error: err.message });
     }
@@ -398,6 +401,27 @@ app.put("/api/publicaciones/:id", upload.array("archivo", 10), async (req, res) 
         res.status(500).json({ message: "Error al actualizar publicación", error: err.message });
     }
 });
+
+app.patch("/api/publicaciones/:id/like", async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const result = await publicacionesDB.updateOne(
+            { _id: new ObjectId(id) },
+            { $inc: { likes: 1 } } // Incrementa el campo "likes"
+        );
+
+        if (result.modifiedCount === 0) {
+            return res.status(404).json({ message: "Publicación no encontrada o sin cambios" });
+        }
+
+        res.json({ message: "Me gusta añadido correctamente" });
+    } catch (err) {
+        console.error("Error al dar like:", err);
+        res.status(500).json({ message: "Error al procesar el like", error: err.message });
+    }
+});
+
 
 app.get("/api/users/:id/foto", async (req, res) => {
     const { id } = req.params;
@@ -502,6 +526,34 @@ app.post("/api/comentarios", async (req, res) => {
         res.status(500).json({ message: "Error al crear comentario", error: err.message });
     }
 });
+
+app.get("/api/publicaciones/:id/comentarios", async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const comentarios = await comentariosCollection
+            .find({ publicacionId: new ObjectId(id) })
+            .sort({ fecha: -1 })
+            .toArray();
+
+        // Opcional: incluir datos del usuario
+        const comentariosConUsuario = await Promise.all(
+            comentarios.map(async (comentario) => {
+                const usuario = await usersCollection.findOne(
+                    { _id: comentario.usuarioId },
+                    { projection: { name: 1, foto: 1 } }
+                );
+                return { ...comentario, usuario };
+            })
+        );
+
+        res.json(comentariosConUsuario);
+    } catch (err) {
+        console.error("Error al obtener comentarios:", err);
+        res.status(500).json({ message: "Error al obtener comentarios" });
+    }
+});
+
 
 // BLOQUE DE BÚSQUEDAS
 

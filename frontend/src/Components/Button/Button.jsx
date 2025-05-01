@@ -9,10 +9,11 @@ export default function Button({
   label,
   onClick, // 👈 Nombre estándar
   icon,
-  to
+  to,
+  disabled= false
 }) {
   const buttonContent = (
-    <button type={type} className={styles[variant]} onClick={onClick}>
+    <button type={type} className={styles[variant]} onClick={onClick} disabled={disabled}> 
       {icon && <FontAwesomeIcon icon={icon} className={styles.icon} />}
       {label && <span>{label}</span>}
     </button>

@@ -8,23 +8,21 @@ import { faStar, faStarHalf, faArrowTurnUp } from "@fortawesome/free-solid-svg-i
 /* Estilos */
 import styles from "./Comment.module.css";
 
-function Comment() {
+function Comment({ autor, mensaje, foto }) {
     return (
-
-        <article className={styles["comment"]}>
-            <div className={styles["author"]}>
-                <img className={styles["author-image"]} src="imageholder.png" alt="Imagen del modelo" />
-                <h3>Trece</h3>
-            </div>
-            <div className={styles["comment-content"]}> 
-                {/* <FontAwesomeIcon icon={faArrowTurnUp} rotation={90} /> */}
-                <p className={styles["text-comment"]}>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a diam lectus. Sed sit amet ipsum mauris.
-                    Maecenas congue ligula ac quam viverra nec consectetur ante hendrerit. Donec et mollis dolor. 
-                    Praesent et diam eget libero egestas mattis sit amet vitae augue.
-                </p>
-            </div>
-        </article>
+      <article className={styles["comment"]}>
+        <div className={styles["author"]}>
+          <img
+            className={styles["author-image"]}
+            src={foto || "imageholder.png"}
+            alt={`Imagen de ${autor}`}
+          />
+          <h3>{autor}</h3>
+        </div>
+        <div className={styles["comment-content"]}>
+          <p className={styles["text-comment"]}>{mensaje}</p>
+        </div>
+      </article>
     );
-}
+  }
 export default Comment;

@@ -60,6 +60,11 @@ p {
   display: flex;
   gap: 3em;
 
+  a > button {
+    padding: 0.8em 3.2em;
+    border-radius: 10px;
+    font-size: medium;
+  }
   > button {
     padding: 0.8em 1.2em;
     border-radius: 10px;

@@ -2,113 +2,177 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Button, Comment, ModelViewer } from '../../Components';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faStar, faStarHalf, faDownload, faHeart } from "@fortawesome/free-solid-svg-icons";
+import { faStar, faDownload, faHeart } from "@fortawesome/free-solid-svg-icons";
 import styles from "./Detail.module.css";
 
 function Detail() {
-    const { id } = useParams();
-    const [publicacion, setPublicacion] = useState(null);
-    console.log("ID de la publicación:", id);
+  const { id } = useParams();
+  const [publicacion, setPublicacion] = useState(null);
+  const [likes, setLikes] = useState(0);
+  const [liked, setLiked] = useState(false);
+  const [comentarios, setComentarios] = useState([]);
+  const [nuevoComentario, setNuevoComentario] = useState("");
 
-    useEffect(() => {
-        console.log('useEffect ejecutado para el id:', id); // Log adicional
-        fetch(`http://localhost:5000/api/publicaciones/${id}`)
-            .then(async res => {
-                if (!res.ok) {
-                    const errorText = await res.text();
-                    throw new Error(`Error ${res.status}: ${errorText}`);
-                }
-                return res.json();
-            })
-            .then(data => {
-                if (!data || Object.keys(data).length === 0) {
-                    alert("Publicación no encontrada");
-                    console.warn("⚠️ Publicación vacía:", data);
-                }
-                setPublicacion(data);
-            })
-            .catch(err => {
-                console.error("❌ Error al obtener la publicación:", err);
-                alert("Error al cargar la publicación. Consulta la consola para más detalles.");
-            });
-    }, [id]);
-    
+  useEffect(() => {
+    fetch(`http://localhost:5000/api/publicaciones/${id}`)
+      .then(res => res.json())
+      .then(data => {
+        setPublicacion(data);
+        setLikes(data.likes || 0);
+      })
+      .catch(err => {
+        console.error("❌ Error al obtener la publicación:", err);
+        alert("Error al cargar la publicación");
+      });
+  }, [id]);
 
-    if (!publicacion) {
-        return <p>Cargando publicación...</p>;
-    }
+  useEffect(() => {
+    fetch(`http://localhost:5000/api/publicaciones/${id}/comentarios`)
+      .then(res => res.json())
+      .then(data => setComentarios(data))
+      .catch(err => console.error("Error al obtener comentarios:", err));
+  }, [id]);
 
-    return (
-        <div className={styles["detail-main-container"]}>
-            {/* Parte Izquierda: Visor 3D */}
-            <section className={styles["detail-images"]}>
-                <ModelViewer modelUrl={`http://localhost:5000/api/publicaciones/${id}/modelo`} />
-            </section>
+  const manejarComentario = (e) => {
+    e.preventDefault();
+    const usuarioId = sessionStorage.getItem("userId");
+    if (!usuarioId || !nuevoComentario.trim()) return;
+  
+    fetch("http://localhost:5000/api/comentarios", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        usuarioId,
+        publicacionId: id,
+        titulo: "Comentario",
+        mensaje: nuevoComentario
+      })
+    })
+      .then(res => res.json())
+      .then(data => {
+        setNuevoComentario("");
+        // 👇 Aquí volvemos a pedir todos los comentarios desde el backend
+        fetch(`http://localhost:5000/api/publicaciones/${id}/comentarios`)
+          .then(res => res.json())
+          .then(data => setComentarios(data))
+          .catch(err => console.error("Error al recargar comentarios:", err));
+      })
+      .catch(err => console.error("Error al enviar comentario:", err));
+  };
+  
 
-            {/* Parte Derecha: Información */}
-            <section className={styles["detail-info"]}>
+  if (!publicacion) return <p>Cargando publicación...</p>;
 
-                <section className={styles["author-block"]}>
-                    <div className={styles["author"]}>
-                        <img className={styles["author-image"]} src="imageholder.png" alt="Imagen del autor" />
-                        <h3>{publicacion.usuario?.[0]?.name || "Autor desconocido"}</h3>
-                    </div>
+  return (
+    <div className={styles["detail-main-container"]}>
+      {/* Parte Izquierda: Visor 3D */}
+      <section className={styles["detail-images"]}>
+        <ModelViewer modelUrl={`http://localhost:5000/api/publicaciones/${id}/modelo`} />
+      </section>
 
-                    <div className={styles["buttons"]}>
-                        <Button variant="blue-rounded" label=" Descargar" icon={faDownload} />
-                        <Button variant="green-rounded" label=" Me gusta" icon={faHeart} />
-                    </div>
+      {/* Parte Derecha: Información */}
+      <section className={styles["detail-info"]}>
 
-                    <h2 className={styles["title"]}>{publicacion.titulo}</h2>
+        <section className={styles["author-block"]}>
+          <div className={styles["author"]}>
+            <img
+              className={styles["author-image"]}
+              src={`http://localhost:5000/api/users/${publicacion.usuario?._id}/foto`}
+              alt="Imagen del autor"
+            />
+            <h3>{publicacion.usuario?.name || "Autor desconocido"}</h3>
+          </div>
 
-                    <p className={styles["description"]}>
-                        {publicacion.descripcion}
-                    </p>
-                </section>
+          <div className={styles["buttons"]}>
+            <a href={`http://localhost:5000/api/publicaciones/${id}/modelo`}>
+              <Button variant="blue-rounded" label=" Descargar" icon={faDownload} />
+            </a>
+            <Button
+              variant="green-rounded"
+              label={liked ? "Ya te gusta" : " Me gusta"}
+              icon={faHeart}
+              disabled={liked}
+              onClick={() => {
+                fetch(`http://localhost:5000/api/publicaciones/${id}/like`, { method: "PATCH" })
+                  .then(res => res.json())
+                  .then(() => {
+                    setLikes(prev => Math.min(prev + 1, 5));
+                    setLiked(true);
+                  })
+                  .catch(err => console.error("Error al dar like:", err));
+              }}
+            />
+          </div>
 
-                <section className={styles["details"]}>
-                    <h2>Detalles</h2>
-                    <div className={styles["span"]}>
-                        <p>Formato:</p>
-                        <p>.glb</p>
-                    </div>
-                    <div className={styles["span"]}>
-                        <p>Me gusta:</p>
-                        <div>
-                            <FontAwesomeIcon icon={faStar} />
-                            <FontAwesomeIcon icon={faStar} />
-                            <FontAwesomeIcon icon={faStar} />
-                            <FontAwesomeIcon icon={faStarHalf} />
-                        </div>
-                    </div>
-                </section>
+          <h2 className={styles["title"]}>{publicacion.titulo}</h2>
 
-                <section className={styles["tags"]}>
-                    <h2>Tags</h2>
-                    <div className={styles["tag-cloud"]}>
-                        <Button variant="grey-rounded" label="Digital 3D" to="/home" />
-                        <Button variant="grey-rounded" label="Fan Art" to="/home" />
-                    </div>
-                </section>
+          <p className={styles["description"]}>
+            {publicacion.descripcion}
+          </p>
+        </section>
 
-                <section className={styles["comments"]}>
-                    <h2>Comentarios</h2>
-                    <form className={styles["comment-form"]}>
-                        <textarea 
-                            placeholder="Escribe tu comentario..." 
-                            className={styles["comment-textarea"]}
-                        />
-                        <Button variant="red-rounded" label="Publicar" type="submit" />
-                    </form>
+        <section className={styles["details"]}>
+          <h2>Detalles</h2>
+          <div className={styles["span"]}>
+            <p>Formato:</p>
+            <p>.glb</p>
+          </div>
+          <div className={styles["span"]}>
+            <p>Me gusta:</p>
+            <div>
+              {Array.from({ length: Math.min(likes, 5) }).map((_, i) => (
+                <FontAwesomeIcon key={i} icon={faStar} />
+              ))}
+            </div>
+          </div>
+        </section>
 
-                    <div className={styles["comment-div"]}>
-                        <Comment />
-                        <Comment />
-                    </div>
-                </section>
+        <section className={styles["tags"]}>
+          <h2>Tags</h2>
+          <div className={styles["tag-cloud"]}>
+            {publicacion.categoria?.map((cat, index) => (
+              <Button
+                key={index}
+                variant="grey-rounded"
+                label={cat}
+                to="/home"
+              />
+            ))}
+          </div>
+        </section>
 
-            </section>
-        </div>
-    );
+        <section className={styles["comments"]}>
+          <h2>Comentarios</h2>
+          <form className={styles["comment-form"]} onSubmit={manejarComentario}>
+            <textarea
+              placeholder="Escribe tu comentario..."
+              className={styles["comment-textarea"]}
+              value={nuevoComentario}
+              onChange={(e) => setNuevoComentario(e.target.value)}
+            />
+            <Button variant="red-rounded" label="Publicar" type="submit" />
+          </form>
+
+          <div className={styles["comment-div"]}>
+            {comentarios.length === 0 ? (
+              <p>No hay comentarios aún.</p>
+            ) : (
+              comentarios.map((comentario) => (
+                <Comment
+                  key={comentario._id}
+                  autor={comentario.usuario?.name || "Anónimo"}
+                  mensaje={comentario.mensaje}
+                  fecha={new Date(comentario.fecha).toLocaleString()}
+                  foto={`http://localhost:5000/api/users/${comentario.usuario?._id}/foto`}
+                />
+              ))
+            )}
+          </div>
+        </section>
+
+      </section>
+    </div>
+  );
 }
+
 export default Detail;

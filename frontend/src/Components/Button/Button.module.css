@@ -1,199 +1,207 @@
 button {
-    width: 100%;
-    padding-inline: 1rem;
-    padding-block: 0.5rem;
-    border: none;
-    border-radius: 0.25rem;
+  width: 100%;
+  padding-inline: 1rem;
+  padding-block: 0.5rem;
+  border: none;
+  border-radius: 0.25rem;
 
-    font-size: var(--font-medium);
-    font-weight: bold;
-    transition: background-color 0.1s ease, color 0.3s ease;
+  font-size: var(--font-medium);
+  font-weight: bold;
+  transition: background-color 0.1s ease, color 0.3s ease;
 
-    &:hover {
-        cursor: pointer;
-    }
+  &:hover {
+    cursor: pointer;
+  }
 }
 
-.red, .white, .white-red {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+.red,
+.white,
+.white-red {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 
-    &:hover {
-        transform: scale(1.05); /* Efecto de ampliación */
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Sombra sutil */
-    }
+  &:hover {
+    transform: scale(1.05); /* Efecto de ampliación */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Sombra sutil */
+  }
 }
 
 .red {
-    color: var(--white);
-    background-color: var(--red);
+  color: var(--white);
+  background-color: var(--red);
 
-    &:active {
-        background-color: var(--dark-red);
-    }
+  &:active {
+    background-color: var(--dark-red);
+  }
 }
 
-
-
 .red-rounded {
-    color: var(--white);
-    background-color: var(--red);
+  color: var(--white);
+  background-color: var(--red);
 }
 
 .grey-rounded {
-    color: var(--white);
-    background-color: var(--medium-light-grey);
+  color: var(--white);
+  background-color: var(--medium-light-grey);
 }
 
 .blue-rounded {
-    color: var(--white);
-    background-color: var(--blue);
+  color: var(--white);
+  background-color: var(--blue);
 }
 
 .green-rounded {
-    color: var(--white);
-    background-color: var(--green);
+  color: var(--white);
+  background-color: var(--green);
 }
 
-.grey-rounded, .red-rounded, .blue-rounded, .green-rounded {
-    border-radius: 2rem;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+.grey-rounded,
+.red-rounded,
+.blue-rounded,
+.green-rounded {
+  border-radius: 2rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 
-    padding: 1em 2em 1em 2em;
+  padding: 1em 2em 1em 2em;
 
-    &:active {
-        background-color: var(--white);
-        color: black;
-    }
+  &:active {
+    background-color: var(--white);
+    color: black;
+  }
 
-    &:hover {
-        transform: scale(1.05); /* Efecto de ampliación */
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Sombra sutil */
-    }
+  &:hover {
+    transform: scale(1.05); /* Efecto de ampliación */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Sombra sutil */
+  }
 }
-
 
 .white {
-    color: black;
-    background-color: var(--white);
+  color: black;
+  background-color: var(--white);
 
-    &:active {
-        background-color: black;
-        color: var(--white);
-    }
+  &:active {
+    background-color: black;
+    color: var(--white);
+  }
 }
 
-
 .white-red {
-    color: var(--red);
-    background-color: var(--white);
+  color: var(--red);
+  background-color: var(--white);
 
-    &:active {
-        background-color: black;
-        color: var(--white);
-    }
+  &:active {
+    background-color: black;
+    color: var(--white);
+  }
 }
 
 .white-rounded {
-    color: black;
-    background-color: var(--white);
-    border-radius: 1rem;
+  color: black;
+  background-color: var(--white);
+  border-radius: 1rem;
 
-    &:active {
-        background-color: black;
-        color: var(--white);
-    }
+  &:active {
+    background-color: black;
+    color: var(--white);
+  }
 }
 
 .black {
-    color: var(--white);
-    background-color: black;
-    
-    &:active {
-        background-color: var(--white);
-        color: black;
-    }
+  color: var(--white);
+  background-color: black;
+
+  &:active {
+    background-color: var(--white);
+    color: black;
+  }
 }
 
 .black-rounded {
-    color: var(--white);
-    background-color: black;
-    border-radius: 1rem;
+  color: var(--white);
+  background-color: black;
+  border-radius: 1rem;
 
-    &:active {
-        background-color: var(--white);
-        color: black;
-    }
+  &:active {
+    background-color: var(--white);
+    color: black;
+  }
 }
 
 /* .headerButtonWhite */
 .headerButtonWhite {
-    display: flex;
-    gap: 0.5em;
-    font-size: 16px;
-    width: fit-content;
-    border: 2px solid transparent;
-    padding: 0.5em 1rem;
-    border-radius: 5px;
-    transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  gap: 0.5em;
+  font-size: 16px;
+  width: fit-content;
+  border: 2px solid transparent;
+  padding: 0.5em 1rem;
+  border-radius: 5px;
+  transition: background-color 0.3s ease, transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .headerButtonWhite:hover {
-    transform: scale(1.05); /* Efecto de ampliación */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Sombra sutil */
-    cursor: pointer;
+  transform: scale(1.05); /* Efecto de ampliación */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Sombra sutil */
+  cursor: pointer;
 }
 .headerButtonWhite:active {
-    transform: scale(0.98); /* Reducir el tamaño del botón */
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); /* Reducir la sombra */
-    background-color: var(--medium-grey); /* Fondo más oscuro cuando se presiona */
-    color: var(--white);
+  transform: scale(0.98); /* Reducir el tamaño del botón */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); /* Reducir la sombra */
+  background-color: var(
+    --medium-grey
+  ); /* Fondo más oscuro cuando se presiona */
+  color: var(--white);
 }
 /* .headerButtonBlack */
 .headerButtonBlack {
-    display: flex;
-    gap: 0.5em;
-    font-size: 16px;
-    width: fit-content;
-    background-color: var(--dark-grey);
-    color: var(--white);
-    padding: 0.5em 1rem;
-    border-radius: 5px;
-    border: 2px solid transparent;
-    transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
+  display: flex;
+  gap: 0.5em;
+  font-size: 16px;
+  width: fit-content;
+  background-color: var(--dark-grey);
+  color: var(--white);
+  padding: 0.5em 1rem;
+  border-radius: 5px;
+  border: 2px solid transparent;
+  transition: background-color 0.3s ease, transform 0.3s ease,
+    box-shadow 0.3s ease, color 0.3s ease;
 }
 
 .headerButtonBlack:hover {
-    background-color: var(--medium-grey); /* Fondo más claro en hover */
-    transform: scale(1.05); /* Efecto de ampliación */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); /* Sombra más pronunciada */
-    color: var(--light-grey); /* Cambiar color del texto */
-    cursor: pointer;
+  background-color: var(--medium-grey); /* Fondo más claro en hover */
+  transform: scale(1.05); /* Efecto de ampliación */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); /* Sombra más pronunciada */
+  color: var(--light-grey); /* Cambiar color del texto */
+  cursor: pointer;
 }
 
 .headerButtonBlack:active {
-    transform: scale(0.98); /* Reducir el tamaño del botón */
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); /* Reducir la sombra */
-    background-color: var(--white); /* Fondo más oscuro cuando se presiona */
-    color: var(--dark-grey);
+  transform: scale(0.98); /* Reducir el tamaño del botón */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); /* Reducir la sombra */
+  background-color: var(--white); /* Fondo más oscuro cuando se presiona */
+  color: var(--dark-grey);
 }
-
 
 @media (max-width: 550px) {
-    /* Ocultar el texto de los botones */
-    .headerButtonWhite span,
-    .headerButtonBlack span {
-        display: none;
-    }
+  /* Ocultar el texto de los botones */
+  .headerButtonWhite span,
+  .headerButtonBlack span {
+    display: none;
+  }
 
-    /* Ajustar tamaño de los botones */
-    .headerButtonWhite,
-    .headerButtonBlack {
-        width: 40px; /* Tamaño fijo */
-        height: 40px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 0; /* Eliminar relleno extra */
-    }
+  /* Ajustar tamaño de los botones */
+  .headerButtonWhite,
+  .headerButtonBlack {
+    width: 40px; /* Tamaño fijo */
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0; /* Eliminar relleno extra */
+  }
 }
-  
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
