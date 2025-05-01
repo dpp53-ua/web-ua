@@ -390,13 +390,22 @@ app.post("/api/publicaciones/:idUsuario", upload.fields([
   ]), async (req, res) => {
     try {
       let { titulo, descripcion, categoria } = req.body;
+
       if (!Array.isArray(categoria)) categoria = [categoria];
+
+      // Eliminar valores falsy
+      categoria = categoria.filter(c => c);
+      
+      // Si después de limpiar está vacío, asignar por defecto
+      if (categoria.length === 0) {
+        categoria = ["Sin categoría"];
+      }
   
       const archivos = req.files["archivo"] || [];
       const miniatura = req.files["miniatura"]?.[0];
   
       const idUsuario = req.params.idUsuario;
-      if (!titulo || !descripcion || !categoria.length || !archivos.length || !miniatura || !idUsuario) {
+      if (!titulo || !descripcion || !archivos.length || !miniatura || !idUsuario) {
         return res.status(400).json({ message: "Faltan campos obligatorios" });
       }
   

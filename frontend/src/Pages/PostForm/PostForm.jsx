@@ -112,8 +112,6 @@ function PostForm() {
     if (!miniatureFile && !initialMiniature) {
       newErrors.postMiniature = "Debe subir una miniatura obligatoriamente";
     }    
-
-    if (!selectedTags.length)      newErrors.postCategories = "Seleccione al menos una categoría";
   
     if (Object.keys(newErrors).length) {
       setErrors(newErrors);
