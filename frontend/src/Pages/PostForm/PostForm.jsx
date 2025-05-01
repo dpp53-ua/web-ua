@@ -81,13 +81,10 @@ function PostForm() {
 
   const addTag = (e) => {
     const newTag = e.target.value;
-  
     if (newTag && !selectedTags.includes(newTag)) {
-      setSelectedTags(prevTags =>
-        [...prevTags.filter(tag => tag !== "Sin categoría"), newTag]
-      );
+      setSelectedTags(prev => [...prev, newTag]);
     }
-  };  
+  };   
 
   const deleteTag = (tagToDelete) => {
     setSelectedTags(prevTags => prevTags.filter(tag => tag !== tagToDelete));
@@ -131,20 +128,56 @@ function PostForm() {
     
     
     if (isEditMode) {
+      // ——— DEBUG: imprimir estado actual vs inicial ——
+      console.log("=== DEBUG SIN CAMBIOS ===");
+      console.log("formData.postTitle:", formData.postTitle);
+      console.log("initialFormData.postTitle:", initialFormData.postTitle);
+      console.log("formData.postDescription:", formData.postDescription);
+      console.log("initialFormData.postDescription:", initialFormData.postDescription);
+    
+      //AA 
+
+      const sortedCurrentTags = [...selectedTags].sort();
+      const sortedInitialTags = [...initialTags].sort();
+      console.log("selectedTags:", selectedTags);
+      console.log("initialTags:", initialTags);
+      console.log("sortedCurrentTags:", sortedCurrentTags);
+      console.log("sortedInitialTags:", sortedInitialTags);
+    
       const isMiniatureChanged = miniatureFile?.name !== initialMiniature?.nombre;
-      const hasNewFiles = uploadedFiles.some(file => file instanceof File);
-      const filesToDelete = initialFiles.filter(initialFile =>
-        !uploadedFiles.some(file => file.name === initialFile.nombre)
+      console.log("miniatureFile?.name:", miniatureFile?.name);
+      console.log("initialMiniature?.nombre:", initialMiniature?.nombre);
+      console.log("isMiniatureChanged:", isMiniatureChanged);
+    
+      // Nuevo criterio: solo contamos como "nuevo" si es File y no estaba en initialFiles
+      const hasNewFiles = uploadedFiles.some(
+        file => file instanceof File &&
+                !initialFiles.some(init => init.nombre === file.name)
       );
-      
+      console.log("uploadedFiles:", uploadedFiles);
+      console.log("hasNewFiles:", hasNewFiles);
+    
+      // Archivos iniciales que han sido eliminados
+      const filesToDelete = initialFiles.filter(
+        init => !uploadedFiles.some(f => f.name === init.nombre)
+      );
+      console.log("initialFiles:", initialFiles);
+      console.log("filesToDelete:", filesToDelete);
+    
+      const compareTags = (arr1, arr2) =>
+        arr1.length === arr2.length && arr1.every((v, i) => v === arr2[i]);
+    
       const sinCambios =
         formData.postTitle === initialFormData.postTitle &&
         formData.postDescription === initialFormData.postDescription &&
-        compareTags(selectedTags.sort(), initialTags.sort()) &&
+        compareTags(sortedCurrentTags, sortedInitialTags) &&
         filesToDelete.length === 0 &&
         !isMiniatureChanged &&
         !hasNewFiles;
-      
+    
+      console.log("sinCambios:", sinCambios);
+      console.log("=== FIN DEBUG ===");
+    
       if (sinCambios) {
         await Swal.fire({
           title: 'Sin cambios',
@@ -152,42 +185,34 @@ function PostForm() {
           icon: 'info',
           background: getCSSVariable('--dark-grey'),
           color: getCSSVariable('--white'),
-          customClass: {
-            confirmButton: "swal-confirm-btn",
-          },
+          customClass: { confirmButton: "swal-confirm-btn" }
         });
+        return;
       }
-  
+    
       const result = await Swal.fire({
         title: '¿Desea actualizar la publicación?',
         text: 'Se sustituirán los datos antiguos por los nuevos',
         icon: 'warning',
         background: getCSSVariable('--dark-grey'),
         color: getCSSVariable('--white'),
-        customClass: {
-          confirmButton: "swal-confirm-btn",
-        },
+        customClass: { confirmButton: "swal-confirm-btn" },
         showCancelButton: true,
         confirmButtonText: 'Sí, guardar cambios',
         cancelButtonText: 'Cancelar'
       });
-  
+    
       if (!result.isConfirmed) {
         return;
       }
-    }
+    }    
   
     // Construir FormData
     const formPayload = new FormData();
     formPayload.append("titulo", formData.postTitle);
     formPayload.append("descripcion", formData.postDescription);
 
-    const categoriasFinales = selectedTags.length > 0 ? selectedTags : ["Sin categoría"];
-    categoriasFinales.forEach(tag => formPayload.append("categoria", tag));
-
-
     selectedTags.forEach(tag => formPayload.append("categoria", tag));
-
   
     filesToDelete.forEach(file =>
       formPayload.append("eliminarArchivo", file.nombre)
@@ -204,7 +229,11 @@ function PostForm() {
     }    
   
     const userId = sessionStorage.getItem("userId");
-  
+
+    for (const [key, value] of formPayload.entries()) {
+      console.log(key, value);
+    }
+
     try {
       const endpoint = isEditMode
         ? `http://localhost:5000/api/publicaciones/${id}`
