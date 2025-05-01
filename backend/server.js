@@ -303,15 +303,18 @@ app.post("/api/publicaciones/:idUsuario", upload.fields([
     try {
       let { titulo, descripcion, categoria } = req.body;
 
-      if (!Array.isArray(categoria)) categoria = [categoria];
+        // Normalizar a array y limpiar falsy
+        categoria = Array.isArray(categoria) ? categoria.filter(Boolean)
+                : categoria ? [categoria]
+                : [];
 
-      // Eliminar valores falsy
-      categoria = categoria.filter(c => c);
-      
-      // Si después de limpiar está vacío, asignar por defecto
-      if (categoria.length === 0) {
+        // Si después de limpiar no hay categorías, poner "Sin categoría"
+        if (categoria.length === 0) {
         categoria = ["Sin categoría"];
-      }
+        } else {
+        // Eliminar "Sin categoría" si llegan otras categorías válidas
+        categoria = categoria.filter(c => c !== "Sin categoría");
+        }
   
       const archivos = req.files["archivo"] || [];
       const miniatura = req.files["miniatura"]?.[0];
