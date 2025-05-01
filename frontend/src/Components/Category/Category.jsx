@@ -8,7 +8,7 @@ function Category({ id, nombre }) {
 
       <article className={styles["article-category"]}>
         <header className={styles["category-header"]}>
-          <img className={styles["category-image"]} src="imageholder.png" alt="Imagen de categoría" />
+          <img className={styles["category-image"]} src="no-image.webp" alt="Imagen de categoría" />
         </header>
         <footer className={styles["category-footer"]}>
           <h3>{nombre}</h3>

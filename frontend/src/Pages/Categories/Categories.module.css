@@ -11,7 +11,7 @@
     flex-wrap: wrap;
     gap: 1em; 
     justify-content: center; 
-    margin: 5em auto; 
+    margin: 3rem 3rem 1rem 3rem; 
 }
 
 .category-title {
@@ -30,7 +30,7 @@
     justify-content: center; /* Centra los elementos horizontalmente */
     max-width: calc(5 * 200px + 4 * 1em); /* Máximo 5 elementos por fila */
     margin: 0 auto; /* Centrar el contenedor */
-    padding: 0px 3em 5em 3em;
+    padding: 0px 3em 3em 3em;
 }
 
 
