@@ -81,10 +81,13 @@ function PostForm() {
 
   const addTag = (e) => {
     const newTag = e.target.value;
+  
     if (newTag && !selectedTags.includes(newTag)) {
-      setSelectedTags(prevTags => [...prevTags, newTag]);
+      setSelectedTags(prevTags =>
+        [...prevTags.filter(tag => tag !== "Sin categoría"), newTag]
+      );
     }
-  };
+  };  
 
   const deleteTag = (tagToDelete) => {
     setSelectedTags(prevTags => prevTags.filter(tag => tag !== tagToDelete));
@@ -178,7 +181,13 @@ function PostForm() {
     const formPayload = new FormData();
     formPayload.append("titulo", formData.postTitle);
     formPayload.append("descripcion", formData.postDescription);
+
+    const categoriasFinales = selectedTags.length > 0 ? selectedTags : ["Sin categoría"];
+    categoriasFinales.forEach(tag => formPayload.append("categoria", tag));
+
+
     selectedTags.forEach(tag => formPayload.append("categoria", tag));
+
   
     filesToDelete.forEach(file =>
       formPayload.append("eliminarArchivo", file.nombre)
@@ -281,10 +290,14 @@ function PostForm() {
       const data = await response.json();
 
       if (Array.isArray(data)) {
-        setArrOptions(data.map(category => ({
-          label: category.nombre,
-          value: category.id,
-        })));
+        setArrOptions(
+          data
+            .filter(category => category.nombre !== "Sin categoría")
+            .map(category => ({
+              label: category.nombre,
+              value: category.id,
+            }))
+        );        
       }
     } catch (error) {
       console.error('Error al obtener las categorías:', error);
@@ -295,6 +308,16 @@ function PostForm() {
     try {
       const res = await fetch(`http://localhost:5000/api/publicaciones/${id}`);
       const data = await res.json();
+
+      const userId = sessionStorage.getItem("userId");
+
+      console.log("Lo que llega: ", data.usuarioId);
+      console.log("SessionStorage: ", userId);
+
+      if (!data.usuario || data.usuario._id !== userId) {
+        window.location.href = "/home";
+        return;
+      }
 
       setFormData({
         postTitle: data.titulo,
@@ -309,15 +332,13 @@ function PostForm() {
         new File([""], file.nombre, { type: "application/octet-stream" })
       );
 
-
-
-
       setUploadedFiles(fakeFiles);
       setInitialFiles(data.archivos);
       setMiniatureFile(new File([""], data.miniatura.nombre, { type: "image/*" }));
       setInitialMiniature(data.miniatura);
-      setSelectedTags(data.categoria);
-      setInitialTags(data.categoria);
+      const categoriasFiltradas = data.categoria.filter(c => c !== "Sin categoría");
+      setSelectedTags(categoriasFiltradas);
+      setInitialTags(categoriasFiltradas);      
       setFechaModificacion(new Date(data.fecha));
     } catch (err) {
       console.error("Error al cargar publicación:", err);
@@ -411,13 +432,11 @@ function PostForm() {
           />
           <div className={styles["grid-list"]}>
             <ul>
-              {selectedTags.map((tag) => (
-                <DeleteableTag
-                  key={tag}
-                  tag={tag}
-                  onDelete={() => deleteTag(tag)}
-                />
-              ))}
+            {selectedTags
+            .filter(tag => tag !== "Sin categoría")
+            .map((tag) => (
+              <DeleteableTag key={tag} tag={tag} onDelete={() => deleteTag(tag)} />
+            ))}
             </ul>
           </div>
           <div>
