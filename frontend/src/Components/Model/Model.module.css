@@ -25,7 +25,7 @@
 .model-image {
     background-color: #353535;
     width: 100%;
-    min-height: 337px;
+    height: 310px;
     /* Redondeo solo en la parte superior */
     border-top-left-radius: 10px; 
     border-top-right-radius: 10px;
