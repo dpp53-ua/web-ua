@@ -135,6 +135,8 @@ function PostForm() {
       console.log("formData.postDescription:", formData.postDescription);
       console.log("initialFormData.postDescription:", initialFormData.postDescription);
     
+      //AA 
+
       const sortedCurrentTags = [...selectedTags].sort();
       const sortedInitialTags = [...initialTags].sort();
       console.log("selectedTags:", selectedTags);
