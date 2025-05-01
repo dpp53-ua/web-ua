@@ -501,6 +501,8 @@ app.post("/api/publicaciones/:idUsuario", upload.fields([
       res.status(500).json({ message: "Error al actualizar publicación", error: err.message });
     }
   });
+  
+  
 
 app.patch("/api/publicaciones/:id/like", async (req, res) => {
     const { id } = req.params;
