@@ -17,8 +17,9 @@
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    padding: 3rem;
-    gap: 5rem;
+    padding-inline: 3rem;
+    padding-block: 1rem;
+    gap: 3rem;
     height: fit-content;
 
     > div:first-of-type{
@@ -56,7 +57,8 @@
 }
 
 .category-section, .product-section {
-    padding: 2rem;
+    padding-inline: 2rem;
+    padding-block: 1rem;
 }
 
 .category-header, .product-header {
@@ -149,7 +151,15 @@
         width: 20%;
     }
 }
-
+h2{
+    font-size: 32px;
+}
+.logofont{
+    font-size: 46px;
+    font-family: "Odibee Sans", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+  }
 @media (max-width: 1000px) {  /* Cuando la pantalla sea menor a 768px */
     .home-welcome {
         flex-direction: column; /* Apila los elementos en columna */

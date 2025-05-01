@@ -101,9 +101,36 @@ function SearchResults() {
                     <img alt="logo" src="/logo.png" />
                 </div>
                 <div>
-                    <h1>Bienvenido</h1>
-                    <h1>Comienza a explorar assets</h1>
+                    <h2>Encuentra gran variedad de assets  <br></br> por tipo, categoría o valoración</h2>
                 </div>
+            </section>
+
+            <section className={styles["type-section"]}>
+                <Link 
+                    to={`/buscar?types=3D${selectedCategories.length > 0 ? '&categories=' + selectedCategories.join(',') : ''}${selectedFormats.length > 0 ? '&formats=' + selectedFormats.join(',') : ''}${selectedStars ? '&ratings=' + selectedStars : ''}`}
+                >
+                    <Button variant="red-rounded" label="3D" />
+                </Link>
+                <Link 
+                    to={`/buscar?types=2D${selectedCategories.length > 0 ? '&categories=' + selectedCategories.join(',') : ''}${selectedFormats.length > 0 ? '&formats=' + selectedFormats.join(',') : ''}${selectedStars ? '&ratings=' + selectedStars : ''}`}
+                >
+                    <Button variant="red-rounded" label="2D" />
+                </Link>
+                <Link 
+                    to={`/buscar?types=Vídeo${selectedCategories.length > 0 ? '&categories=' + selectedCategories.join(',') : ''}${selectedFormats.length > 0 ? '&formats=' + selectedFormats.join(',') : ''}${selectedStars ? '&ratings=' + selectedStars : ''}`}
+                >
+                    <Button variant="red-rounded" label="Vídeo" />
+                </Link>
+                <Link 
+                    to={`/buscar?types=Audio${selectedCategories.length > 0 ? '&categories=' + selectedCategories.join(',') : ''}${selectedFormats.length > 0 ? '&formats=' + selectedFormats.join(',') : ''}${selectedStars ? '&ratings=' + selectedStars : ''}`}
+                >
+                    <Button variant="red-rounded" label="Audio" />
+                </Link>
+                <Link 
+                    to={`/buscar?types=Script${selectedCategories.length > 0 ? '&categories=' + selectedCategories.join(',') : ''}${selectedFormats.length > 0 ? '&formats=' + selectedFormats.join(',') : ''}${selectedStars ? '&ratings=' + selectedStars : ''}`}
+                >
+                    <Button variant="red-rounded" label="Script" />
+                </Link>
             </section>
 
             <section className={styles["filter-section"]}>
@@ -178,67 +205,9 @@ function SearchResults() {
                 </div>
             </section>
 
-            <section className={styles["type-section"]}>
-                <Link 
-                    to={`/buscar?types=3D${selectedCategories.length > 0 ? '&categories=' + selectedCategories.join(',') : ''}${selectedFormats.length > 0 ? '&formats=' + selectedFormats.join(',') : ''}${selectedStars ? '&ratings=' + selectedStars : ''}`}
-                >
-                    <Button variant="red-rounded" label="3D" />
-                </Link>
-                <Link 
-                    to={`/buscar?types=2D${selectedCategories.length > 0 ? '&categories=' + selectedCategories.join(',') : ''}${selectedFormats.length > 0 ? '&formats=' + selectedFormats.join(',') : ''}${selectedStars ? '&ratings=' + selectedStars : ''}`}
-                >
-                    <Button variant="red-rounded" label="2D" />
-                </Link>
-                <Link 
-                    to={`/buscar?types=Vídeo${selectedCategories.length > 0 ? '&categories=' + selectedCategories.join(',') : ''}${selectedFormats.length > 0 ? '&formats=' + selectedFormats.join(',') : ''}${selectedStars ? '&ratings=' + selectedStars : ''}`}
-                >
-                    <Button variant="red-rounded" label="Vídeo" />
-                </Link>
-                <Link 
-                    to={`/buscar?types=Audio${selectedCategories.length > 0 ? '&categories=' + selectedCategories.join(',') : ''}${selectedFormats.length > 0 ? '&formats=' + selectedFormats.join(',') : ''}${selectedStars ? '&ratings=' + selectedStars : ''}`}
-                >
-                    <Button variant="red-rounded" label="Audio" />
-                </Link>
-                <Link 
-                    to={`/buscar?types=Script${selectedCategories.length > 0 ? '&categories=' + selectedCategories.join(',') : ''}${selectedFormats.length > 0 ? '&formats=' + selectedFormats.join(',') : ''}${selectedStars ? '&ratings=' + selectedStars : ''}`}
-                >
-                    <Button variant="red-rounded" label="Script" />
-                </Link>
-            </section>
-
-            <section className={styles["category-section"]}>
-                <header className={styles["category-header"]}>
-                    <h2>Categorías</h2>
-                    {/* <div className={styles["category-arrows"]}>
-                        <button className={styles["circle-button"]} aria-label="Anterior categoría">
-                            <FontAwesomeIcon icon={faArrowLeft} />
-                        </button>
-                        <button className={styles["circle-button"]} aria-label="Siguiente categoría">
-                            <FontAwesomeIcon icon={faArrowRight} />
-                        </button>
-                    </div> */}
-                </header>
-                <div className={styles["categories"]}>
-                    {categories.length > 0 ? (
-                        categories.map((category) => (
-                            <Category key={category.id} id={category._id} nombre={category.nombre} fotoURL={`http://localhost:5000/api/categorias/foto/${category.fotoId}`} />
-                        ))
-                    ) : (
-                        <p>No se encontraron categorías.</p>
-                    )}
-                </div>
-                {/* <footer className={styles["category-footer"]}>
-                    <span>
-                        <FontAwesomeIcon icon={faCircle} />
-                        <FontAwesomeIcon icon={faCircle} />
-                        <FontAwesomeIcon icon={faCircle} />
-                    </span>
-                </footer> */}
-            </section>
-
             <section className={styles["product-section"]}>
                 <header className={styles["product-header"]}>
-                    <h2>Resultados</h2>
+                    <h2>Resultados obtenidos</h2>
                 </header>
                 {publicaciones.length > 0 ? (
                     <>

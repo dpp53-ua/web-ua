@@ -8,7 +8,7 @@
 
 .home-welcome {
     /* background: linear-gradient(90deg, var(--dark-red), var(--medium-red)); */
-    background-image: url("../../../public/banner4.png");
+    background-image: url("../../../public/a8v0vhx4d9j81.png");
     background-size: cover;  /* Cubre todo el contenedor */
     background-position: center; /* Centra la imagen */
     background-repeat: no-repeat; /* Evita repeticiones */
@@ -16,8 +16,9 @@
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    padding: 3rem;
-    gap: 5rem;
+    padding-inline: 3rem;
+    padding-block: 1rem;
+    gap: 3rem;
     height: fit-content;
 
     > div:first-of-type{
@@ -81,7 +82,8 @@
 }
 
 .category-section, .product-section, .filter-section {
-    padding: 2rem;
+    padding-inline: 2rem;
+    padding-block: 1rem;
 }
 
 .category-header, .product-header {
@@ -171,6 +173,10 @@
     > button {
         width: 20%;
     }
+}
+
+h2{
+    font-size: 32px;
 }
 
 @media (max-width: 1000px) {  /* Cuando la pantalla sea menor a 768px */

@@ -36,8 +36,8 @@ function Home() {
                     <img alt="logo" src="/logo.png" />
                 </div>
                 <div>
-                    <h1>Bienvenido</h1>
-                    <h1>Comienza a explorar assets</h1>
+                    <h1>¡Bienvenido!</h1>
+                    <h2>Descubre, organiza y comparte<br></br>los assets que impulsan tus proyectos</h2>
                 </div>
             </section>
 
