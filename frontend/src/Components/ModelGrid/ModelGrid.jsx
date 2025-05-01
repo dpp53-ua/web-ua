@@ -12,6 +12,7 @@ function ModelGrid({ publicaciones = [] }) {  // Inicializamos publicaciones com
                         titulo={pub.titulo}
                         autor={pub.usuario?.name || "Desconocido"}
                         imagen={`http://localhost:5000/api/publicaciones/${pub._id}/miniatura`} 
+                        likes={pub.likes}
                     />
                 ))
             ) : (

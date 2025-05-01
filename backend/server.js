@@ -725,6 +725,25 @@ app.post("/api/publicaciones/:idUsuario", upload.fields([
     }
   });
   
+  app.get("/api/publicaciones/:id/likes", async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const publicacion = await publicacionesDB.findOne(
+            { _id: new ObjectId(id) },
+            { projection: { likes: 1 } }
+        );
+
+        if (!publicacion) {
+            return res.status(404).json({ message: "Publicación no encontrada" });
+        }
+
+        res.json({ likes: publicacion.likes || 0 });
+    } catch (err) {
+        console.error("Error al obtener likes:", err);
+        res.status(500).json({ message: "Error al obtener likes", error: err.message });
+    }
+});
   
 
 app.patch("/api/publicaciones/:id/like", async (req, res) => {
