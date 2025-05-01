@@ -221,7 +221,7 @@ function SearchResults() {
                 <div className={styles["categories"]}>
                     {categories.length > 0 ? (
                         categories.map((category) => (
-                            <Category key={category.id} id={category._id} nombre={category.nombre} />
+                            <Category key={category.id} id={category._id} nombre={category.nombre} fotoURL={`http://localhost:5000/api/categorias/foto/${category.fotoId}`} />
                         ))
                     ) : (
                         <p>No se encontraron categorías.</p>

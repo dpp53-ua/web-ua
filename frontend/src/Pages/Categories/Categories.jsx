@@ -27,7 +27,7 @@ function Categories() {
             <h2 className={styles["category-title"]}>Categorías</h2>
             <section className={styles["category-grid"]}>
                 {categories.map((category) => (
-                    <Category key={category._id} id={category._id} nombre={category.nombre}/>
+                    <Category key={category._id} id={category._id} nombre={category.nombre} fotoURL={`http://localhost:5000/api/categorias/foto/${category.fotoId}`} />
                 ))}
             </section>
             <footer className={styles["category-footer"]}>
