@@ -236,7 +236,7 @@ h2{
     gap: 1em;  /* Espacio entre el texto y la X */
     background-color: var(--grey);
     border-radius: 12px;
-    color: var(--black);
+    color: black;
 }
 
 /* Ajusta el tamaño y la ubicación de la X */

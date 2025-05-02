@@ -18,15 +18,23 @@ const applyUserPreferences = ({ theme, fontSize }) => {
   
     // Tema
     if (theme === "night") {
-      root.style.setProperty('--white', '#E6E8EC');
-      root.style.setProperty('--black', '#000000');
-      root.style.setProperty('--grey', '#A7A7A7');
-      root.style.setProperty('--dark-grey', '#141212');
     } else {
-      root.style.setProperty('--white', '#000000');
-      root.style.setProperty('--black', '#E6E8EC');
-      root.style.setProperty('--grey', '#141212');
-      root.style.setProperty('--dark-grey', '#fffffff');
+      root.style.setProperty('--red', '#c62828');
+      root.style.setProperty('--medium-red', '#9a0007');
+      root.style.setProperty('--dark-red', '#6a1b1b');
+
+      root.style.setProperty('--blue', '#1e88e5');
+      root.style.setProperty('--green', '#2e7d32');
+
+      root.style.setProperty('--grey', '#b0b0b0');
+      root.style.setProperty('--medium-grey', '#d3d3d3');
+      root.style.setProperty('--medium-light-grey', '#eeeeee');
+
+      root.style.setProperty('--dark-grey', '#f5f5f5');
+      root.style.setProperty('--white', '#000000');  // fondo
+      root.style.setProperty('--black', '#ffffff');  // texto
+
+      root.style.setProperty('--primary-link', '#673ab7');
     }
   };
 

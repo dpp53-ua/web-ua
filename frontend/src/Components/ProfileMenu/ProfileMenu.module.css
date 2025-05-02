@@ -21,7 +21,7 @@
         gap: 2rem;
         > .photoname{
             display: flex;
-            color: var(--white);
+            color: white;
             display: flex;
             font-weight: bold;
             align-items: center;
@@ -41,7 +41,7 @@
         }
 
         > .uploadsdownloads{
-            color: var(--white);
+            color: white;
             display: flex;
             gap: 0.25;
             flex-direction: column;
@@ -61,7 +61,7 @@
 }
 
 .profilemenu a {
-    color: var(--white);
+    color:white;
     text-decoration: none;
     display: flex;
     align-items: center;
@@ -84,7 +84,7 @@
     .profilemenu > .profilebox{
         flex-direction: column;
         gap: 0;
-        border-bottom: 0.08em solid var(--white);
+        border-bottom: 0.08em solid white;
 
         > .photoname{
             margin-bottom: 1rem;
@@ -100,7 +100,6 @@
         }
     }
     .profilemenu a {
-        color: var(--white);
         text-decoration: none; /* Quita el subrayado */
         display: flex;
         align-items: center;
