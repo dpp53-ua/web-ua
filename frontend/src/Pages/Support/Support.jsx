@@ -31,7 +31,7 @@ function Support() {
   const handleClear = async () => {
     const result = await Swal.fire({
       title: '¿Limpiar formulario?',
-      text: 'Se borrarán todos los campos llenados. ¿Deseas continuar?',
+      text: '¿Deseas borrar todos los campos introducidos?',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Sí, limpiar',

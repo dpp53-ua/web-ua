@@ -3,6 +3,8 @@ import styles from "./Model.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar, faStarHalf, faHeart, faDownload } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
+import Swal from "sweetalert2";
+import { getCSSVariable } from "../../Utils";
 
 function Model({ _id, titulo, autor, imagen, mostrarBotonDescarga= false }) {
   const [likes, setLikes] = useState(0);
@@ -56,7 +58,16 @@ function Model({ _id, titulo, autor, imagen, mostrarBotonDescarga= false }) {
   const handleDownload = async () => {
     try {
       const userId = sessionStorage.getItem("userId");
-      if (!userId) return alert("Debes estar logueado para descargar.");
+      if (!userId) return await Swal.fire({
+        title: 'Permiso denegado',
+        text: 'Inicia sesión para poder realizar descargas',
+        icon: 'warning',
+        background: getCSSVariable('--dark-grey'),
+        color: getCSSVariable('--white'),
+        customClass: {
+          confirmButton: "swal-confirm-btn",
+        }
+      });
   
       const response = await fetch(`http://localhost:5000/api/publicaciones/${_id}/descargar/${userId}`);
   
@@ -78,7 +89,16 @@ function Model({ _id, titulo, autor, imagen, mostrarBotonDescarga= false }) {
       window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error("Error en la descarga:", error);
-      alert("No se pudo descargar el archivo");
+      await Swal.fire({
+        title: 'Error',
+        text: 'No se ha podido realizar la descarga',
+        icon: 'error',
+        background: getCSSVariable('--dark-grey'),
+        color: getCSSVariable('--white'),
+        customClass: {
+          confirmButton: "swal-confirm-btn",
+        }
+      });
     }
   };
 

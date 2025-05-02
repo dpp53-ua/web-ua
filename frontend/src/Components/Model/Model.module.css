@@ -93,6 +93,7 @@
     align-self: right;
     margin: 0.25rem;
     margin-left: 11rem;
+    outline: 0.1rem solid var(--black);
   }
 
   
