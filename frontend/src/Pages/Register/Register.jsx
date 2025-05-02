@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import Swal from "sweetalert2";
 import { getCSSVariable } from '../../Utils';
+import Lottie from "lottie-react";
+import loginAnimation from "../../assets/manchas.json"; 
 
 /* Estilos */
 import styles from "./Register.module.css";
@@ -149,6 +151,12 @@ function Register() {
         </form>
       </section>
       <section className={styles["right-section"]}>
+        <Lottie 
+          animationData={loginAnimation} 
+          loop 
+          autoplay 
+          className={styles["right-animation"]}
+        />
         <img alt="logo" src="/logo.png"/>
         <h1>Bienvenido</h1>
         <p>¿Ya tienes una cuenta?</p>

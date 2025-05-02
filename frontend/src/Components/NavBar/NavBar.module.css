@@ -15,7 +15,7 @@
   }
   
   .nav a {
-    color: var(--white);
+    color: white;
     text-decoration: none;
     transition: color 0.3s ease; /* Transición suave para el color del texto */
   }
@@ -39,7 +39,7 @@
     left: 0;
     width: 100%;
     height: 2px;
-    background-color: var(--white); /* Subrayado animado */
+    background-color: white; /* Subrayado animado */
     transform: scaleX(0);
     transform-origin: bottom right;
     transition: transform 0.3s ease-out;

@@ -1,3 +1,11 @@
+h1{
+    font-size: var(--font-larger);
+    color: var(--white);
+}
+h2{
+    font-size: var(--font-large);
+    color: var(--white);
+}
 .searchResults-main-container {
     display: flex;
     flex-direction: column;
@@ -20,7 +28,12 @@
     padding-block: 1rem;
     gap: 3rem;
     height: fit-content;
-
+    
+    p{
+        font-size: var(--font-larger);
+        font-weight: 600;
+        color: white;
+    }
     > div:first-of-type{
         width: 30%;
         display: flex;
@@ -175,10 +188,15 @@
     }
 }
 
-h2{
-    font-size: 32px;
-}
-
+.marquee {
+    width: 100%;
+    overflow: hidden;
+    display: flex;
+    justify-content: center; /* Centra el contenido */
+    align-items: center;
+    padding-block: 2rem;
+    }
+    
 @media (max-width: 1000px) {  /* Cuando la pantalla sea menor a 768px */
     .home-welcome {
         flex-direction: column; /* Apila los elementos en columna */

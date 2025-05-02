@@ -52,6 +52,7 @@
     width: 100%;
     color: var(--black);
     text-decoration: none;
+    font-size: 24px;
 }
 
 .article-category:hover .category-footer h3,

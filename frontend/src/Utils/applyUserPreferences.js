@@ -26,7 +26,7 @@ const applyUserPreferences = ({ theme, fontSize }) => {
       root.style.setProperty('--white', '#000000');
       root.style.setProperty('--black', '#E6E8EC');
       root.style.setProperty('--grey', '#141212');
-      root.style.setProperty('--dark-grey', '#A7A7A7');
+      root.style.setProperty('--dark-grey', '#fffffff');
     }
   };
 
