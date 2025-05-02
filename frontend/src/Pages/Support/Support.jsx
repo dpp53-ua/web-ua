@@ -33,11 +33,11 @@ function Support() {
       title: '¿Limpiar formulario?',
       text: '¿Deseas borrar todos los campos introducidos?',
       icon: 'warning',
+      background: getCSSVariable('--dark-grey'),
+      color: getCSSVariable('--white'),
       showCancelButton: true,
       confirmButtonText: 'Sí, limpiar',
       cancelButtonText: 'No, cancelar',
-      background: '#2b2b2b',
-      color: '#fff',
     });
   
     if (!result.isConfirmed) return;

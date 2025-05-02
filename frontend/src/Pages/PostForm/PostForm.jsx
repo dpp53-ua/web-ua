@@ -26,6 +26,7 @@ function PostForm() {
 
   const dropAreaRef = useRef(null);
   const fileInputRef = useRef(null);
+  const miniatureInputRef = useRef(null);
   const MAX_FILES = 10;
 
   const isDuplicate = (fileName) =>
@@ -57,6 +58,7 @@ function PostForm() {
     }
 
     if (fileInputRef.current) fileInputRef.current.value = "";
+    if(miniatureInputRef.current) miniatureInputRef.current.value = "";
   };
 
   const handleFileInput = (e) => {
@@ -72,6 +74,7 @@ function PostForm() {
     }
   
     if (fileInputRef.current) fileInputRef.current.value = "";
+    if(miniatureInputRef.current) miniatureInputRef.current.value = "";
   };
   
 
@@ -310,6 +313,7 @@ function PostForm() {
     setInitialTags([]);
     setErrors({});
     if (fileInputRef.current) fileInputRef.current.value = "";
+    if(miniatureInputRef.current) miniatureInputRef.current.value = "";
   };
   
 
@@ -379,6 +383,44 @@ function PostForm() {
     if (isEditMode) fetchPost();
   }, [id]);
 
+
+  useEffect(() => {
+    const dropArea = dropAreaRef.current;
+    if (!dropArea) return;
+
+    const preventDefaults = (e) => e.preventDefault();
+    const highlight = () => (dropArea.style.opacity = "0.6");
+    const unhighlight = () => (dropArea.style.opacity = "1");
+    const handleDrop = (e) => {
+      const files = Array.from(e.dataTransfer.files);
+      addFiles(files);
+    };
+
+    ["dragenter", "dragover", "dragleave", "drop"].forEach(event =>
+      dropArea.addEventListener(event, preventDefaults)
+    );
+    ["dragenter", "dragover"].forEach(event =>
+      dropArea.addEventListener(event, highlight)
+    );
+    ["dragleave", "drop"].forEach(event =>
+      dropArea.addEventListener(event, unhighlight)
+    );
+    dropArea.addEventListener("drop", handleDrop);
+
+    return () => {
+      ["dragenter", "dragover", "dragleave", "drop"].forEach(event =>
+        dropArea.removeEventListener(event, preventDefaults)
+      );
+      ["dragenter", "dragover"].forEach(event =>
+        dropArea.removeEventListener(event, highlight)
+      );
+      ["dragleave", "drop"].forEach(event =>
+        dropArea.removeEventListener(event, unhighlight)
+      );
+      dropArea.removeEventListener("drop", handleDrop);
+    };
+  }, [uploadedFiles]);
+
   return (
     <div className={styles["post-main-container"]}>
       <section className={styles["left-section"]}>
@@ -436,7 +478,7 @@ function PostForm() {
             placeholder="Seleccionar archivo"
             onChange={handleFileInput}
             explicativeText={errors.postMiniature}
-            ref={fileInputRef}
+            ref={miniatureInputRef}
           />
           <div className={styles["grid-list"]}>
             {miniatureFile && (
