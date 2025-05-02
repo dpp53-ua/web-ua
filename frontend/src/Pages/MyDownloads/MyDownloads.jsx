@@ -4,7 +4,11 @@ import styles from "./MyDownloads.module.css";
 
 function MyDownloads() {
   const [descargas, setDescargas] = useState([]);
+  const [visibleCount, setVisibleCount] = useState(4);
 
+  const handleMostrarMas = () => {
+    setVisibleCount(prev => prev + 4);
+  };
   useEffect(() => {
     const userId = sessionStorage.getItem("userId"); // Asegúrate de que esté disponible
 
@@ -36,10 +40,10 @@ function MyDownloads() {
         <header>
           <h1>Mis descargas</h1>
         </header>
-        <ModelGrid publicaciones={descargas} mostrarBotonDescarga={true} />
+        <ModelGrid publicaciones={descargas.slice(0, visibleCount)} mostrarBotonDescarga={true} />
         <footer className={styles["model-footer"]}>
-          <Button variant="red-rounded" label="Mostrar más +" to="/home" />
-        </footer>
+                    <Button variant="red-rounded" label="Mostrar más +" onClick={handleMostrarMas} />
+                </footer>
       </section>
     </div>
   );

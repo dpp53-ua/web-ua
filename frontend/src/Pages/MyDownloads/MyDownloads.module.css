@@ -18,7 +18,7 @@
           margin-bottom: 3rem;
         }   
     }   
-  }
+  
 
   .model-footer {
     display: flex;
@@ -26,8 +26,9 @@
     padding: 2em;
 
     > button {
-        padding: 2em;
+        width: 30%;
     }
+  }
 }
 
 
