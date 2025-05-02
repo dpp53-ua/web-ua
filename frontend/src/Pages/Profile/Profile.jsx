@@ -211,7 +211,7 @@ function Profile() {
         </header>
         <hr></hr>
         <form onSubmit={handleSubmit}>
-          <h3>Información personal</h3>
+          <h2>Información personal</h2>
           {errors.general && <p className={styles["error"]}>{errors.general}</p>}
           <div className={styles["seccion"]}>
             <div className={styles["pic-name-email-input"]}>
@@ -280,7 +280,7 @@ function Profile() {
             />
           </div>
           <hr></hr>
-          <h3>Social</h3>
+          <h2>Social</h2>
           <div className={styles["seccion"]}>
             <InputField
               id="web"

@@ -11,7 +11,7 @@
   min-height: fit-content;
   height: 5rem;
   /* background: var(--medium-red); */
-  color: var(--white);
+  color: white;
   /* position: sticky;
   top: 0; 
   z-index: 10;  */
@@ -28,7 +28,7 @@
     gap: 0;
     align-items: center;
     text-decoration: none;
-    color: var(--white);
+    color: white;
     transition: transform 0.3s ease;
     margin-right: 1rem;
     

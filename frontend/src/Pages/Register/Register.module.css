@@ -49,14 +49,14 @@
         > form  {
             display: inherit;
             flex-direction: column;
-            gap: 3rem;
+            gap: 2rem;
 
             label {
                 font-size: var(--font-large);
             }
 
             input {
-                font-size: var(--font-medium);
+                font-size: var(--font-small);
             }
 
             > div:last-child {
@@ -72,15 +72,18 @@
     > .right-section {
         gap: 1rem;
         /* padding-inline: 6rem; */
-        background: linear-gradient(90deg, var(--dark-red), var(--medium-red));
+        /*background: linear-gradient(90deg, var(--dark-red), var(--medium-red));
         background-image: url("../../../public/bannner2.png");
         background-size: cover;  /* Cubre todo el contenedor */
-        background-position: left; /* Centra la imagen */
-        background-repeat: no-repeat; /* Evita repeticiones */
+        /*background-position: left; /* Centra la imagen */
+        /*background-repeat: no-repeat; /* Evita repeticiones */
+        position: relative;
+        overflow: hidden;
+        padding: 0;
 
         > img {
             /* width: 20rem; */
-            width: 60%;
+            width: 50%;
             height: auto;
             animation: spin 25s linear infinite;
             margin-bottom: 1rem;
@@ -89,9 +92,27 @@
         > p {
             color: var(--white);
             font-size: var(--font-large);
+            margin-bottom: 2rem;
         }
     }
 }
+
+.right-animation {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transform: scale(2.1); /* Aumentá el número según necesites */
+    transform-origin: center;
+    pointer-events: none;
+  }
+  
+  
+  .right-section > *:not(.right-animation) {
+    position: relative;
+    z-index: 1;
+  }
 
 @keyframes spin {
     from {

@@ -4,11 +4,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFaceFrown } from "@fortawesome/free-solid-svg-icons";
 import { useSearchParams, useNavigate, Link } from "react-router-dom";
 import styles from "./SearchResults.module.css";
+import Marquee from "react-fast-marquee";
 
 function SearchResults() {
     const [categories, setCategories] = useState([]);
     const [publicaciones, setPublicaciones] = useState([]);
     const [visibleCount, setVisibleCount] = useState(4);
+    const [sliderPublicaciones, setsliderPublicaciones] = useState([]);
 
     const handleMostrarMas = () => {
         setVisibleCount(prev => prev + 4);
@@ -90,7 +92,12 @@ function SearchResults() {
         fetchSearchResults();
     }, [searchParams]);
     
-    
+    useEffect(() => {
+        fetch('http://localhost:5000/api/publicaciones')
+            .then(response => response.json())
+            .then(data => setsliderPublicaciones(data))
+            .catch(error => console.error('Error al traer las publicaciones:', error));
+    }, []);
     
     return (
         <div className={styles["searchResults-main-container"]}>
@@ -101,7 +108,7 @@ function SearchResults() {
                     <img alt="logo" src="/logo.png" />
                 </div>
                 <div>
-                    <h2>Encuentra gran variedad de assets  <br></br> por tipo, categoría o valoración</h2>
+                    <p>Encuentra gran variedad de assets  <br></br> por tipo, categoría o valoración</p>
                 </div>
             </section>
 
@@ -225,6 +232,29 @@ function SearchResults() {
 
                 )}
             </section>
+            {sliderPublicaciones.length > 0 && (
+                <Marquee
+                    gradient={false}
+                    speed={40}
+                    pauseOnHover={true}
+                    direction="left"
+
+                    className={styles.marquee}
+                >
+                    {[...sliderPublicaciones, ...sliderPublicaciones].map((pub, i) => (
+                        <img
+                            key={i}
+                            src={`http://localhost:5000/api/publicaciones/${pub._id}/miniatura`} 
+                            alt={`preview ${i}`}
+                            style={{
+                                height: "100px",
+                                marginRight: "30px",
+                                borderRadius: "10px"
+                            }}
+                        />
+                    ))}
+                </Marquee>
+            )}
 
         </div>
     );

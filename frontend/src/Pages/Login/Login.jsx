@@ -6,6 +6,9 @@ import { useState } from "react";
 import { useAuth } from "../../Context";
 import { getCSSVariable } from "../../Utils";
 import Swal from 'sweetalert2';
+import Lottie from "lottie-react";
+import loginAnimation from "../../assets/burbuja.json"; 
+
 
 /* Estilos */
 import styles from "./Login.module.css";
@@ -124,6 +127,12 @@ function Login() {
         </form>
       </section>
       <section className={styles["right-section"]}>
+        <Lottie 
+          animationData={loginAnimation} 
+          loop 
+          autoplay 
+          className={styles["right-animation"]}
+        />
         <img alt="logo" src="/logo.png"/>
         <h1>Bienvenido</h1>
         <p>¿No tienes una cuenta?</p>
