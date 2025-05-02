@@ -744,8 +744,6 @@ app.get("/api/publicaciones/:id/likes", async (req, res) => {
         res.status(500).json({ message: "Error al obtener likes", error: err.message });
     }
 });
-  
-});
 
 // Devuelve el archivo en crudo desde GridFS por ID
 app.get("/api/publicaciones/:archivoId/archivo", async (req, res) => {
