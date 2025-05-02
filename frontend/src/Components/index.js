@@ -12,6 +12,9 @@ import ProfileMenu from "./ProfileMenu/ProfileMenu";
 /* Utils */
 import PrivateRoute from "./PrivateRoute/PrivateRoute";
 import ModelViewer from "./ModelViewer/ModelViewer";
+import VideoPlayer from "./VideoPlayer/VideoPlayer";
+import AudioPlayer from "./AudioPlayer/AudioPlayer";
+import ImageViewer from "./ImageViewer/ImageViewer";
 /* Retorna los componentes */
 export {
     Header,
@@ -26,4 +29,7 @@ export {
     ProfileMenu,
     UpButton,
     ModelViewer,
+    VideoPlayer,
+    AudioPlayer,
+    ImageViewer,
 };

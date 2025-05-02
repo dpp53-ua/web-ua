@@ -213,7 +213,7 @@ app.get("/api/publicaciones", async (req, res) => {
         console.log("💡 categoryArray:", categoryArray);
         match.categoria = { $in: categoryArray };
     }
-            
+
 
     // Filtro por formatos (si existe el parámetro `formats`)
     if (formats) {
@@ -406,7 +406,7 @@ app.post("/api/publicaciones/:idUsuario", upload.array("archivo", 10), async (re
                     .on("error", ko)
                     .on("finish", () => ok());
             });
-            archivoIds.push({ id: uploadStream.id, nombre: file.originalname });
+            archivoIds.push({ id: uploadStream.id, nombre: file.originalname, extension: file.originalname.split('.').pop().toLowerCase() });
             fs.unlinkSync(file.path);
         }
 
@@ -485,6 +485,24 @@ app.put("/api/publicaciones/:id", upload.array("archivo", 10), async (req, res) 
     } catch (err) {
         console.error("Error al actualizar publicación:", err);
         res.status(500).json({ message: "Error al actualizar publicación", error: err.message });
+    }
+});
+
+// Devuelve el archivo en crudo desde GridFS por ID
+app.get("/api/publicaciones/:archivoId/archivo", async (req, res) => {
+    try {
+        const archivoId = new ObjectId(req.params.archivoId);
+        const downloadStream = bucket.openDownloadStream(archivoId);
+
+        // Si no existe, devolver 404
+        downloadStream.on("error", () => {
+            res.status(404).json({ message: "Archivo no encontrado" });
+        });
+
+        downloadStream.pipe(res);
+    } catch (err) {
+        console.error("❌ Error al obtener archivo:", err);
+        res.status(500).json({ message: "Error al recuperar el archivo", error: err.message });
     }
 });
 
@@ -680,12 +698,6 @@ app.get("/api/publicaciones/:id/modelo", async (req, res) => {
         res.status(500).json({ message: "Error interno del servidor" });
     }
 });
-
-
-
-
-
-
 app.listen(PORT, () => console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`));
 
 

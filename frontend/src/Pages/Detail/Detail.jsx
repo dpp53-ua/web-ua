@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Button, Comment, ModelViewer } from '../../Components';
+import { Button, Comment, ModelViewer, VideoPlayer, AudioPlayer, ImageViewer} from '../../Components';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar, faDownload, faHeart } from "@fortawesome/free-solid-svg-icons";
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+
 import styles from "./Detail.module.css";
 
 function Detail() {
@@ -12,6 +15,10 @@ function Detail() {
   const [liked, setLiked] = useState(false);
   const [comentarios, setComentarios] = useState([]);
   const [nuevoComentario, setNuevoComentario] = useState("");
+  const [contenidoTexto, setContenidoTexto] = useState("");
+  const [esArchivoTxt, setEsArchivoTxt] = useState(false);
+  const [archivoTxtUrl, setArchivoTxtUrl] = useState("");
+
 
   useEffect(() => {
     fetch(`http://localhost:5000/api/publicaciones/${id}`)
@@ -19,6 +26,12 @@ function Detail() {
       .then(data => {
         setPublicacion(data);
         setLikes(data.likes || 0);
+
+        const archivo = data.archivos?.[0];
+        if (archivo && archivo.extension === "txt") {
+        setEsArchivoTxt(true);
+        setArchivoTxtUrl(`http://localhost:5000/api/publicaciones/${archivo.id}/archivo`);
+      }
       })
       .catch(err => {
         console.error("❌ Error al obtener la publicación:", err);
@@ -32,6 +45,16 @@ function Detail() {
       .then(data => setComentarios(data))
       .catch(err => console.error("Error al obtener comentarios:", err));
   }, [id]);
+
+  useEffect(() => {
+    if (esArchivoTxt && archivoTxtUrl) {
+      fetch(archivoTxtUrl)
+        .then(res => res.text())
+        .then(data => setContenidoTexto(data))
+        .catch(err => console.error("Error al cargar archivo de texto:", err));
+    }
+  }, [esArchivoTxt, archivoTxtUrl]);
+  
 
   const manejarComentario = (e) => {
     e.preventDefault();
@@ -67,8 +90,35 @@ function Detail() {
     <div className={styles["detail-main-container"]}>
       {/* Parte Izquierda: Visor 3D */}
       <section className={styles["detail-images"]}>
-        <ModelViewer modelUrl={`http://localhost:5000/api/publicaciones/${id}/modelo`} />
-      </section>
+          {publicacion.archivos?.length > 0 ? (
+        (() => {
+          const archivo = publicacion.archivos[0];
+          const url = `http://localhost:5000/api/publicaciones/${archivo.id}/archivo`;
+          const ext = archivo.extension;
+
+          if (ext === "glb") return       <ModelViewer modelUrl={`http://localhost:5000/api/publicaciones/${id}/modelo`} />;
+          if (["jpg", "jpeg", "png", "svg"].includes(ext)) return <ImageViewer imageUrl={url} />;
+          if (ext === "mp4") return <VideoPlayer videoUrl={url} />;
+          if (ext === "mp3") return <AudioPlayer audioUrl={url} />;
+          if (ext === "zip") return <img src="/imagenZip.jpg" alt="Archivo ZIP" style={{margin:"0 auto", marginTop: "5em", width: "50%"}} />;
+          if (ext === "txt") {
+            return (
+              <div style={{ maxHeight: "500px", overflowY: "auto", marginTop: "2em", borderRadius: "8px" }}>
+                <SyntaxHighlighter language="javascript" style={vscDarkPlus} wrapLongLines>
+                  {contenidoTexto}
+                </SyntaxHighlighter>
+              </div>
+            );
+          }
+
+          return <p>Formato no compatible: .{ext}</p>;
+        })()
+        ) : (
+        <p>No hay archivos disponibles.</p>
+        )}
+        </section>
+
+
 
       {/* Parte Derecha: Información */}
       <section className={styles["detail-info"]}>
@@ -115,8 +165,7 @@ function Detail() {
           <h2>Detalles</h2>
           <div className={styles["span"]}>
             <p>Formato:</p>
-            <p>.glb</p>
-          </div>
+            <p>.{publicacion.archivos?.[0]?.extension || "Desconocido"}</p>          </div>
           <div className={styles["span"]}>
             <p>Me gusta:</p>
             <div>
