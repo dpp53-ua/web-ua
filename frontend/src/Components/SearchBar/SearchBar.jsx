@@ -196,10 +196,50 @@ export default function SearchBar() {
                 <label>
                   <input
                     type="checkbox"
-                    value=".FBX"
-                    checked={selectedFormats.includes(".FBX")}
+                    value=".png"
+                    checked={selectedFormats.includes(".png")}
                     onChange={handleFormatChange}
-                  /> .FBX
+                  /> .png
+                </label>
+                <label>
+                  <input
+                    type="checkbox"
+                    value=".jpg"
+                    checked={selectedFormats.includes(".jpg")}
+                    onChange={handleFormatChange}
+                  /> .jpg
+                </label>
+                <label>
+                  <input
+                    type="checkbox"
+                    value=".mp4"
+                    checked={selectedFormats.includes(".mp4")}
+                    onChange={handleFormatChange}
+                  /> .mp4
+                </label>
+                <label>
+                  <input
+                    type="checkbox"
+                    value=".mp3"
+                    checked={selectedFormats.includes(".mp3")}
+                    onChange={handleFormatChange}
+                  /> .mp3
+                </label>
+                <label>
+                  <input
+                    type="checkbox"
+                    value=".txt"
+                    checked={selectedFormats.includes(".txt")}
+                    onChange={handleFormatChange}
+                  /> .txt
+                </label>
+                <label>
+                  <input
+                    type="checkbox"
+                    value=".avi"
+                    checked={selectedFormats.includes(".avi")}
+                    onChange={handleFormatChange}
+                  /> .avi
                 </label>
               </section>
 

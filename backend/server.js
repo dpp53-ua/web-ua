@@ -231,13 +231,19 @@ app.get("/api/publicaciones", async (req, res) => {
 
     // Filtro por estrellas (si existe el parámetro `ratings`)
     if (ratings) {
-        match.valoracion = { $gte: parseInt(ratings) };  // Filtra por valoraciones mayores o iguales a la proporcionada
+        match.likes = { $gte: parseInt(ratings) };
     }
+
 
     // Búsqueda de texto (si existe el parámetro `query`)
     if (query) {
-        match.$text = { $search: query };  // Suponiendo que tienes un índice de texto en el campo correspondiente
+        const regex = new RegExp(query, 'i'); // 'i' = insensitive (mayúsculas/minúsculas)
+        match.$or = [
+            { titulo: { $regex: regex } },
+            { descripcion: { $regex: regex } }
+        ];
     }
+    
 
     try {
         // Realiza la agregación con los filtros aplicados
@@ -265,6 +271,7 @@ app.get("/api/publicaciones", async (req, res) => {
                     archivos: 1, // Incluye el array de archivos [{ id, nombre }]
                     miniatura: 1,
                     fecha: 1,
+                    likes: 1,
                     "usuario._id": 1,
                     "usuario.name": 1,
                     "usuario.email": 1
@@ -566,77 +573,98 @@ app.post("/api/publicaciones/:idUsuario", upload.fields([
     { name: "miniatura", maxCount: 1 }
 ]), async (req, res) => {
     try {
-        const { idUsuario } = req.params;
-        let { titulo, descripcion, categoria } = req.body;
-
-        // —— NORMALIZAR CATEGORÍAS ——
-        if (Array.isArray(categoria)) {
-            categoria = categoria.filter(c => Boolean(c));
-        } else if (typeof categoria === "string") {
-            categoria = categoria.trim() ? [categoria.trim()] : [];
-        } else {
-            categoria = [];
-        }
-        if (categoria.length === 0) {
-            categoria = ["Sin categoría"];
-        } else {
-            categoria = categoria.filter(c => c !== "Sin categoría");
-        }
-        // ——————————————————————
-
-        // validación de campos obligatorios
-        const archivos = req.files["archivo"] || [];
-        const miniatura = req.files["miniatura"]?.[0];
-        if (!titulo || !descripcion || archivos.length === 0 || !miniatura) {
-            return res.status(400).json({ message: "Faltan campos obligatorios" });
-        }
-
-        // comprobar existencia de usuario
-        const usuario = await usersCollection.findOne({ _id: new ObjectId(idUsuario) });
-        if (!usuario) {
-            return res.status(404).json({ message: "Usuario no encontrado" });
-        }
-
-        // subir archivos
-        const archivoIds = [];
-        for (const file of archivos) {
-            const readStream = fs.createReadStream(file.path);
-            const uploadStream = bucket.openUploadStream(file.originalname);
-            await new Promise((ok, ko) =>
-                readStream.pipe(uploadStream)
-                    .on("error", ko)
-                    .on("finish", ok)
-            );
-            archivoIds.push({ id: uploadStream.id, nombre: file.originalname });
-            fs.unlinkSync(file.path);
-        }
-
-        // subir miniatura
-        const miniRead = fs.createReadStream(miniatura.path);
-        const miniUpload = bucket.openUploadStream(miniatura.originalname);
+      const { idUsuario } = req.params;
+      let { titulo, descripcion, categoria } = req.body;
+  
+      // —— NORMALIZAR CATEGORÍAS ——
+      if (Array.isArray(categoria)) {
+        categoria = categoria.filter(c => Boolean(c));
+      } else if (typeof categoria === "string") {
+        categoria = categoria.trim() ? [categoria.trim()] : [];
+      } else {
+        categoria = [];
+      }
+      if (categoria.length === 0) {
+        categoria = ["Sin categoría"];
+      } else {
+        categoria = categoria.filter(c => c !== "Sin categoría");
+      }
+      // ——————————————————————
+  
+      // validación de campos obligatorios
+      const archivos = req.files["archivo"] || [];
+      const miniatura = req.files["miniatura"]?.[0];
+      if (!titulo || !descripcion || archivos.length === 0 || !miniatura) {
+        return res.status(400).json({ message: "Faltan campos obligatorios" });
+      }
+  
+      // comprobar existencia de usuario
+      const usuario = await usersCollection.findOne({ _id: new ObjectId(idUsuario) });
+      if (!usuario) {
+        return res.status(404).json({ message: "Usuario no encontrado" });
+      }
+  
+      // subir archivos
+      const archivoIds = [];
+      for (const file of archivos) {
+        const readStream = fs.createReadStream(file.path);
+        const uploadStream = bucket.openUploadStream(file.originalname);
         await new Promise((ok, ko) =>
-            miniRead.pipe(miniUpload)
-                .on("error", ko)
-                .on("finish", ok)
+          readStream.pipe(uploadStream)
+            .on("error", ko)
+            .on("finish", ok)
         );
-        fs.unlinkSync(miniatura.path);
+        archivoIds.push({ id: uploadStream.id, nombre: file.originalname });
+        fs.unlinkSync(file.path);
+      }
 
-        // crear documento
-        const nuevaPublicacion = {
-            usuarioId: idUsuario,
-            titulo,
-            descripcion,
-            categoria,
-            archivos: archivoIds,
-            miniatura: { id: miniUpload.id, nombre: miniatura.originalname },
-            fecha: new Date()
-        };
-        const insertResult = await publicacionesDB.insertOne(nuevaPublicacion);
+      // ——— DETERMINAR FORMATO Y TIPO ———
+    const formatos = archivos.map(file => path.extname(file.originalname).toLowerCase());
+    function obtenerTipoPorExtension(ext) {
+        const imagenes = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp'];
+        const modelos3d = ['.blend', '.fbx', '.obj', '.glb', '.gltf', '.stl', '.3ds'];
+        const videos = ['.mp4', '.mov', '.avi', '.mkv', '.webm'];
+        const audios = ['.mp3', '.wav', '.ogg', '.flac', '.m4a'];
+        const scripts = ['.js', '.ts', '.py', '.java', '.cpp', '.cs', '.html', '.css', '.php', '.rb', '.txt', '.sh'];
+        
+        if (imagenes.includes(ext)) return "2D";
+        if (modelos3d.includes(ext)) return "3D";
+        if (videos.includes(ext)) return "Vídeo";
+        if (audios.includes(ext)) return "Audio";
+        if (scripts.includes(ext)) return "Script";
+        return "Otro";
+    }
+    const tipos = [...new Set(formatos.map(obtenerTipoPorExtension))]; // sin duplicados
 
-        res.status(201).json({
-            message: "Publicación creada",
-            publicacion: { _id: insertResult.insertedId, ...nuevaPublicacion }
-        });
+  
+      // subir miniatura
+      const miniRead = fs.createReadStream(miniatura.path);
+      const miniUpload = bucket.openUploadStream(miniatura.originalname);
+      await new Promise((ok, ko) =>
+        miniRead.pipe(miniUpload)
+          .on("error", ko)
+          .on("finish", ok)
+      );
+      fs.unlinkSync(miniatura.path);
+  
+      // crear documento
+      const nuevaPublicacion = {
+        usuarioId: idUsuario,
+        titulo,
+        descripcion,
+        categoria,
+        archivos: archivoIds,
+        miniatura: { id: miniUpload.id, nombre: miniatura.originalname },
+        fecha: new Date(),
+        formato: [...new Set(formatos)],
+        tipo: tipos
+      };
+      const insertResult = await publicacionesDB.insertOne(nuevaPublicacion);
+  
+      res.status(201).json({
+        message: "Publicación creada",
+        publicacion: { _id: insertResult.insertedId, ...nuevaPublicacion }
+      });
     } catch (err) {
         console.error("Error en publicación:", err);
         res.status(500).json({ message: "Error al procesar la publicación", error: err.message });

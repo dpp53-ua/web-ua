@@ -78,16 +78,12 @@ function SearchResults() {
             if (selectedStars) params.append("ratings", selectedStars);
      
             try {
-                fetch(`http://localhost:5000/api/publicaciones?${params.toString()}`)
-                .then(response => response.json())
-                .then(data => setPublicaciones(data))
-                .catch(error => console.error('Error al traer las publicaciones:', error));
-                // const data = await response.json();
-                // console.log("Resultados obtenidos:", data);  // Verifica si los datos están llegando
-                // setSearchResults(data);
+                const response = await fetch(`http://localhost:5000/api/publicaciones?${params.toString()}`);
+                const data = await response.json();
+                setPublicaciones(data);
             } catch (error) {
                 console.error("Error al obtener publicaciones:", error);
-            }
+            }            
         };
         fetchSearchResults();
     }, [searchParams]);
@@ -202,7 +198,7 @@ function SearchResults() {
                             <span>Valoración mínima: <strong>{selectedStars} estrellas</strong></span>
                             <button
                                 className={styles.clearFilter}
-                                onClick={() => removeFilter('stars')}
+                                onClick={() => removeFilter('ratings')}
                                 aria-label="Eliminar filtro de valoraciones"
                             >
                                 ✖
