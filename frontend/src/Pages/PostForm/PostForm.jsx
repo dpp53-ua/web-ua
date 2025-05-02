@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCloudArrowUp } from "@fortawesome/free-solid-svg-icons";
+import { faCloudArrowUp, faRotateLeft, faCheck } from "@fortawesome/free-solid-svg-icons";
 import { Button, InputField, DeleteableTag } from '../../Components';
 import { getCSSVariable } from "../../Utils";
 import Swal from "sweetalert2";
@@ -469,8 +469,8 @@ function PostForm() {
             </ul>
           </div>
           <div>
-            <Button type="reset" variant="red" label="Limpiar" />
-            <Button type="submit" variant="red" label={isEditMode ? "Actualizar" : "Aceptar"} />
+            <Button type="reset" variant="red" label="Limpiar" icon={faRotateLeft} />
+            <Button type="submit" variant="red" label={isEditMode ? "Actualizar" : "Aceptar"} icon={faCheck} />
           </div>
         </form>
       </section>

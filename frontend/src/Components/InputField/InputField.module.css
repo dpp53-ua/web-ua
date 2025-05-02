@@ -30,7 +30,8 @@
         background-color: var(--medium-grey);
         padding: 0.35rem;
         color: var(--white);
-
+        font-size: var(--font-medium);
+        font-family: inherit;
         &::placeholder {
             color: var(--grey)
         }
