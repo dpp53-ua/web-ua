@@ -85,5 +85,33 @@
     opacity: 0.5;
     cursor: not-allowed;
   }
+  
+  .article-model {
+    position: relative; /* Añadir esto */
+    width: 100%;
+    min-height: fit-content;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+  }
+  
+  .download-button {
+    position: absolute; /* Cambiar de relativo a absoluto */
+    top: 0.5rem;
+    width: fit-content;
+    right: 0.5rem;
+    border-radius: 0.5rem;
+    outline: 0.1rem solid var(--black);
+    background-color: var(--white); /* Opcional, para visibilidad */
+    padding-inline: 0.8rem;
+    z-index: 2; /* Asegura que esté por encima de la imagen */
+  }
+  
 
+  
+  
+  
   

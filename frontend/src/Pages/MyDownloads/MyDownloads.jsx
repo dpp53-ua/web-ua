@@ -36,7 +36,7 @@ function MyDownloads() {
         <header>
           <h1>Mis descargas</h1>
         </header>
-        <ModelGrid publicaciones={descargas} />
+        <ModelGrid publicaciones={descargas} mostrarBotonDescarga={true} />
         <footer className={styles["model-footer"]}>
           <Button variant="red-rounded" label="Mostrar más +" to="/home" />
         </footer>
