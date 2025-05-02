@@ -205,11 +205,11 @@ function ProfileConfiguration() {
       </section>
       <section className={styles["right-section"]}>
         <h1>Configuración</h1>
-        <hr />
+        <hr/>
 
         <section>
           <h2>Cuenta</h2>
-          <div>
+          <div className={styles["responsive-div"]}>
             <section>
               <h3>Dar de baja la cuenta</h3>
               <small>Al darte de baja estarás eliminando todos tus assets y compras realizadas</small>
@@ -218,11 +218,11 @@ function ProfileConfiguration() {
           </div>
         </section>
 
-        <hr style={{ border: "1px solid #ccc" }} />
+        <hr/>
 
         <section>
           <h2>Preferencias de Interfaz</h2>
-          <div>
+          <div className={styles["responsive-div"]}>
             <section>
               <h3>Tema</h3>
               <small>Realiza cambios en los colores de las fuentes, fondos e iconos</small>
@@ -239,7 +239,7 @@ function ProfileConfiguration() {
               ]}
             />
           </div>
-          <div>
+          <div className={styles["responsive-div"]}>
             <section>
               <h3>Tamaño de fuente</h3>
               <small>Cambia el tamaño de letra: grande, mediano, pequeño</small>
