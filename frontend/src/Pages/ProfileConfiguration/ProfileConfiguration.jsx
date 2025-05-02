@@ -6,6 +6,7 @@ import { applyUserPreferences, getCSSVariable } from '../../Utils';
 
 /* Estilos */
 import styles from "./ProfileConfiguration.module.css";
+import { faCheck } from '@fortawesome/free-solid-svg-icons';
 
 function ProfileConfiguration() {
   const { userId, logout } = useAuth();
@@ -38,7 +39,16 @@ function ProfileConfiguration() {
         setInitial({ theme, fontSize });
       } catch (err) {
         console.error("Error cargando usuario:", err);
-        Swal.fire('Error', 'No se pudieron cargar tus preferencias', 'error');
+        Swal.fire({
+          title: 'Error',
+          text: 'No se pudieron cargar tus preferencias',
+          icon: 'error',
+          background: getCSSVariable('--dark-grey'),     
+          color: getCSSVariable('--white'),           
+          customClass: {
+            confirmButton: "swal-confirm-btn",
+          },
+        });
       } finally {
         setLoading(false);
       }
@@ -120,7 +130,16 @@ function ProfileConfiguration() {
         setInitial({ ...preferences });
       } catch (err) {
         console.error('Error al actualizar:', err);
-        Swal.fire('Error', 'No se pudieron guardar los cambios', 'error');
+        Swal.fire({
+          title: 'Error',
+          text: 'No se pudieron guardar los cambios',
+          icon: 'error',
+          background: getCSSVariable('--dark-grey'),     
+          color: getCSSVariable('--white'),           
+          customClass: {
+            confirmButton: "swal-confirm-btn",
+          },
+        });
       }
     }
   };
@@ -162,13 +181,21 @@ function ProfileConfiguration() {
           logout();
 
         } catch {
-          Swal.fire('Error', 'No se pudo dar de baja tu cuenta', 'error');
+          Swal.fire({
+            title: 'Error',
+            text: 'No se pudo dar de baja tu cuenta',
+            icon: 'error',
+            background: getCSSVariable('--dark-grey'),     
+            color: getCSSVariable('--white'),           
+            customClass: {
+              confirmButton: "swal-confirm-btn",
+            },
+          });
         }
       }
     });
   };
   
-
   if (loading) return <p>Cargando...</p>;
 
   return (
@@ -178,11 +205,11 @@ function ProfileConfiguration() {
       </section>
       <section className={styles["right-section"]}>
         <h1>Configuración</h1>
-        <hr />
+        <hr/>
 
         <section>
           <h2>Cuenta</h2>
-          <div>
+          <div className={styles["responsive-div"]}>
             <section>
               <h3>Dar de baja la cuenta</h3>
               <small>Al darte de baja estarás eliminando todos tus assets y compras realizadas</small>
@@ -191,11 +218,11 @@ function ProfileConfiguration() {
           </div>
         </section>
 
-        <hr style={{ border: "1px solid #ccc" }} />
+        <hr/>
 
         <section>
           <h2>Preferencias de Interfaz</h2>
-          <div>
+          <div className={styles["responsive-div"]}>
             <section>
               <h3>Tema</h3>
               <small>Realiza cambios en los colores de las fuentes, fondos e iconos</small>
@@ -212,7 +239,7 @@ function ProfileConfiguration() {
               ]}
             />
           </div>
-          <div>
+          <div className={styles["responsive-div"]}>
             <section>
               <h3>Tamaño de fuente</h3>
               <small>Cambia el tamaño de letra: grande, mediano, pequeño</small>
@@ -231,10 +258,10 @@ function ProfileConfiguration() {
             />
           </div>
         </section>
-
-        <hr />
-
-        <Button onClick={handleSubmit} label="Confirmar cambios" variant="white" />
+        <hr/>
+          <div className={styles['actions']}>
+            <Button onClick={handleSubmit} label="Confirmar cambios" variant="red" icon={faCheck}/>
+          </div>
       </section>
     </div>
   );

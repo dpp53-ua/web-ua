@@ -1,3 +1,11 @@
+h1{
+    font-size: var(--font-larger);
+    color: var(--white);
+}
+h2{
+    font-size: var(--font-large);
+    color: var(--white);
+}
 .searchResults-main-container {
     display: flex;
     flex-direction: column;
@@ -8,7 +16,7 @@
 
 .home-welcome {
     /* background: linear-gradient(90deg, var(--dark-red), var(--medium-red)); */
-    background-image: url("../../../public/banner4.png");
+    background-image: url("../../../public/a8v0vhx4d9j81.png");
     background-size: cover;  /* Cubre todo el contenedor */
     background-position: center; /* Centra la imagen */
     background-repeat: no-repeat; /* Evita repeticiones */
@@ -16,10 +24,16 @@
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    padding: 3rem;
-    gap: 5rem;
+    padding-inline: 3rem;
+    padding-block: 1rem;
+    gap: 3rem;
     height: fit-content;
-
+    
+    p{
+        font-size: var(--font-larger);
+        font-weight: 600;
+        color: white;
+    }
     > div:first-of-type{
         width: 30%;
         display: flex;
@@ -81,7 +95,8 @@
 }
 
 .category-section, .product-section, .filter-section {
-    padding: 2rem;
+    padding-inline: 2rem;
+    padding-block: 1rem;
 }
 
 .category-header, .product-header {
@@ -173,6 +188,15 @@
     }
 }
 
+.marquee {
+    width: 100%;
+    overflow: hidden;
+    display: flex;
+    justify-content: center; /* Centra el contenido */
+    align-items: center;
+    padding-block: 2rem;
+    }
+    
 @media (max-width: 1000px) {  /* Cuando la pantalla sea menor a 768px */
     .home-welcome {
         flex-direction: column; /* Apila los elementos en columna */
@@ -212,7 +236,7 @@
     gap: 1em;  /* Espacio entre el texto y la X */
     background-color: var(--grey);
     border-radius: 12px;
-    color: var(--black);
+    color: black;
 }
 
 /* Ajusta el tamaño y la ubicación de la X */

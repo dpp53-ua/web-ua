@@ -4,11 +4,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFaceFrown } from "@fortawesome/free-solid-svg-icons";
 import { useSearchParams, useNavigate, Link } from "react-router-dom";
 import styles from "./SearchResults.module.css";
+import Marquee from "react-fast-marquee";
 
 function SearchResults() {
     const [categories, setCategories] = useState([]);
     const [publicaciones, setPublicaciones] = useState([]);
     const [visibleCount, setVisibleCount] = useState(4);
+    const [sliderPublicaciones, setsliderPublicaciones] = useState([]);
 
     const handleMostrarMas = () => {
         setVisibleCount(prev => prev + 4);
@@ -90,7 +92,12 @@ function SearchResults() {
         fetchSearchResults();
     }, [searchParams]);
     
-    
+    useEffect(() => {
+        fetch('http://localhost:5000/api/publicaciones')
+            .then(response => response.json())
+            .then(data => setsliderPublicaciones(data))
+            .catch(error => console.error('Error al traer las publicaciones:', error));
+    }, []);
     
     return (
         <div className={styles["searchResults-main-container"]}>
@@ -101,9 +108,36 @@ function SearchResults() {
                     <img alt="logo" src="/logo.png" />
                 </div>
                 <div>
-                    <h1>Bienvenido</h1>
-                    <h1>Comienza a explorar assets</h1>
+                    <p>Encuentra gran variedad de assets  <br></br> por tipo, categoría o valoración</p>
                 </div>
+            </section>
+
+            <section className={styles["type-section"]}>
+                <Link 
+                    to={`/buscar?types=3D${selectedCategories.length > 0 ? '&categories=' + selectedCategories.join(',') : ''}${selectedFormats.length > 0 ? '&formats=' + selectedFormats.join(',') : ''}${selectedStars ? '&ratings=' + selectedStars : ''}`}
+                >
+                    <Button variant="red-rounded" label="3D" />
+                </Link>
+                <Link 
+                    to={`/buscar?types=2D${selectedCategories.length > 0 ? '&categories=' + selectedCategories.join(',') : ''}${selectedFormats.length > 0 ? '&formats=' + selectedFormats.join(',') : ''}${selectedStars ? '&ratings=' + selectedStars : ''}`}
+                >
+                    <Button variant="red-rounded" label="2D" />
+                </Link>
+                <Link 
+                    to={`/buscar?types=Vídeo${selectedCategories.length > 0 ? '&categories=' + selectedCategories.join(',') : ''}${selectedFormats.length > 0 ? '&formats=' + selectedFormats.join(',') : ''}${selectedStars ? '&ratings=' + selectedStars : ''}`}
+                >
+                    <Button variant="red-rounded" label="Vídeo" />
+                </Link>
+                <Link 
+                    to={`/buscar?types=Audio${selectedCategories.length > 0 ? '&categories=' + selectedCategories.join(',') : ''}${selectedFormats.length > 0 ? '&formats=' + selectedFormats.join(',') : ''}${selectedStars ? '&ratings=' + selectedStars : ''}`}
+                >
+                    <Button variant="red-rounded" label="Audio" />
+                </Link>
+                <Link 
+                    to={`/buscar?types=Script${selectedCategories.length > 0 ? '&categories=' + selectedCategories.join(',') : ''}${selectedFormats.length > 0 ? '&formats=' + selectedFormats.join(',') : ''}${selectedStars ? '&ratings=' + selectedStars : ''}`}
+                >
+                    <Button variant="red-rounded" label="Script" />
+                </Link>
             </section>
 
             <section className={styles["filter-section"]}>
@@ -178,67 +212,9 @@ function SearchResults() {
                 </div>
             </section>
 
-            <section className={styles["type-section"]}>
-                <Link 
-                    to={`/buscar?types=3D${selectedCategories.length > 0 ? '&categories=' + selectedCategories.join(',') : ''}${selectedFormats.length > 0 ? '&formats=' + selectedFormats.join(',') : ''}${selectedStars ? '&ratings=' + selectedStars : ''}`}
-                >
-                    <Button variant="red-rounded" label="3D" />
-                </Link>
-                <Link 
-                    to={`/buscar?types=2D${selectedCategories.length > 0 ? '&categories=' + selectedCategories.join(',') : ''}${selectedFormats.length > 0 ? '&formats=' + selectedFormats.join(',') : ''}${selectedStars ? '&ratings=' + selectedStars : ''}`}
-                >
-                    <Button variant="red-rounded" label="2D" />
-                </Link>
-                <Link 
-                    to={`/buscar?types=Vídeo${selectedCategories.length > 0 ? '&categories=' + selectedCategories.join(',') : ''}${selectedFormats.length > 0 ? '&formats=' + selectedFormats.join(',') : ''}${selectedStars ? '&ratings=' + selectedStars : ''}`}
-                >
-                    <Button variant="red-rounded" label="Vídeo" />
-                </Link>
-                <Link 
-                    to={`/buscar?types=Audio${selectedCategories.length > 0 ? '&categories=' + selectedCategories.join(',') : ''}${selectedFormats.length > 0 ? '&formats=' + selectedFormats.join(',') : ''}${selectedStars ? '&ratings=' + selectedStars : ''}`}
-                >
-                    <Button variant="red-rounded" label="Audio" />
-                </Link>
-                <Link 
-                    to={`/buscar?types=Script${selectedCategories.length > 0 ? '&categories=' + selectedCategories.join(',') : ''}${selectedFormats.length > 0 ? '&formats=' + selectedFormats.join(',') : ''}${selectedStars ? '&ratings=' + selectedStars : ''}`}
-                >
-                    <Button variant="red-rounded" label="Script" />
-                </Link>
-            </section>
-
-            <section className={styles["category-section"]}>
-                <header className={styles["category-header"]}>
-                    <h2>Categorías</h2>
-                    {/* <div className={styles["category-arrows"]}>
-                        <button className={styles["circle-button"]} aria-label="Anterior categoría">
-                            <FontAwesomeIcon icon={faArrowLeft} />
-                        </button>
-                        <button className={styles["circle-button"]} aria-label="Siguiente categoría">
-                            <FontAwesomeIcon icon={faArrowRight} />
-                        </button>
-                    </div> */}
-                </header>
-                <div className={styles["categories"]}>
-                    {categories.length > 0 ? (
-                        categories.map((category) => (
-                            <Category key={category.id} id={category._id} nombre={category.nombre} />
-                        ))
-                    ) : (
-                        <p>No se encontraron categorías.</p>
-                    )}
-                </div>
-                {/* <footer className={styles["category-footer"]}>
-                    <span>
-                        <FontAwesomeIcon icon={faCircle} />
-                        <FontAwesomeIcon icon={faCircle} />
-                        <FontAwesomeIcon icon={faCircle} />
-                    </span>
-                </footer> */}
-            </section>
-
             <section className={styles["product-section"]}>
                 <header className={styles["product-header"]}>
-                    <h2>Resultados</h2>
+                    <h2>Resultados obtenidos</h2>
                 </header>
                 {publicaciones.length > 0 ? (
                     <>
@@ -256,6 +232,29 @@ function SearchResults() {
 
                 )}
             </section>
+            {sliderPublicaciones.length > 0 && (
+                <Marquee
+                    gradient={false}
+                    speed={40}
+                    pauseOnHover={true}
+                    direction="left"
+
+                    className={styles.marquee}
+                >
+                    {[...sliderPublicaciones, ...sliderPublicaciones].map((pub, i) => (
+                        <img
+                            key={i}
+                            src={`http://localhost:5000/api/publicaciones/${pub._id}/miniatura`} 
+                            alt={`preview ${i}`}
+                            style={{
+                                height: "100px",
+                                marginRight: "30px",
+                                borderRadius: "10px"
+                            }}
+                        />
+                    ))}
+                </Marquee>
+            )}
 
         </div>
     );

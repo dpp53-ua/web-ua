@@ -36,6 +36,14 @@
         > h1 {
             font-size: var(--font-larger);
             color: var(--white);
+            margin: 0;
+            margin-top: 1rem;
+        }
+
+        > small {
+            color: var(--white);
+            font-weight: bold;
+            margin-block: 0.5rem;
         }
 
         > form  {
@@ -133,12 +141,12 @@
     }
 }
 
-@media (max-width: 768px) {  /* Cuando la pantalla sea menor a 768px */
-    .login-main-container {
-        flex-direction: column; /* Apila los elementos en columna */
+@media (max-width: 1200px) {
+    .post-main-container {
+        flex-direction: column;
     }
 
     .right-section {
-        order: -1; /* Mueve la sección derecha abajo */
+        order: -1;
     }
 }

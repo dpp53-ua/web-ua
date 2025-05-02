@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react"; // 🔄 CAMBIO
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useAuth } from "../../Context";
 import Swal from "sweetalert2";
+import { getCSSVariable } from '../../Utils';
 import styles from "./Profile.module.css";
 
 function Profile() {
@@ -140,6 +141,59 @@ function Profile() {
     setErrors((prevErrors) => ({ ...prevErrors, [e.target.name]: "" }));
   };
 
+  const handleReset = async () => {
+    const result = await Swal.fire({
+      title: '¿Reestablecer formulario?',
+      text: 'Se volverán a insertar tus datos actuales. ¿Deseas continuar?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, reestablecer',
+      cancelButtonText: 'No, cancelar',
+      background: getCSSVariable('--dark-grey'),
+      color: getCSSVariable('--white'),
+      customClass: {
+        confirmButton: 'swal-confirm-btn',
+        cancelButton:  'swal-cancel-btn'
+      }
+    });
+  
+    if (!result.isConfirmed) return;
+  
+    try {
+      const res = await fetch(`http://localhost:5000/api/users/${userId}`);
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(`Error ${res.status}: ${text}`);
+      }
+      const data = await res.json();
+  
+      setFormData({
+        name: data.name      || '',
+        email: data.email    || '',
+        bio: data.biografia  || '',
+        web: data.web        || '',
+        twitter: data.twitter|| '',
+        insta: data.instagram|| '',
+        currentPassword: '',
+        newPassword: ''
+      });
+      setPreviewUrl('');      // o recarga la imagen si lo deseas
+      setErrors({});
+    } catch (err) {
+      console.error('Error al resetear formulario:', err);
+      Swal.fire({
+        title: 'Error',
+        text: 'No se pudo reestablecer el formulario',
+        icon: 'error',
+        background: getCSSVariable('--dark-grey'),
+        color: getCSSVariable('--white'),
+        customClass: { confirmButton: 'swal-confirm-btn' }
+      });
+    }
+  };
+  
+
+
   const togglePasswordFields = () => {
     setShowPasswordFields(!showPasswordFields);
   };
@@ -153,9 +207,11 @@ function Profile() {
       <section className={styles["right-content"]}>
         <header>
           <h1>Perfil</h1>
+          <small>Los campos con el carácter '*' son obligatorios</small>
         </header>
+        <hr></hr>
         <form onSubmit={handleSubmit}>
-          <h3>Información personal</h3>
+          <h2>Información personal</h2>
           {errors.general && <p className={styles["error"]}>{errors.general}</p>}
           <div className={styles["seccion"]}>
             <div className={styles["pic-name-email-input"]}>
@@ -192,7 +248,7 @@ function Profile() {
                 <InputField
                   id="name"
                   type="text"
-                  label="NOMBRE *"
+                  label="Nombre (*)"
                   name="name"
                   placeholder="Usuario"
                   value={formData.name}
@@ -202,7 +258,7 @@ function Profile() {
                 <InputField
                   id="email"
                   type="text"
-                  label="EMAIL *"
+                  label="Email (*)"
                   name="email"
                   placeholder="usuario@gmail.com"
                   value={formData.email}
@@ -215,7 +271,7 @@ function Profile() {
             <InputField
               id="bio"
               type="textarea"
-              label="BIOGRAFÍA"
+              label="Biografía"
               name="bio"
               placeholder="Háblanos de ti"
               value={formData.bio}
@@ -223,13 +279,13 @@ function Profile() {
               explicativeText={errors.bio}
             />
           </div>
-
-          <h3>Social</h3>
+          <hr></hr>
+          <h2>Social</h2>
           <div className={styles["seccion"]}>
             <InputField
               id="web"
               type="text"
-              label="WEB"
+              label="Web"
               name="web"
               placeholder="Tu sitio web"
               value={formData.web}
@@ -240,7 +296,7 @@ function Profile() {
             <InputField
               id="twitter"
               type="text"
-              label="TWITTER"
+              label="Twitter"
               name="twitter"
               placeholder="@nombre twitter"
               value={formData.twitter}
@@ -250,7 +306,7 @@ function Profile() {
             <InputField
               id="insta"
               type="text"
-              label="INSTAGRAM"
+              label="Instagram"
               name="insta"
               placeholder="@nombre instagram"
               value={formData.insta}
@@ -258,7 +314,7 @@ function Profile() {
               explicativeText={errors.insta}
             />
           </div>
-
+          <hr></hr>
           <h4 onClick={togglePasswordFields} className={styles["change-password-header"]}>
             <FontAwesomeIcon icon={faLock} />
             <span> Cambiar contraseña </span>
@@ -289,28 +345,17 @@ function Profile() {
               />
             </div>
           )}
-
+          <hr></hr>
           <div className={styles["profile-buttons"]}>
             <Button
               className={styles.btn_regist}
-              variant="headerButtonBlack"
+              variant="red"
               label="Reestablecer"
               icon={faRotateLeft}
               type="button"
-              onClick={() =>
-                setFormData({
-                  name: "",
-                  email: "",
-                  bio: "",
-                  web: "",
-                  twitter: "",
-                  insta: "",
-                  currentPassword: "",
-                  newPassword: "",
-                })
-              }
+              onClick={() => handleReset()}
             />
-            <Button variant="headerButtonWhite" label="Actualizar" icon={faCheck} type="submit" />
+            <Button variant="red" label="Actualizar" icon={faCheck} type="submit" />
           </div>
         </form>
       </section>

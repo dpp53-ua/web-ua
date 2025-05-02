@@ -1,6 +1,10 @@
 import { Button, ModelGrid, Category, UpButton } from '../../Components';
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import Marquee from "react-fast-marquee";
+import Lottie from "lottie-react";
+import particlesAnimation from "../../assets/lineas.json";
+
 
 import styles from "./Home.module.css";
 
@@ -26,21 +30,22 @@ function Home() {
             .then(data => setPublicaciones(data))
             .catch(error => console.error('Error al traer las publicaciones:', error));
     }, []);
-
+    
     return (
         <div className={styles["home-main-container"]}>
+           
             <UpButton />
-
+            
             <section className={styles["home-welcome"]}>
                 <div>
                     <img alt="logo" src="/logo.png" />
                 </div>
                 <div>
-                    <h1>Bienvenido</h1>
-                    <h1>Comienza a explorar assets</h1>
+                    <p>¡Bienvenido!</p>
+                    <p>Descubre, organiza y comparte<br></br>los assets que impulsan tus proyectos</p>
                 </div>
             </section>
-
+            
             <section className={styles["type-section"]}>
                 <Link to="/buscar?types=3D">
                     <Button variant="red-rounded" label="3D" />
@@ -73,7 +78,7 @@ function Home() {
                 </header>
                 <div className={styles["categories"]}>
                     {categories.map((category) => (
-                        <Category key={category._id} id={category._id} nombre={category.nombre} />
+                        <Category key={category._id} id={category._id} nombre={category.nombre} fotoURL={`http://localhost:5000/api/categorias/foto/${category.fotoId}`} />
                     ))}
                 </div>
                 {/* <footer className={styles["category-footer"]}>
@@ -94,7 +99,31 @@ function Home() {
                     <Button variant="red-rounded" label="Mostrar más +" onClick={handleMostrarMas} />
                 </footer>
             </section>
+            <Marquee
+                gradient={false}  // Desactiva el gradiente
+                speed={40}  // Ajusta la velocidad de desplazamiento
+                pauseOnHover={true}  // Pausa el desplazamiento cuando el ratón está encima
+                direction="left"  // Dirección de izquierda a derecha
+                loop={0}  // Hace que el Marquee repita de forma indefinida
+                className={styles.marquee}
+            >
+               {/* Duplicamos las imágenes para lograr el ciclo continuo */}
+               {[...publicaciones, ...publicaciones].map((pub, i) => (
+                    <img
+                        key={i}
+                        src={`http://localhost:5000/api/publicaciones/${pub._id}/miniatura`} 
+                        alt={`preview ${i}`}
+                        style={{
+                            height: "100px",
+                            marginRight: "30px",
+                            borderRadius: "10px"
+                        }}
+                    />
+                ))}
+            </Marquee>
+
         </div>
+
     );
 }
 

@@ -34,7 +34,7 @@ function Detail() {
       }
       })
       .catch(err => {
-        console.error("❌ Error al obtener la publicación:", err);
+        console.error("Error al obtener la publicación:", err);
         alert("Error al cargar la publicación");
       });
   }, [id]);
@@ -81,6 +81,39 @@ function Detail() {
           .catch(err => console.error("Error al recargar comentarios:", err));
       })
       .catch(err => console.error("Error al enviar comentario:", err));
+  };
+  
+
+  const handleDownload = async () => {
+    try {
+      const userId = sessionStorage.getItem("userId");
+      if (!userId) return alert("Debes estar logueado para descargar.");
+  
+      const response = await fetch(`http://localhost:5000/api/publicaciones/${id}/descargar/${userId}`);
+  
+      if (!response.ok) {
+        throw new Error("Error en la descarga");
+      }
+  
+      // Obtener nombre sugerido del header (si el servidor lo envía)
+      const contentDisposition = response.headers.get("Content-Disposition");
+      const fileNameMatch = contentDisposition?.match(/filename="?(.+)"?/);
+      const fileName = fileNameMatch?.[1] || "descarga";
+  
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+  
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error en la descarga:", error);
+      alert("No se pudo descargar el archivo");
+    }
   };
   
 
@@ -134,9 +167,13 @@ function Detail() {
           </div>
 
           <div className={styles["buttons"]}>
-            <a href={`http://localhost:5000/api/publicaciones/${id}/modelo`}>
-              <Button variant="blue-rounded" label=" Descargar" icon={faDownload} />
-            </a>
+          <Button
+            variant="blue-rounded"
+            label=" Descargar"
+            icon={faDownload}
+            onClick={() => handleDownload()}
+          />
+
             <Button
               variant="green-rounded"
               label={liked ? "Ya te gusta" : " Me gusta"}

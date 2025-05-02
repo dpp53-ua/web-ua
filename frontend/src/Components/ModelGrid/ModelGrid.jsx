@@ -1,7 +1,7 @@
 import Model from "../Model/Model";
 import styles from "./ModelGrid.module.css";
 
-function ModelGrid({ publicaciones = [] }) {  // Inicializamos publicaciones como un arreglo vacío
+function ModelGrid({ publicaciones = [], mostrarBotonDescarga = false }) {  // Inicializamos publicaciones como un arreglo vacío
     return (
         <div className={styles["models"]}>
             {publicaciones.length > 0 ? (
@@ -11,7 +11,9 @@ function ModelGrid({ publicaciones = [] }) {  // Inicializamos publicaciones com
                         _id={pub._id}
                         titulo={pub.titulo}
                         autor={pub.usuario?.name || "Desconocido"}
-                        imagen={`api/archivo/${pub.archivos?.[0]?.id}`} // depende cómo sirvas tus imágenes
+                        imagen={`http://localhost:5000/api/publicaciones/${pub._id}/miniatura`} 
+                        likes={pub.likes}
+                        mostrarBotonDescarga={mostrarBotonDescarga}
                     />
                 ))
             ) : (

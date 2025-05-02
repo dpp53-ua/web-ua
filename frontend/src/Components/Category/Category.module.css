@@ -14,7 +14,7 @@
 /* Hover */
 .article-category:hover {
     transform: scale(1.02);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);    
 }
 
 .category-header {
@@ -45,11 +45,18 @@
     /* Redondeo solo en la parte inferior */
     border-bottom-left-radius: 10px; 
     border-bottom-right-radius: 10px;
+}
 
-    > h3 {
-        font-size: 1rem;
-        margin: 0;
-        width: 100%; /* Asegura que el texto ocupe todo el ancho disponible */
-        color: rgb(0, 0, 0); 
-    }
+.category-footer h3 {
+    margin: 0;
+    width: 100%;
+    color: var(--black);
+    text-decoration: none;
+    font-size: 24px;
+}
+
+.article-category:hover .category-footer h3,
+.category-footer h3:hover {
+    text-decoration: underline;
+    text-decoration-color: var(--black);
 }

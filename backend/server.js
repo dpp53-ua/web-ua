@@ -8,6 +8,7 @@ const { MongoClient, GridFSBucket, ObjectId } = require("mongodb");
 
 const multer = require("multer");
 const fs = require("fs");
+const archiver = require("archiver");
 
 const upload = multer({ dest: 'uploads/' });
 const path = require('path');
@@ -59,7 +60,8 @@ app.post("/api/users", (req, res) => {
             name,
             password,
             theme: "night",
-            fontSize: "medium"
+            fontSize: "medium",
+            descargas: []
         };
 
         usersCollection.insertOne(nuevoUsuario)
@@ -261,6 +263,7 @@ app.get("/api/publicaciones", async (req, res) => {
                     descripcion: 1,
                     categoria: 1,
                     archivos: 1, // Incluye el array de archivos [{ id, nombre }]
+                    miniatura: 1,
                     fecha: 1,
                     "usuario._id": 1,
                     "usuario.name": 1,
@@ -274,7 +277,7 @@ app.get("/api/publicaciones", async (req, res) => {
         console.log("🔎 Respuesta:", publicaciones);
 
     } catch (err) {
-        console.error("❌ Error al obtener publicaciones:", err);
+        console.error("Error al obtener publicaciones:", err);
         res.status(500).json({ message: "Error al procesar la solicitud", error: err.message });
     }
 });
@@ -313,6 +316,7 @@ app.get("/api/publicaciones/:id", async (req, res) => {
                     descripcion: 1,
                     categoria: 1,
                     archivos: 1,
+                    miniatura: 1,
                     fecha: 1,
                     likes: 1,
                     "usuario._id": 1,
@@ -334,6 +338,145 @@ app.get("/api/publicaciones/:id", async (req, res) => {
         res.status(500).json({ message: "Error al procesar la solicitud", error: err.message });
     }
 });
+
+app.get("/api/publicaciones/:id/descargar/:userId", async (req, res) => {
+    const { id, userId } = req.params;
+
+    try {
+        const publicacion = await publicacionesDB.findOne({ _id: new ObjectId(id) });
+        if (!publicacion) return res.status(404).json({ message: "Publicación no encontrada" });
+
+        const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+        if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
+
+        if (!user.descargas?.includes(id)) {
+            await usersCollection.updateOne(
+                { _id: new ObjectId(userId) },
+                { $push: { descargas: id } }
+            );
+        }
+
+        const archivos = publicacion.archivos || [];
+
+        // Si solo hay un archivo, descargarlo directamente
+        if (archivos.length === 1) {
+            const archivoId = archivos[0].id;
+            const downloadStream = bucket.openDownloadStream(new ObjectId(archivoId));
+            res.set("Content-Type", "application/octet-stream");
+            res.set("Content-Disposition", `attachment; filename="${archivos[0].nombre || 'archivo'}"`);
+            return downloadStream.pipe(res);
+        }
+
+        // Si hay más de un archivo, crear un ZIP en streaming
+        res.set("Content-Type", "application/zip");
+        res.set("Content-Disposition", `attachment; filename="publicacion_${id}.zip"`);
+
+        const archive = archiver("zip", { zlib: { level: 9 } });
+        archive.on("error", err => { throw err; });
+
+        archive.pipe(res);
+
+        for (const archivo of archivos) {
+            const stream = bucket.openDownloadStream(new ObjectId(archivo.id));
+            archive.append(stream, { name: archivo.nombre || `archivo_${archivo.id}` });
+        }
+
+        archive.finalize();
+
+    } catch (err) {
+        console.error("Error en descarga:", err);
+        res.status(500).json({ message: "Error en la descarga", error: err });
+    }
+});
+
+app.get("/api/users/:id/descargas", async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const user = await usersCollection.findOne({ _id: new ObjectId(id) });
+        if (!user || !user.descargas) {
+            return res.json([]);
+        }
+
+        const publicaciones = await publicacionesDB
+            .find({ _id: { $in: user.descargas.map(d => new ObjectId(d)) } })
+            .toArray();
+
+        res.json(publicaciones);
+    } catch (err) {
+        res.status(500).json({ message: "Error al obtener descargas", error: err });
+    }
+});
+
+app.get("/api/publicaciones/:id/descargar/:userId", async (req, res) => {
+    const { id, userId } = req.params;
+
+    try {
+        const publicacion = await publicacionesDB.findOne({ _id: new ObjectId(id) });
+        if (!publicacion) return res.status(404).json({ message: "Publicación no encontrada" });
+
+        const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+        if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
+
+        if (!user.descargas?.includes(id)) {
+            await usersCollection.updateOne(
+                { _id: new ObjectId(userId) },
+                { $push: { descargas: id } }
+            );
+        }
+
+        const archivos = publicacion.archivos || [];
+
+        // Si solo hay un archivo, descargarlo directamente
+        if (archivos.length === 1) {
+            const archivoId = archivos[0].id;
+            const downloadStream = bucket.openDownloadStream(new ObjectId(archivoId));
+            res.set("Content-Type", "application/octet-stream");
+            res.set("Content-Disposition", `attachment; filename="${archivos[0].nombre || 'archivo'}"`);
+            return downloadStream.pipe(res);
+        }
+
+        // Si hay más de un archivo, crear un ZIP en streaming
+        res.set("Content-Type", "application/zip");
+        res.set("Content-Disposition", `attachment; filename="publicacion_${id}.zip"`);
+
+        const archive = archiver("zip", { zlib: { level: 9 } });
+        archive.on("error", err => { throw err; });
+
+        archive.pipe(res);
+
+        for (const archivo of archivos) {
+            const stream = bucket.openDownloadStream(new ObjectId(archivo.id));
+            archive.append(stream, { name: archivo.nombre || `archivo_${archivo.id}` });
+        }
+
+        archive.finalize();
+
+    } catch (err) {
+        console.error("Error en descarga:", err);
+        res.status(500).json({ message: "Error en la descarga", error: err });
+    }
+});
+
+app.get("/api/users/:id/descargas", async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const user = await usersCollection.findOne({ _id: new ObjectId(id) });
+        if (!user || !user.descargas) {
+            return res.json([]);
+        }
+
+        const publicaciones = await publicacionesDB
+            .find({ _id: { $in: user.descargas.map(d => new ObjectId(d)) } })
+            .toArray();
+
+        res.json(publicaciones);
+    } catch (err) {
+        res.status(500).json({ message: "Error al obtener descargas", error: err });
+    }
+});
+
 app.get("/api/publicaciones/usuario/:idUsuario", async (req, res) => {
     try {
         const idUsuario = req.params.idUsuario;
@@ -376,106 +519,200 @@ app.get("/api/publicaciones/usuario/:idUsuario", async (req, res) => {
         res.json(publicaciones);
 
     } catch (err) {
-        console.error("❌ Error al obtener publicaciones:", err);
+        console.error("Error al obtener publicaciones:", err);
         res.status(500).json({ message: "Error al procesar la solicitud", error: err.message });
     }
 });
 
+// GET /api/publicaciones/:id/miniatura
+app.get("/api/publicaciones/:id/miniatura", async (req, res) => {
+    const { id } = req.params;
 
-app.post("/api/publicaciones/:idUsuario", upload.array("archivo", 10), async (req, res) => {
     try {
-        let { titulo, descripcion, categoria } = req.body;
-        if (!Array.isArray(categoria)) categoria = [categoria];
+        // Buscar la publicación para obtener el ID de la miniatura
+        const publicacion = await publicacionesDB.findOne({ _id: new ObjectId(id) });
 
-        const files = req.files;    // ahora es array
-        const idUsuario = req.params.idUsuario;
-        if (!titulo || !descripcion || !categoria.length || !files.length || !idUsuario) {
+        if (!publicacion || !publicacion.miniatura || !publicacion.miniatura.id) {
+            return res.status(404).json({ message: "Miniatura no encontrada" });
+        }
+
+        const { miniatura } = publicacion;
+
+        // Abrir un stream de lectura desde GridFS usando el ID de la miniatura
+        const downloadStream = bucket.openDownloadStream(miniatura.id);
+
+        downloadStream.on("file", (file) => {
+            // Puedes mejorar esto si guardas el mime-type en la DB, por ahora lo ponemos como imagen JPEG
+            res.set("Content-Type", "image/jpeg");
+        });
+
+        downloadStream.on("error", (err) => {
+            console.error("Error al leer la miniatura desde GridFS:", err);
+            res.status(500).json({ message: "Error al leer la miniatura" });
+        });
+
+        downloadStream.pipe(res);
+    } catch (err) {
+        console.error("Error al procesar la miniatura:", err);
+        res.status(500).json({ message: "Error al procesar la miniatura", error: err.message });
+    }
+});
+
+
+
+// POST /api/publicaciones/:idUsuario
+app.post("/api/publicaciones/:idUsuario", upload.fields([
+    { name: "archivo", maxCount: 10 },
+    { name: "miniatura", maxCount: 1 }
+]), async (req, res) => {
+    try {
+        const { idUsuario } = req.params;
+        let { titulo, descripcion, categoria } = req.body;
+
+        // —— NORMALIZAR CATEGORÍAS ——
+        if (Array.isArray(categoria)) {
+            categoria = categoria.filter(c => Boolean(c));
+        } else if (typeof categoria === "string") {
+            categoria = categoria.trim() ? [categoria.trim()] : [];
+        } else {
+            categoria = [];
+        }
+        if (categoria.length === 0) {
+            categoria = ["Sin categoría"];
+        } else {
+            categoria = categoria.filter(c => c !== "Sin categoría");
+        }
+        // ——————————————————————
+
+        // validación de campos obligatorios
+        const archivos = req.files["archivo"] || [];
+        const miniatura = req.files["miniatura"]?.[0];
+        if (!titulo || !descripcion || archivos.length === 0 || !miniatura) {
             return res.status(400).json({ message: "Faltan campos obligatorios" });
         }
 
+        // comprobar existencia de usuario
         const usuario = await usersCollection.findOne({ _id: new ObjectId(idUsuario) });
-        if (!usuario) return res.status(404).json({ message: "Usuario no encontrado" });
+        if (!usuario) {
+            return res.status(404).json({ message: "Usuario no encontrado" });
+        }
 
-        // Subir cada fichero a GridFS
+        // subir archivos
         const archivoIds = [];
-        for (const file of files) {
+        for (const file of archivos) {
             const readStream = fs.createReadStream(file.path);
             const uploadStream = bucket.openUploadStream(file.originalname);
-            await new Promise((ok, ko) => {
+            await new Promise((ok, ko) =>
                 readStream.pipe(uploadStream)
                     .on("error", ko)
-                    .on("finish", () => ok());
-            });
-            archivoIds.push({ id: uploadStream.id, nombre: file.originalname, extension: file.originalname.split('.').pop().toLowerCase() });
+                    .on("finish", ok)
+            );
+            archivoIds.push({ id: uploadStream.id, nombre: file.originalname });
             fs.unlinkSync(file.path);
         }
 
+        // subir miniatura
+        const miniRead = fs.createReadStream(miniatura.path);
+        const miniUpload = bucket.openUploadStream(miniatura.originalname);
+        await new Promise((ok, ko) =>
+            miniRead.pipe(miniUpload)
+                .on("error", ko)
+                .on("finish", ok)
+        );
+        fs.unlinkSync(miniatura.path);
+
+        // crear documento
         const nuevaPublicacion = {
             usuarioId: idUsuario,
             titulo,
             descripcion,
             categoria,
             archivos: archivoIds,
-            fecha: new Date(),
-            likes: 0
+            miniatura: { id: miniUpload.id, nombre: miniatura.originalname },
+            fecha: new Date()
         };
-
         const insertResult = await publicacionesDB.insertOne(nuevaPublicacion);
+
         res.status(201).json({
             message: "Publicación creada",
             publicacion: { _id: insertResult.insertedId, ...nuevaPublicacion }
         });
-
     } catch (err) {
         console.error("Error en publicación:", err);
         res.status(500).json({ message: "Error al procesar la publicación", error: err.message });
     }
-}
-);
+});
 
-app.put("/api/publicaciones/:id", upload.array("archivo", 10), async (req, res) => {
-    console.log("Archivos recibidos:", req.files);
+
+// PUT /api/publicaciones/:id
+app.put("/api/publicaciones/:id", upload.fields([
+    { name: "archivo", maxCount: 10 },
+    { name: "miniatura", maxCount: 1 }
+]), async (req, res) => {
     try {
         const { id } = req.params;
         let { titulo, descripcion, categoria } = req.body;
-        if (!Array.isArray(categoria)) categoria = [categoria];
 
-        // Buscar la publicación original
+        // —— NORMALIZAR CATEGORÍAS ——
+        if (Array.isArray(categoria)) {
+            categoria = categoria.filter(c => Boolean(c));
+        } else if (typeof categoria === "string") {
+            categoria = categoria.trim() ? [categoria.trim()] : [];
+        } else {
+            categoria = [];
+        }
+        if (categoria.length === 0) {
+            categoria = ["Sin categoría"];
+        } else {
+            categoria = categoria.filter(c => c !== "Sin categoría");
+        }
+        // ——————————————————————
+
+        // obtener publicación existente
         const publicacion = await publicacionesDB.findOne({ _id: new ObjectId(id) });
         if (!publicacion) {
             return res.status(404).json({ message: "Publicación no encontrada" });
         }
 
+        // preparar campos a actualizar
         const updateFields = {};
         if (titulo) updateFields.titulo = titulo;
         if (descripcion) updateFields.descripcion = descripcion;
-        if (categoria) updateFields.categoria = categoria;
+        updateFields.categoria = categoria;
 
-        // Vaciamos los archivos actuales en la base de datos
-        updateFields.archivos = [];
-
-        // Subir los archivos nuevos
-        if (req.files && req.files.length > 0) {
+        // manejar nuevos archivos (si los hay)
+        const archivos = req.files["archivo"] || [];
+        if (archivos.length > 0) {
             const nuevosArchivos = [];
-
-            for (const file of req.files) {
+            for (const file of archivos) {
                 const readStream = fs.createReadStream(file.path);
                 const uploadStream = bucket.openUploadStream(file.originalname);
-                await new Promise((resolve, reject) => {
+                await new Promise((ok, ko) =>
                     readStream.pipe(uploadStream)
-                        .on("error", reject)
-                        .on("finish", () => resolve());
-                });
-
+                        .on("error", ko)
+                        .on("finish", ok)
+                );
                 nuevosArchivos.push({ id: uploadStream.id, nombre: file.originalname });
-                fs.unlinkSync(file.path);  // Eliminar el archivo temporal después de subirlo
+                fs.unlinkSync(file.path);
             }
-
-            // Reemplazamos los archivos en la base de datos con los nuevos
             updateFields.archivos = nuevosArchivos;
         }
 
-        // Actualizamos la publicación con los nuevos campos, incluidos los archivos
+        // manejar nueva miniatura (si se ha enviado)
+        const miniatura = req.files["miniatura"]?.[0];
+        if (miniatura) {
+            const miniRead = fs.createReadStream(miniatura.path);
+            const miniUpload = bucket.openUploadStream(miniatura.originalname);
+            await new Promise((ok, ko) =>
+                miniRead.pipe(miniUpload)
+                    .on("error", ko)
+                    .on("finish", ok)
+            );
+            fs.unlinkSync(miniatura.path);
+            updateFields.miniatura = { id: miniUpload.id, nombre: miniatura.originalname };
+        }
+
+        // ejecutar actualización
         await publicacionesDB.updateOne(
             { _id: new ObjectId(id) },
             { $set: updateFields }
@@ -486,6 +723,28 @@ app.put("/api/publicaciones/:id", upload.array("archivo", 10), async (req, res) 
         console.error("Error al actualizar publicación:", err);
         res.status(500).json({ message: "Error al actualizar publicación", error: err.message });
     }
+});
+
+app.get("/api/publicaciones/:id/likes", async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const publicacion = await publicacionesDB.findOne(
+            { _id: new ObjectId(id) },
+            { projection: { likes: 1 } }
+        );
+
+        if (!publicacion) {
+            return res.status(404).json({ message: "Publicación no encontrada" });
+        }
+
+        res.json({ likes: publicacion.likes || 0 });
+    } catch (err) {
+        console.error("Error al obtener likes:", err);
+        res.status(500).json({ message: "Error al obtener likes", error: err.message });
+    }
+});
+  
 });
 
 // Devuelve el archivo en crudo desde GridFS por ID
@@ -553,30 +812,63 @@ app.get("/api/users/:id/foto", async (req, res) => {
     }
 });
 
-app.post("/api/categorias", async (req, res) => {
+app.post("/api/categorias", upload.single("foto"), async (req, res) => {
     const { nombre } = req.body;
+    const foto = req.file;
 
     if (!nombre) {
         return res.status(400).json({ message: "El nombre de la categoría es obligatorio" });
     }
 
     try {
-        // Verifica si ya existe una categoría con ese nombre (ignorando mayúsculas/minúsculas)
-        const categoriaExistente = await categoriasCollection.findOne({ nombre: { $regex: `^${nombre}$`, $options: "i" } });
+        // Verificar si ya existe la categoría
+        const categoriaExistente = await categoriasCollection.findOne({
+            nombre: { $regex: `^${nombre}$`, $options: "i" }
+        });
 
         if (categoriaExistente) {
             return res.status(400).json({ message: "La categoría ya existe" });
         }
 
-        const nuevaCategoria = { nombre };
+        let fotoId = null;
+
+        // Si se ha subido una foto, guardarla en GridFS
+        if (foto) {
+            const readStream = fs.createReadStream(foto.path);
+            const uploadStream = bucket.openUploadStream(foto.originalname, {
+                contentType: foto.mimetype
+            });
+
+            readStream.pipe(uploadStream);
+
+            await new Promise((resolve, reject) => {
+                uploadStream.on("finish", () => {
+                    fotoId = uploadStream.id;
+                    fs.unlinkSync(foto.path); // elimina el archivo temporal
+                    resolve();
+                });
+                uploadStream.on("error", reject);
+            });
+        }
+
+        // Guardar categoría
+        const nuevaCategoria = {
+            nombre,
+            fotoId // puede ser null si no hay imagen
+        };
 
         const resultado = await categoriasCollection.insertOne(nuevaCategoria);
 
-        res.status(201).json({ message: "Categoría creada", categoria: { _id: resultado.insertedId, nombre } });
+        res.status(201).json({
+            message: "Categoría creada",
+            categoria: { _id: resultado.insertedId, ...nuevaCategoria }
+        });
     } catch (err) {
-        res.status(500).json({ message: "Error al crear la categoría", error: err });
+        console.error(err);
+        res.status(500).json({ message: "Error al crear la categoría", error: err.message });
     }
 });
+
 
 app.get("/api/categorias", async (req, res) => {
     try {
@@ -584,6 +876,21 @@ app.get("/api/categorias", async (req, res) => {
         res.json(categorias);
     } catch (err) {
         res.status(500).json({ message: "Error al obtener categorías", error: err });
+    }
+});
+app.get("/api/categorias/foto/:id", async (req, res) => {
+    try {
+        const id = new ObjectId(req.params.id);
+        const downloadStream = bucket.openDownloadStream(id);
+
+        downloadStream.on("error", () => {
+            res.status(404).json({ message: "Imagen no encontrada" });
+        });
+
+        res.set("Content-Type", "image/jpeg"); // o usa el tipo que corresponda
+        downloadStream.pipe(res);
+    } catch (err) {
+        res.status(500).json({ message: "Error al recuperar la imagen", error: err.message });
     }
 });
 
@@ -698,6 +1005,21 @@ app.get("/api/publicaciones/:id/modelo", async (req, res) => {
         res.status(500).json({ message: "Error interno del servidor" });
     }
 });
+
+
+app.delete("/api/publicaciones", async (req, res) => {
+    try {
+        const result = await publicacionesDB.deleteMany({});
+        res.json({ message: "Todas las publicaciones eliminadas", deletedCount: result.deletedCount });
+    } catch (error) {
+        console.error("Error al eliminar publicaciones:", error);
+        res.status(500).json({ message: "Error al eliminar publicaciones" });
+    }
+});
+
+
+
+
 app.listen(PORT, () => console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`));
 
 

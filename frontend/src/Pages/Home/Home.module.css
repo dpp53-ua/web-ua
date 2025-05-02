@@ -1,11 +1,19 @@
+h1{
+    font-size: var(--font-larger);
+    color: var(--white);
+}
+h2{
+    font-size: var(--font-large);
+}
 .home-main-container {
     display: flex;
     flex-direction: column;
     background-color: var(--dark-grey);
     min-height: 100vh; 
     color: var(--white);
+    position: relative; /* asegura que el resto del contenido se posicione bien */
+    z-index: 0;
 }
-
 
 .home-welcome {
     /* background: linear-gradient(90deg, var(--dark-red), var(--medium-red)); */
@@ -17,9 +25,17 @@
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    padding: 3rem;
-    gap: 5rem;
+    padding-inline: 3rem;
+    padding-block: 1rem;
+    gap: 3rem;
     height: fit-content;
+    z-index: 5;
+
+    p{
+        font-size: var(--font-larger);
+        font-weight: 600;
+        color: white;
+    }
 
     > div:first-of-type{
         width: 30%;
@@ -56,7 +72,9 @@
 }
 
 .category-section, .product-section {
-    padding: 2rem;
+    padding-inline: 2rem;
+    padding-block: 1rem;
+    z-index: 5;
 }
 
 .category-header, .product-header {
@@ -95,7 +113,7 @@
 .categories {
     display: flex;
     gap: 1em; 
-    justify-content: space-between;
+    justify-content: space-evenly;
     scroll-snap-type: x mandatory;
     overflow-x: auto;
     overflow-y: hidden;
@@ -150,11 +168,29 @@
     }
 }
 
+.logofont{
+    font-size: 46px;
+    font-family: "Odibee Sans", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+
+.marquee {
+    width: 100%;
+    overflow: hidden;
+    display: flex;
+    justify-content: center; /* Centra el contenido */
+    align-items: center;
+    padding-block: 2rem;
+    z-index: 5;
+}
+
 @media (max-width: 1000px) {  /* Cuando la pantalla sea menor a 768px */
     .home-welcome {
         flex-direction: column; /* Apila los elementos en columna */
         gap: 1rem;
         padding: 2rem;
+
         img{
             margin: 0;
         }
@@ -163,10 +199,15 @@
             align-items: center; 
         }
         > div:last-of-type{
-            width: 90%;
+            width: 80%;
             justify-content: center;
             align-items: center;
-            text-align: center;
+            
+            p{
+                font-size: var(--font-large);
+                text-align: center;
+            }
+
         }
     }
 }

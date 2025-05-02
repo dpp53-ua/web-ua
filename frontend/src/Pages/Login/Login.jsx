@@ -1,9 +1,14 @@
 /* Componentes */
 import { Link, useNavigate } from "react-router-dom";
 import { Button, InputField } from '../../Components';
-import { faUser, faLock } from "@fortawesome/free-solid-svg-icons";
+import { faUser, faLock, faCheck, faRotateLeft, faRotate } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
 import { useAuth } from "../../Context";
+import { getCSSVariable } from "../../Utils";
+import Swal from 'sweetalert2';
+import Lottie from "lottie-react";
+import loginAnimation from "../../assets/burbuja.json"; 
+
 
 /* Estilos */
 import styles from "./Login.module.css";
@@ -64,16 +69,39 @@ function Login() {
     }
   };
 
+  const handleClear = async () => {
+    const result = await Swal.fire({
+      title: '¿Limpiar formulario?',
+      text: '¿Deseas borrar todos los campos introducidos?',
+      icon: 'warning',
+      background: getCSSVariable('--dark-grey'),
+      color: getCSSVariable('--white'),
+      customClass: {
+        confirmButton: "swal-confirm-btn",
+      },
+      showCancelButton: true,
+      confirmButtonText: 'Sí, borrar',
+      cancelButtonText: 'Cancelar'
+    });
+  
+    if (result.isConfirmed) {
+      setFormData({ name: "", password: "" });
+      setErrors({});
+    }
+  };
+  
+
   return (
     <div className={styles["login-main-container"]}>
       <section className={styles["left-section"]}>
         <h1>Inicia sesión</h1>
+        <small>Los campos con el carácter '*' son obligatorios</small>
         {errors.general && <p className={styles["error"]}>{errors.general}</p>}
         <form onSubmit={handleSubmit}>
           <InputField 
             id="name" 
             type="text" 
-            label="Nombre de usuario" 
+            label="Nombre de usuario (*)" 
             name="name" 
             placeholder="Usuario" 
             icon={faUser} 
@@ -84,7 +112,7 @@ function Login() {
           <InputField 
             id="password" 
             type="password" 
-            label="Contraseña" 
+            label="Contraseña (*)" 
             name="password" 
             placeholder="Contraseña" 
             icon={faLock} 
@@ -92,14 +120,19 @@ function Login() {
             onChange={handleChange} 
             explicativeText={errors.password}
           />
-          <Link to="">¿Has olvidado tu contraseña?</Link>
           <div>
-            <Button type="reset" variant="red" label="Limpiar" onClick={() => setFormData({ name: "", password: "" })}/>
-            <Button type="submit" variant="red" label="Aceptar" />
+            <Button type="reset" variant="red" label="Limpiar" onClick={handleClear} icon={faRotateLeft}/>
+            <Button type="submit" variant="red" label="Aceptar" icon={faCheck} />
           </div>
         </form>
       </section>
       <section className={styles["right-section"]}>
+        <Lottie 
+          animationData={loginAnimation} 
+          loop 
+          autoplay 
+          className={styles["right-animation"]}
+        />
         <img alt="logo" src="/logo.png"/>
         <h1>Bienvenido</h1>
         <p>¿No tienes una cuenta?</p>
