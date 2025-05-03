@@ -37,6 +37,9 @@ const InputField = forwardRef((props, ref) => {
         onChange={onChange}
         defaultValue={value || "DEFAULT"}
         ref={ref}
+        className={
+          value === "DEFAULT" ? styles["select-placeholder"] : ""
+        }
       >
         <option value="DEFAULT" disabled>
           Seleccione una opción ...

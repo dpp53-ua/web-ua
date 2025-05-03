@@ -112,6 +112,7 @@ function Home() {
                     <img
                         key={i}
                         src={`http://localhost:5000/api/publicaciones/${pub._id}/miniatura`} 
+                        onError={(e) => { e.target.src = '/no-image.webp'; }}
                         alt={`preview ${i}`}
                         style={{
                             height: "100px",

@@ -33,13 +33,32 @@
         font-size: var(--font-medium);
         font-family: inherit;
         &::placeholder {
-            color: var(--grey)
+            color: var(--white);
+            font-style: italic;
         }
     }
+
+    .select-placeholder {
+        font-style: italic;
+        opacity: 0.5;
+      }
+
+    > input[type="file"] {
+        font-style: italic;
+    }
+
+    select:invalid {
+        font-style: italic;
+        opacity: 0.5;
+      }
+      
 
     > select:hover, input[type="file"]:hover {
         cursor:pointer;
     }
+
+    
+    
 
     input:-webkit-autofill,
     select:-webkit-autofill {

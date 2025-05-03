@@ -47,12 +47,12 @@
   padding-inline: 0.3em;
   width: 1em;
   height: 1em;
-  color:  white;
+  color:  black;
   transition: color 0.2s ease-in-out;
 }
 
 .searchBar button:hover svg {
-  color: #333;
+  color: black;
 }
 
 /* Estilo para el botón de filtro */

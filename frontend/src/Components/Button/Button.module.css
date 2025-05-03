@@ -28,7 +28,7 @@ button {
 }
 
 .red {
-  color: var(--white);
+  color: white;;
   background-color: var(--red);
 
     &:active {
@@ -39,7 +39,7 @@ button {
 }
 
 .red-rounded {
-    color: var(--white);
+    color: white;
     background-color: var(--red);
 
     text-decoration-color: var(--white);
@@ -99,7 +99,7 @@ button {
 }
 
 .white-red {
-  color: var(--red);
+  color:#EB3131;
   background-color: var(--white);
 
     &:active {
@@ -166,7 +166,7 @@ button {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Sombra sutil */
     cursor: pointer;
     text-decoration: underline;
-    text-decoration-color: var(--black);
+    text-decoration-color: black;
 }
 .headerButtonWhite:active {
   transform: scale(0.98); /* Reducir el tamaño del botón */
@@ -175,6 +175,7 @@ button {
     --medium-grey
   ); /* Fondo más oscuro cuando se presiona */
   color: var(--white);
+  text-decoration-color: white;
 }
 /* .headerButtonBlack */
 .headerButtonBlack {
@@ -192,10 +193,10 @@ button {
 }
 
 .headerButtonBlack:hover {
-    background-color: var(--medium-grey); /* Fondo más claro en hover */
+    background-color: var(--black); /* Fondo más claro en hover */
     transform: scale(1.05); /* Efecto de ampliación */
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); /* Sombra más pronunciada */
-    color: var(--light-grey); /* Cambiar color del texto */
+    color: var(--white); /* Cambiar color del texto */
     cursor: pointer;
     text-decoration: underline;
     text-decoration-color: var(--white);
@@ -206,6 +207,7 @@ button {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); /* Reducir la sombra */
   background-color: var(--white); /* Fondo más oscuro cuando se presiona */
   color: var(--dark-grey);
+  text-decoration-color: black;
 }
 
 @media (max-width: 550px) {

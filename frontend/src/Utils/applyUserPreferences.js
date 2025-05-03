@@ -18,8 +18,9 @@ const applyUserPreferences = ({ theme, fontSize }) => {
   
     // Tema
     if (theme === "night") {
+
     } else {
-      root.style.setProperty('--red', '#c62828');
+      root.style.setProperty('--red', '#A11515');
       root.style.setProperty('--medium-red', '#9a0007');
       root.style.setProperty('--dark-red', '#6a1b1b');
 
@@ -31,8 +32,8 @@ const applyUserPreferences = ({ theme, fontSize }) => {
       root.style.setProperty('--medium-light-grey', '#eeeeee');
 
       root.style.setProperty('--dark-grey', '#f5f5f5');
-      root.style.setProperty('--white', '#000000');  // fondo
-      root.style.setProperty('--black', '#ffffff');  // texto
+      root.style.setProperty('--white', '#000000');
+      root.style.setProperty('--black', '#ffffff'); 
 
       root.style.setProperty('--primary-link', '#673ab7');
     }

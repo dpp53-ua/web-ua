@@ -125,8 +125,12 @@ function ProfileConfiguration() {
           customClass: {
             confirmButton: "swal-confirm-btn",
           }
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.href = "profile-configuration";
+          }
         });
-  
+
         setInitial({ ...preferences });
       } catch (err) {
         console.error('Error al actualizar:', err);
