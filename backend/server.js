@@ -35,11 +35,18 @@ mongoClient.connect().then(client => {
 
 const cors = require("cors");
 
+
+const corsOptions = {
+    origin: 'http://localhost:3000', // O la URL de tu frontend React
+    optionsSuccessStatus: 200,
+    exposedHeaders: ['Content-Disposition'], // <--- ¡Añade esto!
+  };
+
 const app = express();
 
 // Middleware
 app.use(logger("dev")); // Logs de las peticiones
-app.use(cors()); // Permitir CORS
+app.use(cors(corsOptions)); // Permitir CORS
 app.use(express.json()); // Soporte para JSON
 
 app.post("/api/users", (req, res) => {
@@ -346,55 +353,55 @@ app.get("/api/publicaciones/:id", async (req, res) => {
     }
 });
 
-app.get("/api/publicaciones/:id/descargar/:userId", async (req, res) => {
-    const { id, userId } = req.params;
+// app.get("/api/publicaciones/:id/descargar/:userId", async (req, res) => {
+//     const { id, userId } = req.params;
 
-    try {
-        const publicacion = await publicacionesDB.findOne({ _id: new ObjectId(id) });
-        if (!publicacion) return res.status(404).json({ message: "Publicación no encontrada" });
+//     try {
+//         const publicacion = await publicacionesDB.findOne({ _id: new ObjectId(id) });
+//         if (!publicacion) return res.status(404).json({ message: "Publicación no encontrada" });
 
-        const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
-        if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
+//         const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+//         if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
 
-        if (!user.descargas?.includes(id)) {
-            await usersCollection.updateOne(
-                { _id: new ObjectId(userId) },
-                { $push: { descargas: id } }
-            );
-        }
+//         if (!user.descargas?.includes(id)) {
+//             await usersCollection.updateOne(
+//                 { _id: new ObjectId(userId) },
+//                 { $push: { descargas: id } }
+//             );
+//         }
 
-        const archivos = publicacion.archivos || [];
+//         const archivos = publicacion.archivos || [];
 
-        // Si solo hay un archivo, descargarlo directamente
-        if (archivos.length === 1) {
-            const archivoId = archivos[0].id;
-            const downloadStream = bucket.openDownloadStream(new ObjectId(archivoId));
-            res.set("Content-Type", "application/octet-stream");
-            res.set("Content-Disposition", `attachment; filename="${archivos[0].nombre || 'archivo'}"`);
-            return downloadStream.pipe(res);
-        }
+//         // Si solo hay un archivo, descargarlo directamente
+//         if (archivos.length === 1) {
+//             const archivoId = archivos[0].id;
+//             const downloadStream = bucket.openDownloadStream(new ObjectId(archivoId));
+//             res.set("Content-Type", "application/octet-stream");
+//             res.set("Content-Disposition", `attachment; filename="${archivos[0].nombre || 'archivo'}"`);
+//             return downloadStream.pipe(res);
+//         }
 
-        // Si hay más de un archivo, crear un ZIP en streaming
-        res.set("Content-Type", "application/zip");
-        res.set("Content-Disposition", `attachment; filename="publicacion_${id}.zip"`);
+//         // Si hay más de un archivo, crear un ZIP en streaming
+//         res.set("Content-Type", "application/zip");
+//         res.set("Content-Disposition", `attachment; filename="publicacion_${id}.zip"`);
 
-        const archive = archiver("zip", { zlib: { level: 9 } });
-        archive.on("error", err => { throw err; });
+//         const archive = archiver("zip", { zlib: { level: 9 } });
+//         archive.on("error", err => { throw err; });
 
-        archive.pipe(res);
+//         archive.pipe(res);
 
-        for (const archivo of archivos) {
-            const stream = bucket.openDownloadStream(new ObjectId(archivo.id));
-            archive.append(stream, { name: archivo.nombre || `archivo_${archivo.id}` });
-        }
+//         for (const archivo of archivos) {
+//             const stream = bucket.openDownloadStream(new ObjectId(archivo.id));
+//             archive.append(stream, { name: archivo.nombre || `archivo_${archivo.id}` });
+//         }
 
-        archive.finalize();
+//         archive.finalize();
 
-    } catch (err) {
-        console.error("Error en descarga:", err);
-        res.status(500).json({ message: "Error en la descarga", error: err });
-    }
-});
+//     } catch (err) {
+//         console.error("Error en descarga:", err);
+//         res.status(500).json({ message: "Error en la descarga", error: err });
+//     }
+// });
 
 app.get("/api/users/:id/descargas", async (req, res) => {
     const { id } = req.params;
@@ -434,16 +441,32 @@ app.get("/api/publicaciones/:id/descargar/:userId", async (req, res) => {
 
         const archivos = publicacion.archivos || [];
 
-        // Si solo hay un archivo, descargarlo directamente
         if (archivos.length === 1) {
-            const archivoId = archivos[0].id;
+            const archivoInfo = archivos[0];
+            const archivoId = archivoInfo.id;
+            const originalNombre = archivoInfo.nombre || 'archivo';
+
+            const nombreParaDescarga = originalNombre.replace(/_+$/, '');
+
             const downloadStream = bucket.openDownloadStream(new ObjectId(archivoId));
+
+            res.set("Content-Disposition","attachment; filename=\"" + nombreParaDescarga + "\"");
+
             res.set("Content-Type", "application/octet-stream");
-            res.set("Content-Disposition", `attachment; filename="${archivos[0].nombre || 'archivo'}"`);
+
+            // Manejo de error básico para el stream
+            downloadStream.on('error', (err) => {
+                console.error("Error durante streaming de archivo:", err);
+                if (!res.headersSent) {
+                    res.status(500).send("Error al leer el archivo");
+                } else {
+                    res.end();
+                }
+            });
+
             return downloadStream.pipe(res);
         }
 
-        // Si hay más de un archivo, crear un ZIP en streaming
         res.set("Content-Type", "application/zip");
         res.set("Content-Disposition", `attachment; filename="publicacion_${id}.zip"`);
 
