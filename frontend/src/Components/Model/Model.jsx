@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
 import { getCSSVariable } from "../../Utils";
 
-function Model({ _id, titulo, autor, imagen, mostrarBotonDescarga= false }) {
+function Model({ _id, titulo, autor, imagen, mostrarBotonDescarga= false, mostrarBotonEditar = false }) {
   const [likes, setLikes] = useState(0);
   const [liked, setLiked] = useState(false);
 
@@ -102,6 +102,7 @@ function Model({ _id, titulo, autor, imagen, mostrarBotonDescarga= false }) {
     }
   };
 
+
   return (
     <article className={styles["article-model"]}>
       {mostrarBotonDescarga && (
@@ -114,6 +115,17 @@ function Model({ _id, titulo, autor, imagen, mostrarBotonDescarga= false }) {
       </button>
 
       )}
+
+      {mostrarBotonEditar && (
+        <Link
+          to={`/post-form/${_id}`}
+          className={styles["edit-button"]}
+          title="Editar publicación"
+        >
+          Editar
+        </Link>
+      )}
+
       <Link to={`/detail/${_id}`}>
         <header className={styles["model-header"]}>
           <img

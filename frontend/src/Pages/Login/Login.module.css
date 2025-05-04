@@ -89,8 +89,12 @@
             margin-bottom: 1rem;
         }
 
+        > h1 {
+            color: white;
+        }
+
         > p {
-            color: var(--white);
+            color: white;
             font-size: var(--font-large);
             margin-bottom: 2rem;
         }

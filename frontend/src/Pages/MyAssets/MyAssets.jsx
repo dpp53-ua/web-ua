@@ -29,7 +29,7 @@ function MyAssets() {
         <header>
           <h1>Mis assets</h1>
         </header>
-        <ModelGrid publicaciones={publicaciones.slice(0, visibleCount)} />
+        <ModelGrid publicaciones={publicaciones.slice(0, visibleCount)} mostrarBotonEditar={true} />
         <footer className={styles["model-footer"]}>
                             <Button variant="red-rounded" label="Mostrar más +" onClick={handleMostrarMas} />
                         </footer>
