@@ -19,18 +19,17 @@ let publicacionesDB;
 let usersCollection;
 let categoriasCollection;
 let comentariosCollection;
-
+let supportIssuesCollection;
 
 
 mongoClient.connect().then(client => {
     const database = client.db("miBaseDeDatos");
     bucket = new GridFSBucket(database, { bucketName: "archivos" });
     publicacionesDB = database.collection("publicaciones");
-    usersCollection = database.collection("users"); // Cambié esto para usar mongodb en lugar de mongojs
+    usersCollection = database.collection("users");
     categoriasCollection = database.collection("categorias");
     comentariosCollection = database.collection("comentarios");
-
-
+    supportIssuesCollection = database.collection("supportIssues");
 }).catch(console.error);
 
 const cors = require("cors");
@@ -1113,6 +1112,123 @@ app.delete("/api/publicaciones/:id", async (req, res) => {
     } catch {
         console.error(`Error al eliminar la publicación con el ID: ${id}`)
         res.status(500).json({ message: `Error al eliminar la publicación con el ID: ${id}}`});
+    }
+});
+
+app.post("/api/support/issues", upload.single("attachment"), async (req, res) => {
+    try {
+        const { issueType, description /*, userId */ } = req.body; 
+        
+        const errors = {};
+        if (!issueType || typeof issueType !== 'string' || issueType.trim() === '') {
+            errors.issueType = "Tipo de problema requerido.";
+        }
+        if (!description || typeof description !== 'string' || description.trim() === '') {
+            errors.description = "Descripción requerida.";
+        } else if (description.trim().length < 10) {
+            errors.description = "La descripción debe tener al menos 10 caracteres.";
+        }
+
+        if (Object.keys(errors).length > 0) {
+            return res.status(400).json({ message: "Faltan campos requeridos o son inválidos.", errors });
+        }
+
+        const issueData = {
+            issueType: issueType.trim(),
+            description: description.trim(),
+            submittedAt: new Date(),
+            status: 'new',
+            attachment: null,
+        };
+
+        if (req.file) {
+            console.log(`Procesando archivo adjunto: ${req.file.originalname} (${req.file.mimetype})`);
+
+            const uploadStream = bucket.openUploadStream(req.file.originalname, {
+                contentType: req.file.mimetype,
+            });
+
+            uploadStream.end(req.file.buffer);
+
+            await new Promise((resolve, reject) => {
+                uploadStream.on('finish', resolve);
+                uploadStream.on('error', (err) => {
+                    console.error("Error subiendo archivo a GridFS:", err);
+                    reject(new Error("Error al guardar el archivo adjunto."));
+                });
+            });
+
+            console.log(`Archivo ${req.file.originalname} guardado en GridFS con ID: ${uploadStream.id}`);
+
+            issueData.attachment = {
+                fileId: uploadStream.id,
+                filename: req.file.originalname,
+                contentType: req.file.mimetype,
+                size: req.file.size
+            };
+        }
+
+        const result = await supportIssuesCollection.insertOne(issueData);
+
+        console.log("Nuevo reporte de soporte guardado, ID:", result.insertedId);
+
+        const newIssue = await supportIssuesCollection.findOne({ _id: result.insertedId });
+
+        res.status(201).json({ message: "Reporte enviado con éxito.", issue: newIssue });
+
+    } catch (error) {
+        console.error("Error en POST /api/support/issues:", error);
+        if (error.message === "Error al guardar el archivo adjunto.") {
+             res.status(500).json({ message: error.message });
+        } else {
+            res.status(500).json({ message: "Error interno del servidor al procesar el reporte." });
+        }
+    }
+});
+
+app.get("/api/support/issues", async (req, res) => {
+    try {
+        const issues = await supportIssuesCollection.find()
+                                                    .sort({ submittedAt: -1 })
+                                                    .toArray();
+
+        res.status(200).json(issues);
+
+    } catch (error) {
+        console.error("Error en GET /api/support/issues:", error);
+        res.status(500).json({ message: "Error interno del servidor al obtener los reportes." });
+    }
+});
+
+app.get("/api/support/issues/attachment/:fileId", async (req, res) => {
+    try {
+        const fileId = new ObjectId(req.params.fileId);
+
+        const fileMeta = await mongoClient.db("miBaseDeDatos").collection('archivos.files').findOne({ _id: fileId });
+
+        if (!fileMeta) {
+            return res.status(404).json({ message: "Archivo adjunto no encontrado." });
+        }
+
+        res.set("Content-Type", fileMeta.contentType || "application/octet-stream");
+        res.set("Content-Disposition", `attachment; filename="${fileMeta.filename}"`);
+
+        const downloadStream = bucket.openDownloadStream(fileId);
+
+        downloadStream.on('error', (err) => {
+            console.error("Error al descargar archivo adjunto:", err);
+            if (!res.headersSent) {
+                res.status(500).json({ message: "Error al leer el archivo adjunto." });
+            }
+        });
+        downloadStream.pipe(res);
+
+    } catch (error) {
+        console.error("Error en GET /api/support/issues/attachment/:fileId:", error);
+        if (error.name === 'BSONTypeError') {
+             return res.status(400).json({ message: "ID de archivo inválido." });
+        }
+        res.status(500).json({ message: "Error interno del servidor al descargar el adjunto." });
     }
 });
 
