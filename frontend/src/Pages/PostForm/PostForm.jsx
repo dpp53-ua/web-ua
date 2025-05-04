@@ -266,8 +266,9 @@ function PostForm() {
       });
   
       handleClear(false);
-      window.location.href = "/post-form";
-
+      const data = await response.json();
+      const postId = data.publicacion._id; // usa el id retornado o el actual en modo edición
+      window.location.href = `/detail/${postId}`;
     } catch (err) {
       console.error("Error al enviar publicación:", err);
       setErrors(prev => ({ ...prev, general: err.message }));
