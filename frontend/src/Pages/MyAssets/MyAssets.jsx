@@ -1,46 +1,68 @@
 import { useEffect, useState } from "react";
 import { Button, ModelGrid, ProfileMenu, UpButton } from "../../Components";
 import styles from "./MyAssets.module.css";
-import { useAuth } from "../../Context"; 
+import { useAuth } from "../../Context";
 
 function MyAssets() {
   const [publicaciones, setPublicaciones] = useState([]);
   const { userId } = useAuth();
   const [visibleCount, setVisibleCount] = useState(4);
+  // --- Add isLoading and error states ---
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     if (userId) {
       cargarPublicaciones();
+    } else {
+       setIsLoading(false);
+       setPublicaciones([]);
+       setError("Usuario no identificado.");
     }
   }, [userId]);
 
   const cargarPublicaciones = async () => {
+    setIsLoading(true);
+    setError(null);
     try {
       const res = await fetch(`http://localhost:5000/api/publicaciones/usuario/${userId}`);
+      if (!res.ok) {
+           let errorMsg = res.statusText;
+           try {
+               const errData = await res.json();
+               errorMsg = errData.message || errorMsg;
+           } catch (parseError) {
+           }
+           throw new Error(`Error ${res.status}: ${errorMsg}`);
+      }
       const data = await res.json();
-      setPublicaciones(data);
+      setPublicaciones(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error("Error al cargar publicaciones:", err);
+      setError(err.message || "No se pudieron cargar tus assets.");
+      setPublicaciones([]); // Clear publications on error
+    } finally {
+      setIsLoading(false);
     }
   };
-  
+
   const handleDeleteLocal = (idEliminado) => {
-    console.log("handleDeleteLocal called with ID:", idEliminado);
     setPublicaciones(prev => {
-      console.log("Updating state. Previous length:", prev.length);
       const nuevas = prev.filter(pub => pub._id !== idEliminado);
-      console.log("New array length:", nuevas.length);
-      if (nuevas.length < visibleCount) {
-        console.log("Adjusting visibleCount to:", nuevas.length);
+      if (nuevas.length < visibleCount && nuevas.length > 0) {
         setVisibleCount(nuevas.length);
+      } else if (nuevas.length === 0) {
+        setVisibleCount(4);
       }
       return nuevas;
     });
   };
-  
+
   const handleMostrarMas = () => {
     setVisibleCount(prev => prev + 4);
   };
+
+  const showMostrarMasButton = !isLoading && !error && publicaciones.length > visibleCount;
 
   return (
     <div className={styles["profile-main-container"]}>
@@ -52,10 +74,28 @@ function MyAssets() {
         <header>
           <h1>Mis assets</h1>
         </header>
-        <ModelGrid publicaciones={publicaciones.slice(0, visibleCount)} mostrarBotonEditar={true} mostrarBotonBorrar={true} onDelete={handleDeleteLocal}/>
-        <footer className={styles["model-footer"]}>
-          <Button variant="red-rounded" label="Mostrar más +" onClick={handleMostrarMas} />
-        </footer>
+
+        {isLoading ? (
+          <div className={styles["loading-message"]}>Cargando tus assets...</div>
+        ) : error ? (
+          <div className={styles["error-message"]}>{error}</div>
+        ) : publicaciones.length === 0 ? (
+             <div className={styles["no-results-message"]}>No has publicado ningún asset todavía.</div>
+        ) : (
+          <>
+            <ModelGrid
+              publicaciones={publicaciones.slice(0, visibleCount)}
+              mostrarBotonEditar={true}
+              mostrarBotonBorrar={true}
+              onDelete={handleDeleteLocal}
+            />
+            {showMostrarMasButton && (
+              <footer className={styles["model-footer"]}>
+                <Button variant="red-rounded" label="Mostrar más +" onClick={handleMostrarMas} />
+              </footer>
+            )}
+          </>
+        )}
       </section>
     </div>
   );

@@ -1,7 +1,7 @@
 import Model from "../Model/Model";
 import styles from "./ModelGrid.module.css";
 
-function ModelGrid({ publicaciones = [], mostrarBotonDescarga = false, mostrarBotonEditar = false, mostrarBotonBorrar = false, onDelete }) {  // Inicializamos publicaciones como un arreglo vacío
+function ModelGrid({ publicaciones = [], mostrarBotonDescarga = false, mostrarBotonEditar = false, mostrarBotonBorrar = false, mostrarBotonQuitarDescarga = false , onDelete, onRemoveDownload }) {  // Inicializamos publicaciones como un arreglo vacío
     return (
         <div className={styles["models"]}>
             {publicaciones.length > 0 ? (
@@ -16,7 +16,9 @@ function ModelGrid({ publicaciones = [], mostrarBotonDescarga = false, mostrarBo
                         mostrarBotonDescarga={mostrarBotonDescarga}
                         mostrarBotonEditar={mostrarBotonEditar}
                         mostrarBotonBorrar={mostrarBotonBorrar}
+                        mostrarBotonQuitarDescarga={mostrarBotonQuitarDescarga}
                         onDelete={onDelete}
+                        onRemoveDownload={onRemoveDownload}
                     />
                 ))
             ) : (

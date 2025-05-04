@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import styles from "./Model.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faStar, faStarHalf, faHeart, faDownload, faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faStar, faStarHalf, faHeart, faDownload, faEdit, faTrash, faMinus } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
 import { getCSSVariable } from "../../Utils";
 
-function Model({ _id, titulo, autor, imagen, mostrarBotonDescarga= false, mostrarBotonEditar = false, mostrarBotonBorrar = false, onDelete }) {
+function Model({ _id, titulo, autor, imagen, mostrarBotonDescarga= false, mostrarBotonEditar = false, mostrarBotonBorrar = false, mostrarBotonQuitarDescarga = false, onDelete, onRemoveDownload }) {
   const [likes, setLikes] = useState(0);
   const [liked, setLiked] = useState(false);
 
@@ -41,7 +41,7 @@ function Model({ _id, titulo, autor, imagen, mostrarBotonDescarga= false, mostra
   };
 
   const handleLike = (e) => {
-    e.preventDefault(); // Previene navegación si se hace clic dentro del <Link>
+    e.preventDefault();
     if (liked) return;
 
     fetch(`http://localhost:5000/api/publicaciones/${_id}/like`, {
@@ -49,7 +49,7 @@ function Model({ _id, titulo, autor, imagen, mostrarBotonDescarga= false, mostra
     })
       .then(res => res.json())
       .then(() => {
-        setLikes(prev => Math.min(prev + 1, 5)); // Límite de 5 estrellas visuales
+        setLikes(prev => Math.min(prev + 1, 5));
         setLiked(true);
       })
       .catch(err => console.error("Error al dar like:", err));
@@ -68,18 +68,27 @@ function Model({ _id, titulo, autor, imagen, mostrarBotonDescarga= false, mostra
           confirmButton: "swal-confirm-btn",
         }
       });
-  
+
       const response = await fetch(`http://localhost:5000/api/publicaciones/${_id}/descargar/${userId}`);
-  
+
       if (!response.ok) {
-        throw new Error("Error en la descarga");
+          let errorMsg = "Error en la descarga";
+          try {
+              const errorData = await response.json();
+              errorMsg = errorData.message || errorMsg;
+          } catch(e) {
+
+          }
+          throw new Error(errorMsg);
       }
-  
-      const fileName = "descarga";
-  
+
+      const contentDisposition = response.headers.get("Content-Disposition");
+      const fileNameMatch = contentDisposition?.match(/filename="?(.+)"?/i);
+      const fileName = fileNameMatch?.[1] || "descarga";
+
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
-  
+
       const a = document.createElement("a");
       a.href = url;
       a.download = fileName;
@@ -87,11 +96,11 @@ function Model({ _id, titulo, autor, imagen, mostrarBotonDescarga= false, mostra
       a.click();
       a.remove();
       window.URL.revokeObjectURL(url);
+
     } catch (error) {
-      console.error("Error en la descarga:", error);
       await Swal.fire({
         title: 'Error',
-        text: 'No se ha podido realizar la descarga',
+        text: error.message || 'No se ha podido realizar la descarga',
         icon: 'error',
         background: getCSSVariable('--dark-grey'),
         color: getCSSVariable('--white'),
@@ -100,7 +109,7 @@ function Model({ _id, titulo, autor, imagen, mostrarBotonDescarga= false, mostra
         }
       });
     }
-  };
+};
 
   const handleDelete = async () => {
     try {
@@ -112,16 +121,14 @@ function Model({ _id, titulo, autor, imagen, mostrarBotonDescarga= false, mostra
         color: getCSSVariable("--white"),
         customClass: {
           confirmButton: "swal-confirm-btn",
-          cancelButton: "swal-cancel-btn", // Optional: Style cancel button too
+          cancelButton: "swal-cancel-btn",
         },
         showCancelButton: true,
         confirmButtonText: "Sí, borrar",
         cancelButtonText: "Cancelar",
       });
   
-      if (result.isConfirmed) {
-        console.log("[Model] User confirmed deletion for ID:", _id); // Log 1
-  
+      if (result.isConfirmed) {  
         const response = await fetch(
           `http://localhost:5000/api/publicaciones/${_id}`,
           {
@@ -129,25 +136,15 @@ function Model({ _id, titulo, autor, imagen, mostrarBotonDescarga= false, mostra
           }
         );
   
-        console.log("[Model] DELETE request sent. Response status:", response.status); // Log 2
-  
-        // --- IMPORTANT: Check if the API deletion was actually successful ---
         if (!response.ok) {
-          // Throw an error to be caught by the catch block below
           throw new Error(`API error! status: ${response.status}`);
         }
   
-        console.log("[Model] API deletion successful. Checking onDelete prop."); // Log 3
-  
-        // --- Call the onDelete prop function IMMEDIATELY after successful deletion ---
         if (typeof onDelete === "function") {
-          console.log("[Model] Calling onDelete prop function with ID:", _id); // Log 4
-          onDelete(_id); // <--- Call the parent's update function
+          onDelete(_id);
         } else {
-          console.warn("[Model] onDelete prop is missing or not a function."); // Warning if prop is wrong
         }
-  
-        // --- Now show the success message (optional, happens after UI update) ---
+
         await Swal.fire({
           title: "Eliminada",
           text: "La publicación fue eliminada correctamente",
@@ -158,13 +155,10 @@ function Model({ _id, titulo, autor, imagen, mostrarBotonDescarga= false, mostra
             confirmButton: "swal-confirm-btn",
           },
         });
-         console.log("[Model] Success Swal shown."); // Log 5
       } else {
-         console.log("[Model] User cancelled deletion."); // Log 6
+
       }
     } catch (err) {
-      // Catch errors from Swal, fetch, response checking, or the onDelete call itself
-      console.error("[Model] Error during handleDelete process:", err); // Log 7 - See the actual error
       await Swal.fire({
           title: 'Error',
           text: 'No se pudo completar la eliminación.',
@@ -178,6 +172,77 @@ function Model({ _id, titulo, autor, imagen, mostrarBotonDescarga= false, mostra
     }
   };
   
+  const handleRemoveDownload = async () => {
+    const userId = sessionStorage.getItem("userId");
+
+    try {
+      const result = await Swal.fire({
+        title: "¿Quitar de descargas?",
+        text: "¿Deseas eliminar esta publicación de tu lista de descargas?",
+        icon: "warning",
+        background: getCSSVariable("--dark-grey"),
+        color: getCSSVariable("--white"),
+        customClass: {
+          confirmButton: "swal-confirm-btn",
+          cancelButton: "swal-cancel-btn",
+        },
+        showCancelButton: true,
+        confirmButtonText: "Sí, quitar",
+        cancelButtonText: "Cancelar",
+      });
+
+      if (result.isConfirmed) {
+
+        const response = await fetch(
+          `http://localhost:5000/api/users/${userId}/descargas/${_id}`,
+          {
+            method: "DELETE",
+          }
+        );
+
+        if (!response.ok) {
+          let errorMsg = `API error! status: ${response.status}`;
+          try {
+            const errorData = await response.json();
+            errorMsg = errorData.message || errorMsg;
+          } catch (parseError) {
+            
+          }
+          throw new Error(errorMsg);
+        }
+
+        if (typeof onRemoveDownload === "function") {
+          onRemoveDownload(_id);
+        } else {
+
+        }
+
+        await Swal.fire({
+          title: "Eliminado",
+          text: "La publicación fue eliminada de tus descargas",
+          icon: "success",
+          background: getCSSVariable("--dark-grey"),
+          color: getCSSVariable("--white"),
+          customClass: {
+            confirmButton: "swal-confirm-btn",
+          },
+        });
+      } else {
+        ;
+      }
+    } catch (err) {
+      await Swal.fire({
+          title: 'Error',
+          text: err.message || 'No se pudo quitar la publicación de tus descargas.',
+          icon: 'error',
+          background: getCSSVariable('--dark-grey'),
+          color: getCSSVariable('--white'),
+          customClass: {
+            confirmButton: "swal-confirm-btn",
+          }
+        });
+    }
+  };
 
   return (
     <article className={styles["article-model"]}>
@@ -198,7 +263,7 @@ function Model({ _id, titulo, autor, imagen, mostrarBotonDescarga= false, mostra
           to={`/post-form/${_id}`}
           className={styles["edit-button"]}
           title="Editar publicación"
-          aria-label="Descargar publicación"
+          aria-label="Editar publicación"
         >
           <FontAwesomeIcon icon={faEdit} />
         </Link>
@@ -209,9 +274,21 @@ function Model({ _id, titulo, autor, imagen, mostrarBotonDescarga= false, mostra
         className={styles["delete-button"]}
         onClick={()=>handleDelete()}
         title="Eliminar publicación"
-        aria-label="Descargar publicación"
+        aria-label="Borrar publicación"
         >
         <FontAwesomeIcon icon={faTrash} />
+      </button>
+
+      )}
+
+      {mostrarBotonQuitarDescarga && (
+        <button
+        className={styles["delete-button"]}
+        onClick={()=>handleRemoveDownload()}
+        title="Eliminar publicación de Mis descargas"
+        aria-label="Eliminar publicación de Mis descargas"
+        >
+        <FontAwesomeIcon icon={faMinus} />
       </button>
 
       )}

@@ -422,6 +422,37 @@ app.get("/api/users/:id/descargas", async (req, res) => {
     }
 });
 
+app.delete("/api/users/:userId/descargas/:publicationId", async (req, res) => {
+    try {
+        const { userId, publicationId } = req.params;
+
+        if (!ObjectId.isValid(userId) || !ObjectId.isValid(publicationId)) {
+            return res.status(400).json({ message: "ID de usuario o publicación inválido" });
+        }
+
+        const result = await usersCollection.updateOne(
+            { _id: new ObjectId(userId) },                
+            { $pull: { descargas: publicationId } }
+        );
+
+        if (result.matchedCount === 0) {
+            return res.status(404).json({ message: "Usuario no encontrado" });
+        }
+
+        if (result.modifiedCount === 0) {
+             console.log(`User ${userId} found, but publication ${publicationId} was not in their downloads list.`);
+        } else {
+             console.log(`Publication ${publicationId} removed from downloads for user ${userId}.`);
+        }
+
+        res.json({ message: "Publicación eliminada de tus descargas" });
+
+    } catch (err) {
+        console.error("Error al eliminar descarga del usuario:", err);
+        res.status(500).json({ message: "Error interno del servidor al eliminar la descarga", error: err.message });
+    }
+});
+
 app.get("/api/publicaciones/:id/descargar/:userId", async (req, res) => {
     const { id, userId } = req.params;
 
@@ -444,21 +475,29 @@ app.get("/api/publicaciones/:id/descargar/:userId", async (req, res) => {
         if (archivos.length === 1) {
             const archivoInfo = archivos[0];
             const archivoId = archivoInfo.id;
-            const originalNombre = archivoInfo.nombre || 'archivo';
 
-            const nombreParaDescarga = originalNombre.replace(/_+$/, '');
+            let originalNombre = archivoInfo.nombre || `archivo_${archivoId}`;
 
+            originalNombre = originalNombre.trim();
+
+            let nombreLimpio = originalNombre.replace(/_+$/, '');
+
+
+            const caracteresInvalidos = /[<>:"/\\|?*]/g;
+            const nombreSanitizado = nombreLimpio.replace(caracteresInvalidos, '_');
+
+            const nombreFinal = path.extname(nombreSanitizado) ? nombreSanitizado : `${nombreSanitizado}.dat`; 
+
+            // --- Descarga ---
             const downloadStream = bucket.openDownloadStream(new ObjectId(archivoId));
 
-            res.set("Content-Disposition","attachment; filename=\"" + nombreParaDescarga + "\"");
-
+            res.set("Content-Disposition", `attachment; filename="${nombreFinal}"`);
             res.set("Content-Type", "application/octet-stream");
 
-            // Manejo de error básico para el stream
             downloadStream.on('error', (err) => {
                 console.error("Error durante streaming de archivo:", err);
                 if (!res.headersSent) {
-                    res.status(500).send("Error al leer el archivo");
+                    res.status(500).json({ message: "Error al leer el archivo desde GridFS" });
                 } else {
                     res.end();
                 }
