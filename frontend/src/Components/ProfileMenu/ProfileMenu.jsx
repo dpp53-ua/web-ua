@@ -51,7 +51,7 @@ export default function ProfileMenu() {
         <div className={styles.profilemenu}>
             <div className={styles.profilebox}>
                 <div className={styles.photoname}>
-                    <img alt="foto de perfil" src={`http://localhost:5000/api/users/${userId}/foto`} onError={(e) => {e.target.src = '/profile.png';}}></img>
+                    <img alt="Foto de perfil" src={`http://localhost:5000/api/users/${userId}/foto`} onError={(e) => {e.target.src = '/profile.png';}}></img>
                     <p>{userData.name}</p>
                 </div>
                 <div className={styles.uploadsdownloads}>

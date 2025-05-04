@@ -110,6 +110,7 @@ function Register() {
             value={formData.email}
             onChange={handleChange}
             explicativeText={errors.email}
+            aria-required="true"
           />
           <InputField 
             id="user"
@@ -121,6 +122,7 @@ function Register() {
             value={formData.name}
             onChange={handleChange}
             explicativeText={errors.name}
+            aria-required="true"
           />
           <InputField 
             id="password"
@@ -132,6 +134,7 @@ function Register() {
             value={formData.password}
             onChange={handleChange}
             explicativeText={errors.password}
+            aria-required="true"
           />
           <InputField 
             id="password_rep"
@@ -143,10 +146,11 @@ function Register() {
             value={formData.password_rep}
             onChange={handleChange}
             explicativeText={errors.password_rep} 
+            aria-required="true"
           />
           <div>
-            <Button type="reset" variant="red" label="Limpiar" onClick={handleClear} icon={faRotateLeft}/>
-            <Button type="submit" variant="red" label="Aceptar" icon={faCheck}/>
+            <Button type="reset" variant="red" label="Limpiar" onClick={handleClear} icon={faRotateLeft} role="submit"/>
+            <Button type="submit" variant="red" label="Aceptar" icon={faCheck} role="submit"/>
           </div>
         </form>
       </section>
@@ -160,7 +164,7 @@ function Register() {
         <img alt="logo" src="/logo.png"/>
         <h1>Bienvenido</h1>
         <p>¿Ya tienes una cuenta?</p>
-        <Button variant="white" label="Inicia sesión" to="/login"/>
+        <Button variant="white" label="Inicia sesión" to="/login" role="link"/>
       </section>
     </div>
   );

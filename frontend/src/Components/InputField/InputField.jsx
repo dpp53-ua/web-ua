@@ -14,6 +14,7 @@ const InputField = forwardRef((props, ref) => {
     onChange,
     arrOptions,
     value,
+    ...rest
   } = props;
 
   let inputElement;
@@ -27,6 +28,7 @@ const InputField = forwardRef((props, ref) => {
         onChange={onChange}
         value={value}
         ref={ref}
+        {...rest}
       />
     );
   } else if (type === "select") {
@@ -40,6 +42,7 @@ const InputField = forwardRef((props, ref) => {
         className={
           value === "DEFAULT" ? styles["select-placeholder"] : ""
         }
+        {...rest}
       >
         <option value="DEFAULT" disabled>
           Seleccione una opción ...
@@ -62,6 +65,7 @@ const InputField = forwardRef((props, ref) => {
         value={value}
         ref={ref}
         multiple
+        {...rest}
       />
     );
   }

@@ -228,12 +228,13 @@ function Model({ _id, titulo, autor, imagen, mostrarBotonDescarga= false, mostra
         <footer className={styles["model-footer"]}>
           <h3>{titulo}</h3>
           <div className={styles["likes-container"]}>
-            <span>{renderStars(likes)}</span>
+            <span aria-label="Contador de likes" title="Contador de likes">{renderStars(likes)}</span>
             <button
               className={styles["like-button"]}
               disabled={liked}
               onClick={handleLike}
               title={liked ? "Ya diste me gusta" : "Dar me gusta"}
+              aria-label="Botón de like"
             >
               <FontAwesomeIcon icon={faHeart} style={{ color: liked ? "red" : "gray" }} />
             </button>

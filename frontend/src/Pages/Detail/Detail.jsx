@@ -158,11 +158,12 @@ function Detail() {
 
         <section className={styles["author-block"]}>
           <div className={styles["author"]}>
-            <img
-              className={styles["author-image"]}
-              src={`http://localhost:5000/api/users/${publicacion.usuario?._id}/foto`}
-              alt="Imagen del autor"
-            />
+          <img
+            className={styles["author-image"]}
+            src={`http://localhost:5000/api/users/${publicacion.usuario?._id}/foto`}
+            alt="Imagen del autor"
+            onError={(e) => { e.target.src = '/profile.png'; }}
+          />
             <h3>{publicacion.usuario?.name || "Autor desconocido"}</h3>
           </div>
 
@@ -205,7 +206,7 @@ function Detail() {
             <p>&nbsp;&nbsp; .{publicacion.archivos?.[0]?.extension || "Desconocido"}</p>          </div>
           <div className={styles["span"]}>
             <p>Me gusta:</p>
-            <div>
+            <div aria-label={`${likes} me gusta`}>
             &nbsp;&nbsp;
               {Array.from({ length: Math.min(likes, 5) }).map((_, i) => (
                 <FontAwesomeIcon key={i} icon={faStar} />
@@ -237,7 +238,7 @@ function Detail() {
               value={nuevoComentario}
               onChange={(e) => setNuevoComentario(e.target.value)}
             />
-            <Button variant="red-rounded" label="Publicar" type="submit" />
+            <Button variant="red-rounded" label="Publicar" type="submit" role="submit"/>
           </form>
 
           <div className={styles["comment-div"]}>

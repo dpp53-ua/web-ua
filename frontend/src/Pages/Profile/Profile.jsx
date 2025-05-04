@@ -254,6 +254,7 @@ function Profile() {
                   value={formData.name}
                   onChange={handleChange}
                   explicativeText={errors.name}
+                  aria-required="true"
                 />
                 <InputField
                   id="email"
@@ -264,6 +265,7 @@ function Profile() {
                   value={formData.email}
                   onChange={handleChange}
                   explicativeText={errors.email}
+                  aria-required="true"
                 />
               </div>
             </div>

@@ -13,7 +13,7 @@ function UpButton() {
   };
 
   return (
-    <button className={styles.upButton} onClick={scrollToTop}>
+    <button className={styles.upButton} onClick={scrollToTop} aria-label="Volver al inicio de esta página" title="Volver al inicio de esta página">
       <FontAwesomeIcon icon={faArrowUp} />
     </button>
   );

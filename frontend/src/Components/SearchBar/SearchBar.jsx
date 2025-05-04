@@ -132,7 +132,7 @@ export default function SearchBar() {
 
           <div className={styles.searchBar}>
             <div>
-              <button>
+              <button aria-label="Confirmar búsqueda" title="Aplicar búsqueda" role="submit">
                 <FontAwesomeIcon icon={faSearch} />
               </button>
               <input
@@ -142,7 +142,7 @@ export default function SearchBar() {
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
-            <button className={styles.filter} onClick={() => setShowFilters(!showFilters)}>
+            <button className={styles.filter} onClick={() => setShowFilters(!showFilters)} aria-label="Filtro de búsqueda" title="Filtros de búsqueda">
               <FontAwesomeIcon icon={faFilter} />
             </button>
           </div>
@@ -347,7 +347,7 @@ export default function SearchBar() {
               </section>
 
                 </div>
-                <Button variant="white-rounded" label="Aplicar filtros" type="submit"/>
+                <Button variant="white-rounded" label="Aplicar filtros" type="submit" role="submit"/>
               {/* </form> */}
             </div>
           )}

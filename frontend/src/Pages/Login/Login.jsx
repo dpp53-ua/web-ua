@@ -108,6 +108,7 @@ function Login() {
             value={formData.name} 
             onChange={handleChange} 
             explicativeText={errors.name}
+            aria-required="true"
           />
           <InputField 
             id="password" 
@@ -119,10 +120,11 @@ function Login() {
             value={formData.password} 
             onChange={handleChange} 
             explicativeText={errors.password}
+            aria-required="true"
           />
           <div>
-            <Button type="reset" variant="red" label="Limpiar" onClick={handleClear} icon={faRotateLeft}/>
-            <Button type="submit" variant="red" label="Aceptar" icon={faCheck} />
+            <Button type="reset" variant="red" label="Limpiar" onClick={handleClear} icon={faRotateLeft} role="reset"/>
+            <Button type="submit" variant="red" label="Aceptar" icon={faCheck} role="submit"/>
           </div>
         </form>
       </section>
@@ -136,7 +138,7 @@ function Login() {
         <img alt="logo" src="/logo.png"/>
         <h1>Bienvenido</h1>
         <p>¿No tienes una cuenta?</p>
-        <Button variant="white" label="Regístrate" to="/register"/>
+        <Button variant="white" label="Regístrate" to="/register" role="link"/>
       </section>
     </div>
   );

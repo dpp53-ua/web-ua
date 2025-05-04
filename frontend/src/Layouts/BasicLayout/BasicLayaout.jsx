@@ -6,7 +6,7 @@ import styles from "./BasicLayout.module.css"
 
 function BasicLayout({ isAuth, setIsAuth }) {  // Asegúrate de recibir setIsAuth aquí
     return (
-        <div className={styles["flex-layout"]}>
+        <div className={styles["flex-layout"]} role="main">
             <Header isAuth={isAuth} setIsAuth={setIsAuth} className={styles["header-layout"]} /> 
             <main className={styles["main-content"]}>
                 <Outlet />

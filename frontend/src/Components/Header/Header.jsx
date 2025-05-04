@@ -60,11 +60,15 @@ export default function Header( ) { //{ isAuth, setIsAuth } antes lo usaba
     }, []);
     
     return (
-        <header className={styles.header}>
+        <header className={styles.header} role="banner">
             <div className={styles.leftContent}>
                 <div className={styles.navigation}>
                      <div className={styles.topNav}>
-                        <a href="/home"><img className={styles.logo} alt="logo" src="/logo.png"/> <p className={styles.logofont}>MolaMazoGames</p></a>
+                     <a href="/home" aria-label="Ir a la página de inicio" title="Ir a la página de inicio">
+                        <img className={styles.logo} alt="Logo de MolaMazoGames" src="/logo.png" />
+                        <p className={styles.logofont}>MolaMazoGames</p>
+                    </a>
+
                         <FontAwesomeIcon icon={faBars} className={styles.menuIcon} onClick={() => setMenuOpen(!menuOpen)}/>
                     </div> 
                     <NavBar menuOpen={menuOpen} />  {/* Pasamos el estado a NavBar */}
@@ -74,12 +78,12 @@ export default function Header( ) { //{ isAuth, setIsAuth } antes lo usaba
             <div className={styles.rightContent}>
                 {!isAuth ? 
                     <>
-                        <Button  variant="headerButtonWhite" label="Iniciar sesión" icon={faSignInAlt} onClickFunction={() => console.log("Redirigiendo a inicio de sesión...")} to="/login"/> 
-                        <Button  className={styles.btn_regist}  variant="headerButtonBlack" label="Registrarse" icon={faUserPlus} onClickFunction={() => console.log("Redirigiendo a registro...")} to="/register"/> 
+                        <Button  variant="headerButtonWhite" label="Iniciar sesión" icon={faSignInAlt} onClickFunction={() => console.log("Redirigiendo a inicio de sesión...")} to="/login" role="link"/> 
+                        <Button  className={styles.btn_regist}  variant="headerButtonBlack" label="Registrarse" icon={faUserPlus} onClickFunction={() => console.log("Redirigiendo a registro...")} to="/register" role="link"/> 
                     </>
                 :
                     <>  
-                    <Button  variant="headerButtonWhite" label="Subir asset" icon={faArrowUpFromBracket} onClickFunction={() => console.log("Redirigiendo a subir asset...")} to="/post-form"/> 
+                    <Button  variant="headerButtonWhite" label="Subir asset" icon={faArrowUpFromBracket} onClickFunction={() => console.log("Redirigiendo a subir asset...")} to="/post-form" role="link"/> 
 
                     <div className={styles.drop} onClick={() => setProfileMenuOpen(!profileMenuOpen)} ref={profileButtonRef}>
                         <img alt="foto de perfil" src={`http://localhost:5000/api/users/${userId}/foto`} onError={(e) => {e.target.src = '/profile.png';}}/>
@@ -88,9 +92,9 @@ export default function Header( ) { //{ isAuth, setIsAuth } antes lo usaba
 
                     {/* Menú desplegable */}
                     {profileMenuOpen && (
-                        <div className={styles.profileMenu} ref={profileMenuRef}>
+                        <div className={styles.profileMenu} ref={profileMenuRef} role="navigation">
                             <p className={styles.menuTitle}>Tus opciones</p>
-                            <ul>
+                            <ul role="navigation">
                                 <a href="/profile"><li><FontAwesomeIcon icon={faUser} /> Perfil</li></a>
                                 <a href="/my-assets"><li><FontAwesomeIcon icon={faFolder} /> Mis assets</li></a>
                                 <a href="/my-downloads"><li><FontAwesomeIcon icon={faDownload} /> Mis descargas</li></a>

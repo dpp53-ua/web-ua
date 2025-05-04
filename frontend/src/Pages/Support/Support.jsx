@@ -93,6 +93,7 @@ function Support() {
               value={form.issueType}
               onChange={handleChange}
               ref={selectRef}
+              aria-required="true"
             />
 
             <InputField
@@ -103,6 +104,7 @@ function Support() {
               placeholder="Describe el problema o sugerencia..."
               value={form.description}
               onChange={handleChange}
+              aria-required="true"
             />
 
             <InputField
@@ -122,8 +124,9 @@ function Support() {
                 icon={faRotateLeft}
                 type="button"
                 onClick={() => handleClear()}
+                role="reset"
               />
-              <Button variant="red" label="Enviar" icon={faCheck} type="submit" />
+              <Button variant="red" label="Enviar" icon={faCheck} type="submit" role="submit"/>
             </div>
           </form>
         </div>

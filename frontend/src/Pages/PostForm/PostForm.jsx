@@ -438,6 +438,7 @@ function PostForm() {
             value={formData.postTitle}
             onChange={handleChange}
             explicativeText={errors.postTitle}
+            aria-required="true"
           />
           <InputField
             id="postDescription"
@@ -448,6 +449,7 @@ function PostForm() {
             value={formData.postDescription}
             onChange={handleChange}
             explicativeText={errors.postDescription}
+            aria-required="true"
           />
           <InputField
             id="postFile"
@@ -459,6 +461,7 @@ function PostForm() {
             explicativeText={errors.postFile}
             multiple
             ref={fileInputRef}
+            aria-required="true"
           />
           <div className={styles["grid-list"]}>
             <ul>
@@ -480,6 +483,7 @@ function PostForm() {
             onChange={handleFileInput}
             explicativeText={errors.postMiniature}
             ref={miniatureInputRef}
+            aria-required="true"
           />
           <div className={styles["grid-list"]}>
             {miniatureFile && (
@@ -512,8 +516,8 @@ function PostForm() {
             </ul>
           </div>
           <div>
-            <Button type="reset" variant="red" label="Limpiar" icon={faRotateLeft} />
-            <Button type="submit" variant="red" label={isEditMode ? "Actualizar" : "Aceptar"} icon={faCheck} />
+            <Button type="reset" variant="red" label="Limpiar" icon={faRotateLeft} role="submit" />
+            <Button type="submit" variant="red" label={isEditMode ? "Actualizar" : "Aceptar"} icon={faCheck} role="submit" />
           </div>
         </form>
       </section>

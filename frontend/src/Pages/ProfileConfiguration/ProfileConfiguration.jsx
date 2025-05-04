@@ -264,7 +264,7 @@ function ProfileConfiguration() {
         </section>
         <hr/>
           <div className={styles['actions']}>
-            <Button onClick={handleSubmit} label="Confirmar cambios" variant="red" icon={faCheck}/>
+            <Button onClick={handleSubmit} label="Confirmar cambios" variant="red" icon={faCheck} role="submit"/>
           </div>
       </section>
     </div>

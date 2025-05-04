@@ -15,7 +15,7 @@ function Comment({ autor, mensaje, foto }) {
           <img
             className={styles["author-image"]}
             src={foto || "imageholder.png"}
-            alt={`Imagen de ${autor}`}
+            alt={`Foto de perfil de ${autor}`}
           />
           <h3>{autor}</h3>
         </div>
