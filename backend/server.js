@@ -637,7 +637,7 @@ app.post("/api/publicaciones/:idUsuario", upload.fields([
             .on("error", ko)
             .on("finish", ok)
         );
-        archivoIds.push({ id: uploadStream.id, nombre: file.originalname });
+        archivoIds.push({ id: uploadStream.id, nombre: file.originalname, extension: file.originalname.split('.').pop().toLowerCase() });
         fs.unlinkSync(file.path);
       }
 
