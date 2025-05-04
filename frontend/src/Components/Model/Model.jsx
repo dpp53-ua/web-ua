@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import styles from "./Model.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faStar, faStarHalf, faHeart, faDownload } from "@fortawesome/free-solid-svg-icons";
+import { faStar, faStarHalf, faHeart, faDownload, faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
 import { getCSSVariable } from "../../Utils";
 
-function Model({ _id, titulo, autor, imagen, mostrarBotonDescarga= false, mostrarBotonEditar = false }) {
+function Model({ _id, titulo, autor, imagen, mostrarBotonDescarga= false, mostrarBotonEditar = false, mostrarBotonBorrar = false, onDelete }) {
   const [likes, setLikes] = useState(0);
   const [liked, setLiked] = useState(false);
 
@@ -102,6 +102,82 @@ function Model({ _id, titulo, autor, imagen, mostrarBotonDescarga= false, mostra
     }
   };
 
+  const handleDelete = async () => {
+    try {
+      const result = await Swal.fire({
+        title: "¿Borrar publicación?",
+        text: "¿Deseas eliminar esta publicación, con todos los archivos asociados?",
+        icon: "warning",
+        background: getCSSVariable("--dark-grey"),
+        color: getCSSVariable("--white"),
+        customClass: {
+          confirmButton: "swal-confirm-btn",
+          cancelButton: "swal-cancel-btn", // Optional: Style cancel button too
+        },
+        showCancelButton: true,
+        confirmButtonText: "Sí, borrar",
+        cancelButtonText: "Cancelar",
+      });
+  
+      if (result.isConfirmed) {
+        console.log("[Model] User confirmed deletion for ID:", _id); // Log 1
+  
+        const response = await fetch(
+          `http://localhost:5000/api/publicaciones/${_id}`,
+          {
+            method: "DELETE",
+          }
+        );
+  
+        console.log("[Model] DELETE request sent. Response status:", response.status); // Log 2
+  
+        // --- IMPORTANT: Check if the API deletion was actually successful ---
+        if (!response.ok) {
+          // Throw an error to be caught by the catch block below
+          throw new Error(`API error! status: ${response.status}`);
+        }
+  
+        console.log("[Model] API deletion successful. Checking onDelete prop."); // Log 3
+  
+        // --- Call the onDelete prop function IMMEDIATELY after successful deletion ---
+        if (typeof onDelete === "function") {
+          console.log("[Model] Calling onDelete prop function with ID:", _id); // Log 4
+          onDelete(_id); // <--- Call the parent's update function
+        } else {
+          console.warn("[Model] onDelete prop is missing or not a function."); // Warning if prop is wrong
+        }
+  
+        // --- Now show the success message (optional, happens after UI update) ---
+        await Swal.fire({
+          title: "Eliminada",
+          text: "La publicación fue eliminada correctamente",
+          icon: "success",
+          background: getCSSVariable("--dark-grey"),
+          color: getCSSVariable("--white"),
+          customClass: {
+            confirmButton: "swal-confirm-btn",
+          },
+        });
+         console.log("[Model] Success Swal shown."); // Log 5
+      } else {
+         console.log("[Model] User cancelled deletion."); // Log 6
+      }
+    } catch (err) {
+      // Catch errors from Swal, fetch, response checking, or the onDelete call itself
+      console.error("[Model] Error during handleDelete process:", err); // Log 7 - See the actual error
+      await Swal.fire({
+          title: 'Error',
+          text: 'No se pudo completar la eliminación.',
+          icon: 'error',
+          background: getCSSVariable('--dark-grey'),
+          color: getCSSVariable('--white'),
+          customClass: {
+            confirmButton: "swal-confirm-btn",
+          }
+        });
+    }
+  };
+  
 
   return (
     <article className={styles["article-model"]}>
@@ -109,7 +185,8 @@ function Model({ _id, titulo, autor, imagen, mostrarBotonDescarga= false, mostra
         <button
         className={styles["download-button"]}
         onClick={()=>handleDownload()}
-        title="Descargar"
+        title="Descargar publicación"
+        aria-label="Descargar publicación"
         >
         <FontAwesomeIcon icon={faDownload} />
       </button>
@@ -121,9 +198,22 @@ function Model({ _id, titulo, autor, imagen, mostrarBotonDescarga= false, mostra
           to={`/post-form/${_id}`}
           className={styles["edit-button"]}
           title="Editar publicación"
+          aria-label="Descargar publicación"
         >
-          Editar
+          <FontAwesomeIcon icon={faEdit} />
         </Link>
+      )}
+
+      {mostrarBotonBorrar && (
+        <button
+        className={styles["delete-button"]}
+        onClick={()=>handleDelete()}
+        title="Eliminar publicación"
+        aria-label="Descargar publicación"
+        >
+        <FontAwesomeIcon icon={faTrash} />
+      </button>
+
       )}
 
       <Link to={`/detail/${_id}`}>

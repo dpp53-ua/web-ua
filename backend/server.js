@@ -1066,7 +1066,16 @@ app.delete("/api/publicaciones", async (req, res) => {
     }
 });
 
-
+app.delete("/api/publicaciones/:id", async (req, res) => {
+    const {id} = req.params;
+    try {
+        const result = await publicacionesDB.deleteOne({_id: new ObjectId(id)});
+        res.json({ message: `Publicación con el ID: ${id} eliminada` });
+    } catch {
+        console.error(`Error al eliminar la publicación con el ID: ${id}`)
+        res.status(500).json({ message: `Error al eliminar la publicación con el ID: ${id}}`});
+    }
+});
 
 
 app.listen(PORT, () => console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`));

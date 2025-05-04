@@ -105,6 +105,7 @@
     background-color: white;
     padding-inline: 0.8rem;
     z-index: 2;
+    color: black;
 
     &:hover {
       animation: palpitar 0.4s ease-in-out infinite;
@@ -123,7 +124,27 @@
     padding-block: 0.5rem;
     font-weight: bold;
     z-index: 2;
+    color: black;
 
+    &:hover {
+      text-decoration: none;
+      animation: palpitar 0.4s ease-in-out infinite;
+    }
+  }
+
+  .delete-button {
+    position: absolute;
+    top: 0.5rem;
+    width: fit-content;
+    left: 0.5rem;
+    border-radius: 0.5rem;
+    outline: 0.15rem solid black;
+    background-color: white; 
+    padding-inline: 0.8rem;
+    padding-block: 0.5rem;
+    font-weight: bold;
+    z-index: 2;
+    color: var(--red);
     &:hover {
       text-decoration: none;
       animation: palpitar 0.4s ease-in-out infinite;

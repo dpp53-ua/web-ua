@@ -127,7 +127,7 @@ function ProfileConfiguration() {
           }
         }).then((result) => {
           if (result.isConfirmed) {
-            window.location.href = "profile-configuration";
+            window.location.reload();
           }
         });
 
