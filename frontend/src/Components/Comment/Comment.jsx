@@ -16,6 +16,7 @@ function Comment({ autor, mensaje, foto }) {
             className={styles["author-image"]}
             src={foto || "imageholder.png"}
             alt={`Foto de perfil de ${autor}`}
+            onError={(e) => { e.target.src = '/profile.png'; }}
           />
           <h3>{autor}</h3>
         </div>

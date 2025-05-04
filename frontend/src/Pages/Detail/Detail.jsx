@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar, faDownload, faHeart } from "@fortawesome/free-solid-svg-icons";
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
-
+import Swal from "sweetalert2";
 import styles from "./Detail.module.css";
 
 function Detail() {
@@ -59,6 +59,15 @@ function Detail() {
   const manejarComentario = (e) => {
     e.preventDefault();
     const usuarioId = sessionStorage.getItem("userId");
+    if (!usuarioId) {
+       Swal.fire({
+        icon: 'warning',
+        title: 'Atención',
+        text: 'Debes estar logueado para comentar.',
+        confirmButtonText: 'Entendido'
+      });
+      return;
+    }
     if (!usuarioId || !nuevoComentario.trim()) return;
   
     fetch("http://localhost:5000/api/comentarios", {
@@ -87,8 +96,16 @@ function Detail() {
   const handleDownload = async () => {
     try {
       const userId = sessionStorage.getItem("userId");
-      if (!userId) return alert("Debes estar logueado para descargar.");
-  
+      if (!userId) {
+        Swal.fire({
+         icon: 'warning',
+         title: 'Atención',
+         text: 'Debes estar logueado para descargar.',
+         confirmButtonText: 'Entendido'
+       });
+       return;
+     }
+      
       const response = await fetch(`http://localhost:5000/api/publicaciones/${id}/descargar/${userId}`);
   
       if (!response.ok) {
@@ -243,7 +260,7 @@ function Detail() {
 
           <div className={styles["comment-div"]}>
             {comentarios.length === 0 ? (
-              <p>No hay comentarios aún.</p>
+              <p></p>
             ) : (
               comentarios.map((comentario) => (
                 <Comment

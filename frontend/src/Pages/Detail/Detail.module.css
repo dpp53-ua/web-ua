@@ -9,6 +9,7 @@ p {
   word-wrap: break-word;
   overflow-wrap: break-word;
   text-align: left;
+  font-size: var(--font-medium);
 }
 
 .detail-images {
@@ -95,7 +96,7 @@ p {
 
 /* Fila de detalles */
 .span {
-  display: flex;  
+  display: flex;
 }
 
 /* 🔵 Bloque Tags */
@@ -116,7 +117,7 @@ p {
 
 /* Etiquetas individuales de botón */
 .tag-cloud button {
-  font-size: 10px;
+  font-size: var(--font-small);
 }
 
 /* 🔵 Bloque Comentarios */
@@ -152,7 +153,7 @@ p {
 }
 
 /* Responsive */
- /* @media (max-width: 1600px) {
+/* @media (max-width: 1600px) {
   .detail-main-container {
     flex-direction: column;
   }
