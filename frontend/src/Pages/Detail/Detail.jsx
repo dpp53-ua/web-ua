@@ -202,10 +202,11 @@ function Detail() {
           <h2>Detalles</h2>
           <div className={styles["span"]}>
             <p>Formato:</p>
-            <p>.{publicacion.archivos?.[0]?.extension || "Desconocido"}</p>          </div>
+            <p>&nbsp;&nbsp; .{publicacion.archivos?.[0]?.extension || "Desconocido"}</p>          </div>
           <div className={styles["span"]}>
             <p>Me gusta:</p>
             <div>
+            &nbsp;&nbsp;
               {Array.from({ length: Math.min(likes, 5) }).map((_, i) => (
                 <FontAwesomeIcon key={i} icon={faStar} />
               ))}

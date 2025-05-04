@@ -7,7 +7,12 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 function ModelViewer({ modelUrl }) {
     const [model, setModel] = useState();
     const [wireframe, setWireframe] = useState(false);
+    const [lightIntensity] = useState(1);
+    const [autoRotate, setAutoRotate] = useState(false);
+
     const groupRef = useRef();
+    const lightRef = useRef();
+    const cameraRef = useRef(); // 👉 Referencia externa para la cámara
 
     useEffect(() => {
         if (!modelUrl) return;
@@ -48,32 +53,71 @@ function ModelViewer({ modelUrl }) {
         const box = new THREE.Box3().setFromObject(model);
         const center = box.getCenter(new THREE.Vector3());
         const size = box.getSize(new THREE.Vector3()).length();
-
-        model.position.sub(center); // Centra
-        const scaleFactor = 10 / size; // Escala base
+        model.position.sub(center);
+        const scaleFactor = 10 / size;
         model.scale.setScalar(scaleFactor);
+    };
+
+    useEffect(() => {
+        let animId;
+        if (autoRotate && groupRef.current) {
+            const rotate = () => {
+                groupRef.current.rotation.y += 0.01;
+                animId = requestAnimationFrame(rotate);
+            };
+            rotate();
+        }
+        return () => cancelAnimationFrame(animId);
+    }, [autoRotate]);
+
+    // 🔄 Función para resetear la cámara
+    const resetCamera = () => {
+        if (cameraRef.current) {
+            cameraRef.current.position.set(0, 4, 10);
+            cameraRef.current.lookAt(0, 0, 0);
+        }
     };
 
     return (
         <div>
-            <button onClick={() => setWireframe(!wireframe)} style={{ marginBottom: '10px' }}>
-                {wireframe ? "Modo Material" : "Modo Wireframe"}
-            </button>
             <Canvas
                 shadows
-                camera={{ position: [0, 2, 5], fov: 60 }}
-                style={{ width: "100%", height: "500px", background: "#111" }}
+                camera={{ position: [0, 4, 10], fov: 60 }}
+                style={{ width: "100%", height: "1000px", background: "#111" }}
+                onCreated={({ camera }) => (cameraRef.current = camera)} // 👈 Capturamos la cámara
             >
                 <ambientLight intensity={0.5} />
-                <directionalLight position={[5, 10, 5]} intensity={1} castShadow />
+                <directionalLight ref={lightRef} position={[5, 10, 5]} intensity={lightIntensity} castShadow />
                 <OrbitControls />
                 <Environment preset="studio" background={false} />
-                <axesHelper args={[5]} />
                 <gridHelper args={[10, 10]} />
                 {model && <primitive object={model} ref={groupRef} />}
             </Canvas>
+
+            {/* Botones de control */}
+            <div style={{ display: "flex", justifyContent: "center", gap: "10px", marginTop: "10px" }}>
+                <button onClick={() => setWireframe(!wireframe)} style={buttonStyle}>
+                    {wireframe ? "Modo Material" : "Modo Wireframe"}
+                </button>
+                <button onClick={() => setAutoRotate(!autoRotate)} style={buttonStyle}>
+                    {autoRotate ? "Parar Giro" : "Girar Modelo"}
+                </button>
+                <button onClick={resetCamera} style={buttonStyle}>
+                    Reset Cámara
+                </button>
+            </div>
         </div>
     );
 }
+
+const buttonStyle = {
+    padding: "6px 12px",
+    fontSize: "14px",
+    borderRadius: "8px",
+    background: "#333",
+    color: "#fff",
+    border: "none",
+    cursor: "pointer"
+};
 
 export default ModelViewer;

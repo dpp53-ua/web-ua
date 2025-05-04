@@ -66,6 +66,15 @@ button {
     text-decoration-color: var(--white);
 }
 
+.green-rounded:disabled {
+  background-color: grey;
+  color: var(--white);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+
 .grey-rounded,
 .red-rounded,
 .blue-rounded,
