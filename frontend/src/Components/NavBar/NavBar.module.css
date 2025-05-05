@@ -29,6 +29,7 @@
   .nav li:hover {
     background-color: #00000031; /* Color de fondo cuando se pasa el ratón */
     border-radius: 5px; /* Bordes redondeados */
+    cursor: pointer;
   }
   
   

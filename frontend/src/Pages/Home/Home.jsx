@@ -1,17 +1,18 @@
 import { Button, ModelGrid, Category, UpButton } from '../../Components';
-import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+import { Link, useLocation, useNavigate  } from "react-router-dom";
 import Marquee from "react-fast-marquee";
-import Lottie from "lottie-react";
-import particlesAnimation from "../../assets/lineas.json";
-
-
+import { getCSSVariable } from '../../Utils';
+import Swal from 'sweetalert2';
 import styles from "./Home.module.css";
 
 function Home() {
     const [categories, setCategories] = useState([]);
     const [publicaciones, setPublicaciones] = useState([]);
     const [visibleCount, setVisibleCount] = useState(4);
+    const location = useLocation();
+    const navigate = useNavigate();
+    const alertProcessedRef = useRef(false);
 
     const handleMostrarMas = () => {
         setVisibleCount(prev => prev + 4);
@@ -30,6 +31,50 @@ function Home() {
             .then(data => setPublicaciones(data))
             .catch(error => console.error('Error al traer las publicaciones:', error));
     }, []);
+
+    useEffect(() => {
+        if (location.state?.needsAuthAlert && !alertProcessedRef.current) {
+          const intendedPath = location.state.from || 'la página anterior';
+
+          alertProcessedRef.current = true;
+    
+          navigate('.', { state: null, replace: true });    
+    
+          const showAlert = async () => {
+              try {
+                  const result = await Swal.fire({
+                      title: 'Acceso Restringido',
+                      text: `Necesitas iniciar sesión para acceder a "${intendedPath}".`,
+                      icon: 'warning',
+                      background: getCSSVariable('--dark-grey') || '#333333',
+                      color: getCSSVariable('--white') || '#ffffff',
+                      customClass: {
+                          confirmButton: "swal-confirm-btn",
+                          cancelButton: "swal-cancel-btn",
+                      },
+                      showCancelButton: true,
+                      confirmButtonText: 'Iniciar Sesión', 
+                      cancelButtonText: 'Entendido',
+                      allowOutsideClick: false,
+                      allowEscapeKey: false,
+                  });
+    
+                  if (result.isConfirmed) {
+                      navigate('/login');
+                  }
+    
+              } catch (error) {
+                  console.error("SweetAlert error:", error);
+              }
+          };
+    
+           showAlert();
+    
+    
+        } else if (!location.state?.needsAuthAlert) {
+            alertProcessedRef.current = false;
+        }
+      }, [location, navigate]);
     
     return (
         <div className={styles["home-main-container"]}>

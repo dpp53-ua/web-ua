@@ -66,6 +66,10 @@
       align-items: center;
       border-radius: 30px;
       padding: 0 0.8rem 0 0;
+      
+      &:hover {
+        cursor: pointer;
+      }
 
       img{
         width: 2.5rem;
@@ -74,21 +78,17 @@
         object-fit: cover;
       }
     }
+
+    
     .drop:hover{
       background-color: #00000031;
     }
   }
 
-
-
-
-
-
-/* Icono de menú hamburguesa */
 .menuIcon {
   font-size: 1.5rem;
   cursor: pointer;
-  display: none; /* Oculto en pantallas grandes */
+  display: none; 
 }
 
 .navigation {

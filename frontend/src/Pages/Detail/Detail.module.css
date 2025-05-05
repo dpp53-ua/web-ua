@@ -16,7 +16,10 @@ p {
   display: flex;
   flex-direction: column;
   width: 75%;
-
+  margin: 1rem;
+  border: 0.2rem solid var(--white);
+  padding: 0.1rem;
+  border-radius: 0.5rem;
   > img {
     width: 100%;
     object-fit: cover;

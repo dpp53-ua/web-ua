@@ -1,16 +1,25 @@
-// src/Components/PrivateRoute.jsx
-import { Navigate, Outlet } from "react-router-dom"; 
-import { useAuth } from "../../Context"; 
+import React, { useEffect } from 'react';
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "../../Context";
 
 function PrivateRoute() {
   const { isAuth } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  if (!isAuth) {
-    // Si no está logueado, lo redirigimos al login
-    return <Navigate to="/login" replace />;
-  }
+  useEffect(() => {
+    if (!isAuth) {
+      navigate('/home', {
+        replace: true,
+        state: {
+          needsAuthAlert: true,
+          from: location.pathname 
+        }
+      });
+    }
+  }, [isAuth, navigate, location]);
 
-  return <Outlet />; // Si está autenticado, permite el acceso a las rutas hijas
+  return isAuth ? <Outlet /> : null;
 }
 
 export default PrivateRoute;
