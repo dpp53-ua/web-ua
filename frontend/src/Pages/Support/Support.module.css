@@ -1,7 +1,12 @@
-.profile-main-container {
+.support-main-container {
     background-color: var(--dark-grey);
     min-width: 300px;
-    padding: 5rem;
+    min-height: 100vh; /* min-height en lugar de height para que crezca con el contenido */
+    padding: 3rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
 
     .right-content{
         color: var(--white);
@@ -120,7 +125,7 @@
     }
   }
 
-  .profile-buttons{
+  .support-buttons{
     margin-top: 1rem;
     display: flex;
     flex-direction: row !important;
@@ -134,5 +139,16 @@
 
 
 
+@media(max-width: 780px) {
+  .support-main-container > .right-content {
 
+    > .faq-section {
+      width: 100%;
+    }
+
+    > .form-section {
+      width: 100%;
+    }
+  }
+}
   

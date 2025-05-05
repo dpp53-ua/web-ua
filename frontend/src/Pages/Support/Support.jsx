@@ -154,7 +154,7 @@ function Support() {
 
 
   return (
-    <div className={styles["profile-main-container"]}>
+    <div className={styles["support-main-container"]}>
       <section className={styles["right-content"]}>
         <header>
           <h1>Soporte</h1>
@@ -217,7 +217,7 @@ function Support() {
               explicativeText={errors.attachment}
             />
 
-            <div className={styles["profile-buttons"]}>
+            <div className={styles["support-buttons"]}>
               <Button
                 variant="grey"
                 label="Limpiar"
