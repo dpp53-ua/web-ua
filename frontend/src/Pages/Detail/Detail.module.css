@@ -18,10 +18,10 @@ p {
   width: 75%;
   margin: 1rem;
   border: 0.2rem solid var(--white);
-  padding: 0.1rem;
+  padding: 1em;
   border-radius: 0.5rem;
-  align-items: center;
-  justify-content: center;
+  height: fit-content;
+
   > img {
     width: 100%;
     object-fit: cover;
@@ -29,6 +29,8 @@ p {
 
   > p {
     font-weight: bold;
+    align-items: center;
+    justify-content: center;
   }
 }
 

@@ -114,8 +114,12 @@ function Detail() {
   
       // Obtener nombre sugerido del header (si el servidor lo envía)
       const contentDisposition = response.headers.get("Content-Disposition");
-      const fileNameMatch = contentDisposition?.match(/filename="?(.+)"?/);
+      const fileNameMatch = contentDisposition?.match(/filename="(.+?)"/);
       const fileName = fileNameMatch?.[1] || "descarga";
+
+      console.log("Header Content-Disposition:", contentDisposition);
+      console.log("Archivo sugerido:", fileName);
+
   
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
