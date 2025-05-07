@@ -29,7 +29,7 @@ export function AuthProvider({ children }) {
   const logout = () => {
     sessionStorage.removeItem('userId');
     setUserId(null);
-    window.location.href = "login"
+    window.location.href = "http://localhost:3000/login"
   };
 
   // useEffect para recuperar el userId al cargar
