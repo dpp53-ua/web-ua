@@ -64,7 +64,9 @@ function Detail() {
         icon: 'warning',
         title: 'Atención',
         text: 'Debes estar logueado para comentar.',
-        confirmButtonText: 'Entendido'
+        confirmButtonText: 'Entendido',
+        background: "#1e1e1e",
+        color: "#ffffff",
       });
       return;
     }
@@ -101,7 +103,9 @@ function Detail() {
          icon: 'warning',
          title: 'Atención',
          text: 'Debes estar logueado para descargar.',
-         confirmButtonText: 'Entendido'
+         confirmButtonText: 'Entendido',
+         background: "#1e1e1e",
+         color: "#ffffff",
        });
        return;
      }
